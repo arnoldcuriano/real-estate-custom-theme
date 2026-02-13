@@ -141,6 +141,8 @@
 
 .hero__lead {
 	margin-top: 1.25rem;
+	width: min(100%, 740px);
+	max-width: none;
 }
 
 /* right hero image */
@@ -803,48 +805,6 @@
 	padding: 1.1rem;
 }
 
-.cta-band {
-	margin: 4rem 0 0;
-	margin-bottom: 0;
-	padding-top: 2.8rem;
-	padding-bottom: 2.35rem;
-	padding-inline: max(
-		var(--site-content-inline-pad),
-		calc((100vw - var(--site-layout-width)) / 2 + var(--site-content-inline-pad))
-	);
-	background:
-		linear-gradient(180deg, rgba(10, 10, 14, 0.88), rgba(8, 8, 12, 0.96)),
-		url("../assets/images/home/Footer Abstract Design.png");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center center;
-	border-top: 1px solid var(--home-border);
-	border-bottom: 1px solid var(--home-border);
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	gap: 1rem;
-	position: relative;
-	overflow: hidden;
-}
-
-.cta-band > * {
-	position: relative;
-	z-index: 1;
-}
-
-.cta-band h2 {
-	margin: 0 0 0.45rem;
-	font-size: clamp(1.4rem, 2.8vw, 2.1rem);
-}
-
-.cta-band p {
-	margin: 0;
-	color: #c8c8ce;
-	max-width: 68ch;
-	line-height: 1.6;
-}
-
 
 @media (max-width: 1024px) {
 	.hero {
@@ -904,11 +864,6 @@
 	.faqs__slide {
 		flex: 0 0 calc((100% - 1rem) / 2);
 		min-width: calc((100% - 1rem) / 2);
-	}
-
-	.cta-band {
-		flex-direction: column;
-		align-items: flex-start;
 	}
 }
 
@@ -1051,18 +1006,6 @@
 	.quick-links__item > span:last-child {
 		font-size: 1.25rem;
 		line-height: 1.35;
-	}
-
-	.cta-band {
-		padding: 2.2rem var(--site-content-inline-pad);
-		align-items: stretch;
-		gap: 1.05rem;
-	}
-
-	.cta-band .btn {
-		width: 100%;
-		min-height: 48px;
-		font-size: 1rem;
 	}
 
 	.card-grid {

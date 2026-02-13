@@ -7,6 +7,10 @@
 
 get_header();
 
+$about_page_url = function_exists( 'real_estate_custom_theme_get_about_page_url' ) ? real_estate_custom_theme_get_about_page_url() : home_url( '/about-us/' );
+$properties_page_url = function_exists( 'real_estate_custom_theme_get_properties_archive_url' ) ? real_estate_custom_theme_get_properties_archive_url() : home_url( '/properties/' );
+$services_page_url = function_exists( 'real_estate_custom_theme_get_services_page_url' ) ? real_estate_custom_theme_get_services_page_url() : home_url( '/services/' );
+
 $front_page_id = (int) get_option( 'page_on_front' );
 $asset_base    = get_template_directory_uri() . '/assets/images/home';
 $asset_path    = get_template_directory() . '/assets/images/home';
@@ -79,13 +83,13 @@ $faq_section_description         = __( 'Find answers to common questions about E
 					<h1 id="hero-title"><?php echo esc_html( $hero_title ); ?></h1>
 					<p class="hero__lead"><?php echo esc_html( $hero_description ); ?></p>
 					<div class="hero__actions">
-						<a class="btn btn--ghost" href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'Learn More', 'real-estate-custom-theme' ); ?></a>
-						<a class="btn btn--primary" href="<?php echo esc_url( home_url( '/properties/' ) ); ?>"><?php esc_html_e( 'Browse Properties', 'real-estate-custom-theme' ); ?></a>
+						<a class="btn btn--ghost" href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Learn More', 'real-estate-custom-theme' ); ?></a>
+						<a class="btn btn--primary" href="<?php echo esc_url( $properties_page_url ); ?>"><?php esc_html_e( 'Browse Properties', 'real-estate-custom-theme' ); ?></a>
 					</div>
 					<ul class="hero__stats" aria-label="<?php esc_attr_e( 'Company statistics', 'real-estate-custom-theme' ); ?>">
-						<li><strong>200+</strong><span><?php esc_html_e( 'Happy Customers', 'real-estate-custom-theme' ); ?></span></li>
-						<li><strong>10k+</strong><span><?php esc_html_e( 'Properties For Clients', 'real-estate-custom-theme' ); ?></span></li>
-						<li><strong>16+</strong><span><?php esc_html_e( 'Years of Experience', 'real-estate-custom-theme' ); ?></span></li>
+						<li><strong data-stat-count="200" data-stat-suffix="+">200+</strong><span><?php esc_html_e( 'Happy Customers', 'real-estate-custom-theme' ); ?></span></li>
+						<li><strong data-stat-count="10" data-stat-suffix="k+">10k+</strong><span><?php esc_html_e( 'Properties For Clients', 'real-estate-custom-theme' ); ?></span></li>
+						<li><strong data-stat-count="16" data-stat-suffix="+">16+</strong><span><?php esc_html_e( 'Years of Experience', 'real-estate-custom-theme' ); ?></span></li>
 					</ul>
 				</div>
 				<div class="hero__media" aria-hidden="true">
@@ -111,22 +115,22 @@ $faq_section_description         = __( 'Find answers to common questions about E
 				$quick_links = array(
 					array(
 						'title' => __( 'Find Your Dream Home', 'real-estate-custom-theme' ),
-						'url'   => home_url( '/properties/' ),
+						'url'   => $properties_page_url,
 						'icon'  => 'icon-home.png',
 					),
 					array(
 						'title' => __( 'Unlock Property Value', 'real-estate-custom-theme' ),
-						'url'   => home_url( '/services/' ),
+						'url'   => $services_page_url,
 						'icon'  => 'icon-ticket.png',
 					),
 					array(
 						'title' => __( 'Effortless Property Management', 'real-estate-custom-theme' ),
-						'url'   => home_url( '/services/' ),
+						'url'   => $services_page_url,
 						'icon'  => 'icon-building.png',
 					),
 					array(
 						'title' => __( 'Smart Investments, Informed Decisions', 'real-estate-custom-theme' ),
-						'url'   => home_url( '/services/' ),
+						'url'   => $services_page_url,
 						'icon'  => 'icon-sun.png',
 					),
 				);
@@ -169,7 +173,7 @@ $faq_section_description         = __( 'Find answers to common questions about E
 				<h2 id="featured-title"><?php esc_html_e( 'Featured Properties', 'real-estate-custom-theme' ); ?></h2>
 				<p class="section-head__description"><?php echo wp_kses_post( $featured_section_description ); ?></p>
 			</div>
-			<a class="btn btn--ghost" href="<?php echo esc_url( home_url( '/properties/' ) ); ?>"><?php esc_html_e( 'View All Properties', 'real-estate-custom-theme' ); ?></a>
+			<a class="btn btn--ghost" href="<?php echo esc_url( $properties_page_url ); ?>"><?php esc_html_e( 'View All Properties', 'real-estate-custom-theme' ); ?></a>
 		</div>
 
 		<?php
@@ -590,13 +594,6 @@ $faq_section_description         = __( 'Find answers to common questions about E
 		?>
 	</section>
 
-	<section class="cta-band" aria-labelledby="cta-title">
-		<div>
-			<h2 id="cta-title"><?php esc_html_e( 'Start Your Real Estate Journey Today', 'real-estate-custom-theme' ); ?></h2>
-			<p><?php esc_html_e( 'Whether you are buying, selling, or investing, Estatein is here to guide you with expert advice and personalized assistance.', 'real-estate-custom-theme' ); ?></p>
-		</div>
-		<a class="btn btn--primary" href="<?php echo esc_url( home_url( '/properties/' ) ); ?>"><?php esc_html_e( 'Explore Properties', 'real-estate-custom-theme' ); ?></a>
-	</section>
 </main>
 
 <?php

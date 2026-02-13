@@ -28,7 +28,22 @@
 		<a class="skip-link screen-reader-text" href="#primary"><?php esc_html_e('Skip to content', 'real-estate-custom-theme'); ?></a>
 
 		<header id="masthead" class="site-header">
-			<?php if (is_front_page()) : ?>
+			<?php
+			$use_front_header = function_exists( 'real_estate_custom_theme_is_front_header_context' )
+				? real_estate_custom_theme_is_front_header_context()
+				: ( is_front_page() || is_page( 'about-us' ) );
+
+			if ( $use_front_header ) :
+				$is_home_item_active       = is_front_page();
+				$is_about_item_active      = is_page( 'about-us' );
+				$is_properties_item_active = is_post_type_archive( 'property' ) || is_singular( 'property' );
+				$is_services_item_active   = is_page( 'services' );
+				$is_contact_item_active    = is_page( 'contact-us' );
+				$about_page_url            = function_exists( 'real_estate_custom_theme_get_about_page_url' ) ? real_estate_custom_theme_get_about_page_url() : home_url( '/about-us/' );
+				$properties_page_url       = function_exists( 'real_estate_custom_theme_get_properties_archive_url' ) ? real_estate_custom_theme_get_properties_archive_url() : home_url( '/properties/' );
+				$services_page_url         = function_exists( 'real_estate_custom_theme_get_services_page_url' ) ? real_estate_custom_theme_get_services_page_url() : home_url( '/services/' );
+				$contact_page_url          = function_exists( 'real_estate_custom_theme_get_contact_page_url' ) ? real_estate_custom_theme_get_contact_page_url() : home_url( '/contact-us/' );
+			?>
 				<?php
 				$symbol_logo_url = '';
 				$logo_candidates = array(
@@ -59,7 +74,7 @@
 							<p class="front-top-banner__text">
 								<span aria-hidden="true">&#10024;</span>
 								<?php esc_html_e( 'Discover Your Dream Property with Estatein', 'real-estate-custom-theme' ); ?>
-								<a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'Learn More', 'real-estate-custom-theme' ); ?></a>
+								<a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Learn More', 'real-estate-custom-theme' ); ?></a>
 							</p>
 						</div>
 						<button type="button" class="front-top-banner__close" aria-label="<?php esc_attr_e( 'Close announcement', 'real-estate-custom-theme' ); ?>">
@@ -87,15 +102,15 @@
 								<span aria-hidden="true"></span>
 							</button>
 							<ul id="front-primary-menu" class="front-menu-list">
-								<li class="current-menu-item"><a href="<?php echo esc_url( home_url('/') ); ?>"><?php esc_html_e( 'Home', 'real-estate-custom-theme' ); ?></a></li>
-								<li><a href="<?php echo esc_url( home_url('/about-us/') ); ?>"><?php esc_html_e( 'About Us', 'real-estate-custom-theme' ); ?></a></li>
-								<li><a href="<?php echo esc_url( home_url('/properties/') ); ?>"><?php esc_html_e( 'Properties', 'real-estate-custom-theme' ); ?></a></li>
-								<li><a href="<?php echo esc_url( home_url('/services/') ); ?>"><?php esc_html_e( 'Services', 'real-estate-custom-theme' ); ?></a></li>
-								<li class="front-menu-contact"><a href="<?php echo esc_url( home_url('/contact-us/') ); ?>"><?php esc_html_e( 'Contact Us', 'real-estate-custom-theme' ); ?></a></li>
+								<li<?php echo $is_home_item_active ? ' class="current-menu-item"' : ''; ?>><a href="<?php echo esc_url( home_url('/') ); ?>"><?php esc_html_e( 'Home', 'real-estate-custom-theme' ); ?></a></li>
+								<li<?php echo $is_about_item_active ? ' class="current-menu-item"' : ''; ?>><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'About Us', 'real-estate-custom-theme' ); ?></a></li>
+								<li<?php echo $is_properties_item_active ? ' class="current-menu-item"' : ''; ?>><a href="<?php echo esc_url( $properties_page_url ); ?>"><?php esc_html_e( 'Properties', 'real-estate-custom-theme' ); ?></a></li>
+								<li<?php echo $is_services_item_active ? ' class="current-menu-item"' : ''; ?>><a href="<?php echo esc_url( $services_page_url ); ?>"><?php esc_html_e( 'Services', 'real-estate-custom-theme' ); ?></a></li>
+								<li class="front-menu-contact<?php echo $is_contact_item_active ? ' current-menu-item' : ''; ?>"><a href="<?php echo esc_url( $contact_page_url ); ?>"><?php esc_html_e( 'Contact Us', 'real-estate-custom-theme' ); ?></a></li>
 							</ul>
 						</nav><!-- #site-navigation -->
 
-						<a class="header-contact-btn" href="<?php echo esc_url(home_url('/contact-us/')); ?>"><?php esc_html_e('Contact Us', 'real-estate-custom-theme'); ?></a>
+						<a class="header-contact-btn" href="<?php echo esc_url( $contact_page_url ); ?>"><?php esc_html_e('Contact Us', 'real-estate-custom-theme'); ?></a>
 					</div>
 				</div>
 			<?php else : ?>
@@ -131,7 +146,7 @@
 						);
 						?>
 					</nav><!-- #site-navigation -->
-					<a class="header-contact-btn" href="<?php echo esc_url(home_url('/contact-us/')); ?>"><?php esc_html_e('Contact Us', 'real-estate-custom-theme'); ?></a>
+					<a class="header-contact-btn" href="<?php echo esc_url( function_exists( 'real_estate_custom_theme_get_contact_page_url' ) ? real_estate_custom_theme_get_contact_page_url() : home_url('/contact-us/') ); ?>"><?php esc_html_e('Contact Us', 'real-estate-custom-theme'); ?></a>
 				</div>
 			<?php endif; ?>
 		</header><!-- #masthead -->

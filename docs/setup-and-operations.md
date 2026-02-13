@@ -18,7 +18,9 @@ Provide operational setup and maintenance steps for developers and maintainers.
 - `inc/acf-fields-properties.php`
 - `inc/acf-fields-testimonials.php`
 - `inc/acf-fields-faq.php`
+- `inc/acf-fields-about.php`
 - `front-page.php`
+- `page-about-us.php`
 - `archive-property.php`
 - `archive-testimonial.php`
 - `archive-faq.php`
@@ -50,7 +52,15 @@ Detailed field setup:
 - If a static page uses slug `properties`, rename that page slug.
 - An admin warning notice is already implemented in `inc/cpt-property.php`.
 
-### 6) Testimonials and FAQs route conflict checks
+### 6) Services + Contact placeholder pages
+- Theme bootstrap seeds missing navigation placeholder pages:
+  - `/services/`
+  - `/contact-us/`
+- Seed logic is implemented in `functions.php` and runs:
+  - on `after_switch_theme`
+  - on `init` (idempotent safety for already-active installs)
+
+### 7) Testimonials and FAQs route conflict checks
 - The `testimonial` CPT archive uses `/testimonials/`.
 - The `faq` CPT archive uses `/faqs/`.
 - If static pages use `testimonials` or `faqs` slugs, rename those pages.
@@ -58,7 +68,7 @@ Detailed field setup:
   - `inc/cpt-testimonial.php`
   - `inc/cpt-faq.php`
 
-### 7) FAQ taxonomy filtering operation
+### 8) FAQ taxonomy filtering operation
 - FAQ archive filter uses `faq_category` query parameter:
   - `/faqs/?faq_category=buying`
 - Main archive query is filtered via `pre_get_posts` in `inc/cpt-faq.php`.
@@ -74,6 +84,8 @@ Detailed field setup:
   - or `/index.php/faqs/`
 - Featured cards rely on property posts and image/content metadata:
   - no image on a post uses fallback image helper from `functions.php`
+- About page sections are ACF-optional:
+  - if About ACF fields are empty, template falls back to built-in default content
 
 ## Troubleshooting
 - `404` on properties archive:
@@ -104,6 +116,9 @@ Detailed field setup:
   - `node --check wp-content/themes/real-estate-custom-theme/js/navigation.js`
 - Route checks:
   - `http://localhost/realestate/`
+  - `http://localhost/realestate/about-us/`
+  - `http://localhost/realestate/services/`
+  - `http://localhost/realestate/contact-us/`
   - `http://localhost/realestate/properties/` or `http://localhost/realestate/index.php/properties/`
   - `http://localhost/realestate/testimonials/` or `http://localhost/realestate/index.php/testimonials/`
   - `http://localhost/realestate/faqs/` or `http://localhost/realestate/index.php/faqs/`

@@ -13,8 +13,22 @@
 
 <?php
 $symbol_logo_url = function_exists( 'real_estate_custom_theme_get_symbol_asset_url' ) ? real_estate_custom_theme_get_symbol_asset_url() : '';
+$about_page_url = function_exists( 'real_estate_custom_theme_get_about_page_url' ) ? real_estate_custom_theme_get_about_page_url() : home_url( '/about-us/' );
+$properties_page_url = function_exists( 'real_estate_custom_theme_get_properties_archive_url' ) ? real_estate_custom_theme_get_properties_archive_url() : home_url( '/properties/' );
+$services_page_url = function_exists( 'real_estate_custom_theme_get_services_page_url' ) ? real_estate_custom_theme_get_services_page_url() : home_url( '/services/' );
+$contact_page_url = function_exists( 'real_estate_custom_theme_get_contact_page_url' ) ? real_estate_custom_theme_get_contact_page_url() : home_url( '/contact-us/' );
 ?>
 <footer id="colophon" class="site-footer home-footer">
+	<div class="home-footer__cta" aria-labelledby="footer-cta-title">
+		<div class="home-footer__cta-inner">
+			<div class="home-footer__cta-content">
+				<h2 id="footer-cta-title"><?php esc_html_e( 'Start Your Real Estate Journey Today', 'real-estate-custom-theme' ); ?></h2>
+				<p><?php esc_html_e( 'Whether you are buying, selling, or investing, Estatein is here to guide you with expert advice and personalized assistance.', 'real-estate-custom-theme' ); ?></p>
+			</div>
+			<a class="home-footer__cta-action" href="<?php echo esc_url( $properties_page_url ); ?>"><?php esc_html_e( 'Explore Properties', 'real-estate-custom-theme' ); ?></a>
+		</div>
+	</div>
+
 	<div class="home-footer__main">
 		<div class="home-footer__brand-col">
 			<a class="home-footer__brand-link" href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
@@ -40,7 +54,7 @@ $symbol_logo_url = function_exists( 'real_estate_custom_theme_get_symbol_asset_u
 				<ul>
 					<li><a href="<?php echo esc_url( home_url( '/#hero-title' ) ); ?>"><?php esc_html_e( 'Hero Section', 'real-estate-custom-theme' ); ?></a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#featured-title' ) ); ?>"><?php esc_html_e( 'Features', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/properties/' ) ); ?>"><?php esc_html_e( 'Properties', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $properties_page_url ); ?>"><?php esc_html_e( 'Properties', 'real-estate-custom-theme' ); ?></a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#testimonials-title' ) ); ?>"><?php esc_html_e( 'Testimonials', 'real-estate-custom-theme' ); ?></a></li>
 					<li><a href="<?php echo esc_url( home_url( '/#faq-title' ) ); ?>"><?php esc_html_e( "FAQ's", 'real-estate-custom-theme' ); ?></a></li>
 				</ul>
@@ -48,35 +62,35 @@ $symbol_logo_url = function_exists( 'real_estate_custom_theme_get_symbol_asset_u
 			<div class="home-footer__col">
 				<h3><?php esc_html_e( 'About Us', 'real-estate-custom-theme' ); ?></h3>
 				<ul>
-					<li><a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'Our Story', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'Our Works', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'How It Works', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'Our Team', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/about-us/' ) ); ?>"><?php esc_html_e( 'Our Clients', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Our Story', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Our Works', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'How It Works', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Our Team', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Our Clients', 'real-estate-custom-theme' ); ?></a></li>
 				</ul>
 			</div>
 			<div class="home-footer__col">
 				<h3><?php esc_html_e( 'Properties', 'real-estate-custom-theme' ); ?></h3>
 				<ul>
-					<li><a href="<?php echo esc_url( home_url( '/properties/' ) ); ?>"><?php esc_html_e( 'Portfolio', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/properties/' ) ); ?>"><?php esc_html_e( 'Categories', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $properties_page_url ); ?>"><?php esc_html_e( 'Portfolio', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $properties_page_url ); ?>"><?php esc_html_e( 'Categories', 'real-estate-custom-theme' ); ?></a></li>
 				</ul>
 			</div>
 			<div class="home-footer__col">
 				<h3><?php esc_html_e( 'Services', 'real-estate-custom-theme' ); ?></h3>
 				<ul>
-					<li><a href="<?php echo esc_url( home_url( '/services/' ) ); ?>"><?php esc_html_e( 'Valuation Mastery', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/services/' ) ); ?>"><?php esc_html_e( 'Strategic Marketing', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/services/' ) ); ?>"><?php esc_html_e( 'Negotiation Wizardry', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/services/' ) ); ?>"><?php esc_html_e( 'Closing Success', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/services/' ) ); ?>"><?php esc_html_e( 'Property Management', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $services_page_url ); ?>"><?php esc_html_e( 'Valuation Mastery', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $services_page_url ); ?>"><?php esc_html_e( 'Strategic Marketing', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $services_page_url ); ?>"><?php esc_html_e( 'Negotiation Wizardry', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $services_page_url ); ?>"><?php esc_html_e( 'Closing Success', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $services_page_url ); ?>"><?php esc_html_e( 'Property Management', 'real-estate-custom-theme' ); ?></a></li>
 				</ul>
 			</div>
 			<div class="home-footer__col">
 				<h3><?php esc_html_e( 'Contact Us', 'real-estate-custom-theme' ); ?></h3>
 				<ul>
-					<li><a href="<?php echo esc_url( home_url( '/contact-us/' ) ); ?>"><?php esc_html_e( 'Contact Form', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( home_url( '/contact-us/' ) ); ?>"><?php esc_html_e( 'Our Offices', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $contact_page_url ); ?>"><?php esc_html_e( 'Contact Form', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $contact_page_url ); ?>"><?php esc_html_e( 'Our Offices', 'real-estate-custom-theme' ); ?></a></li>
 				</ul>
 			</div>
 		</div>
@@ -85,7 +99,7 @@ $symbol_logo_url = function_exists( 'real_estate_custom_theme_get_symbol_asset_u
 	<div class="home-footer__bottom">
 		<div class="home-footer__bottom-inner">
 			<div class="home-footer__legal">
-				<span><?php esc_html_e( '@2023 Estatein. All Rights Reserved.', 'real-estate-custom-theme' ); ?></span>
+				<span><?php esc_html_e( '@Arnold Curiano. All Rights Reserved', 'real-estate-custom-theme' ); ?></span>
 				<a href="<?php echo esc_url( home_url( '/terms-conditions/' ) ); ?>"><?php esc_html_e( 'Terms & Conditions', 'real-estate-custom-theme' ); ?></a>
 			</div>
 			<div class="home-footer__social">

@@ -8,6 +8,7 @@ Document current interactive frontend behavior and event flow.
 - Front-page featured properties carousel
 - Front-page testimonials carousel
 - Front-page FAQ carousel
+- Home/About stat counter animation
 - Header top banner close and nav scroll/menu behavior
 - Existing accessibility hooks in interactive elements
 
@@ -18,6 +19,8 @@ Document current interactive frontend behavior and event flow.
 - `header.php`
 - `css/home.css`
 - `css/header.css`
+- `js/stats-counter.js`
+- `page-about-us.php`
 
 ## Behavior and flow
 
@@ -66,6 +69,21 @@ Current behavior:
 - mobile navigation toggles menu visibility
 - menu closes on outside click
 
+Front-header context is enabled for:
+- front page
+- about page
+- services page
+- contact-us page
+- property archive and single property pages
+
+### Stat counter animation (Home + About)
+- Source: `js/stats-counter.js`
+- Trigger: elements with `data-stat-count`
+- Current behavior:
+  - animates from `0` to target value on section visibility
+  - supports suffix rendering via `data-stat-suffix` (for example `+`, `k+`)
+  - runs on front page and about page only
+
 ## Accessibility hooks currently present
 - Buttons have `aria-label` in featured controls and top banner close.
 - Menu toggle uses `aria-expanded`.
@@ -98,3 +116,5 @@ Current behavior:
   - `node --check wp-content/themes/real-estate-custom-theme/js/navigation.js`
 - Confirm component registrations:
   - `rg -n "window.Alpine.data\\(\" wp-content/themes/real-estate-custom-theme/js/home.js`
+- Confirm stat counter hook usage:
+  - `rg -n "data-stat-count|data-stat-suffix" wp-content/themes/real-estate-custom-theme/front-page.php wp-content/themes/real-estate-custom-theme/page-about-us.php`

@@ -12,6 +12,16 @@ This theme is a custom real estate site built on top of a WordPress theme struct
 This documentation reflects only what currently exists in the codebase.
 
 ## Latest Changes
+- Added About page implementation with reusable front-style header/footer integration:
+  - template: `page-about-us.php`
+  - styles: `css/about.css`
+  - ACF group for achievements/process/optional CTA: `inc/acf-fields-about.php`
+- Added Services and Contact Us placeholder pages and route seeding logic:
+  - templates: `page-services.php`, `page-contact-us.php`
+  - activation/init seeding in `functions.php`
+- Added sitewide footer CTA block (`Start Your Real Estate Journey Today`) in shared footer component.
+- Added reusable stat-count animation for Home + About:
+  - script: `js/stats-counter.js`
 - Featured properties carousel threshold behavior in `js/home.js`:
   - `items <= 4`: static layout, autoplay off, navigation controls disabled/muted.
   - `5 <= items <= 9`: manual navigation enabled, autoplay off.
@@ -40,6 +50,7 @@ This documentation reflects only what currently exists in the codebase.
 - JavaScript:
   - `js/navigation.js` (header/nav interactions + global nav toggle)
   - `js/home.js` (front-page loops/carousels)
+  - `js/stats-counter.js` (animated stat counters on Home/About)
   - local Alpine bundle: `js/vendor/alpine.min.js` (front page only)
 - Optional plugin dependency:
   - Advanced Custom Fields (ACF) for editable field groups
@@ -51,6 +62,9 @@ This documentation reflects only what currently exists in the codebase.
   - `header.php`
   - `footer.php`
   - `front-page.php`
+  - `page-about-us.php`
+  - `page-services.php`
+  - `page-contact-us.php`
   - `archive-property.php`
   - `archive-testimonial.php`
   - `archive-faq.php`
@@ -65,6 +79,7 @@ This documentation reflects only what currently exists in the codebase.
   - `inc/acf-fields-properties.php`
   - `inc/acf-fields-testimonials.php`
   - `inc/acf-fields-faq.php`
+  - `inc/acf-fields-about.php`
   - `inc/property-helpers.php`
   - `inc/testimonial-helpers.php`
   - `inc/faq-helpers.php`
@@ -74,9 +89,11 @@ This documentation reflects only what currently exists in the codebase.
   - `style.css`
   - `css/header.css`
   - `css/home.css`
+  - `css/about.css`
 - Scripts:
   - `js/navigation.js`
   - `js/home.js`
+  - `js/stats-counter.js`
 
 ## Asset and style ownership model
 - `style.css`
@@ -88,7 +105,9 @@ This documentation reflects only what currently exists in the codebase.
 - `css/header.css`
   - front-page header shell, top announcement, nav row, mobile nav
 - `css/home.css`
-  - hero, quick-links, featured section cards/carousel, testimonials, FAQ, CTA
+  - hero, quick-links, featured section cards/carousel, testimonials, FAQ
+- `css/about.css`
+  - about page hero/journey/values/achievements/process section styles
 
 ## Data model summary
 - Custom post types:
@@ -121,6 +140,14 @@ This documentation reflects only what currently exists in the codebase.
 - FAQ fields:
   - `is_featured`
   - `cta_label`
+- About page fields:
+  - `achievements_title`
+  - `achievements_description`
+  - `achievements_items` (`achievement_title`, `achievement_description`)
+  - `steps_section_title`
+  - `steps_section_description`
+  - `process_steps` (`step_number`, `step_title`, `step_description`)
+  - optional process CTA (`cta_heading`, `cta_button_label`, `cta_button_link`)
 - Fallback behavior exists in templates if fields are empty.
 
 ## Front-page flow
@@ -130,8 +157,7 @@ This documentation reflects only what currently exists in the codebase.
 3. Featured properties carousel (`data-featured-carousel`, auto + manual)
 4. Testimonials carousel (`data-testimonials-carousel`, shared carousel engine)
 5. FAQ carousel (`data-faq-carousel`, shared carousel engine)
-6. CTA band
-7. Footer group
+6. Sitewide footer CTA + footer group (from shared `footer.php`)
 
 ## Setup quickstart
 1. Activate the theme.

@@ -17,6 +17,7 @@ Document current data structures used by the theme for dynamic home/archive cont
 - `inc/acf-fields-properties.php`
 - `inc/acf-fields-testimonials.php`
 - `inc/acf-fields-faq.php`
+- `inc/acf-fields-about.php`
 - `inc/property-helpers.php`
 - `inc/testimonial-helpers.php`
 - `inc/faq-helpers.php`
@@ -90,6 +91,23 @@ Contract:
 - `is_featured`
 - `cta_label`
 
+#### About page fields
+- `achievements_title`
+- `achievements_description`
+- `achievements_items`:
+  - `achievement_title`
+  - `achievement_description`
+- `steps_section_title`
+- `steps_section_description`
+- `process_steps`:
+  - `step_number`
+  - `step_title`
+  - `step_description`
+- optional CTA:
+  - `cta_heading`
+  - `cta_button_label`
+  - `cta_button_link`
+
 ### Template field usage and fallbacks
 - Properties:
   - `front-page.php`, `archive-property.php`, `single-property.php`
@@ -102,6 +120,12 @@ Contract:
   - `front-page.php`, `archive-faq.php`
   - excerpt fallback: excerpt -> content trim (`real_estate_custom_theme_get_faq_excerpt()`)
   - CTA label fallback: `Read More` (`real_estate_custom_theme_get_faq_cta_label()`)
+- About page:
+  - `page-about-us.php`
+  - ACF values override hardcoded defaults for achievements/process sections
+  - featured process card is deterministic in template:
+    - prefers a step label containing `03`
+    - otherwise falls back to the third card index
 
 ### Home query logic
 - Featured Properties:

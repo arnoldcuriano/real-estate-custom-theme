@@ -15,6 +15,9 @@ Document the current theme architecture, file ownership, and runtime flow.
 - `header.php`
 - `footer.php`
 - `front-page.php`
+- `page-about-us.php`
+- `page-services.php`
+- `page-contact-us.php`
 - `archive-property.php`
 - `archive-testimonial.php`
 - `archive-faq.php`
@@ -24,10 +27,13 @@ Document the current theme architecture, file ownership, and runtime flow.
 - `inc/acf-fields-properties.php`
 - `inc/acf-fields-testimonials.php`
 - `inc/acf-fields-faq.php`
+- `inc/acf-fields-about.php`
 - `style.css`
 - `css/header.css`
 - `css/home.css`
+- `css/about.css`
 - `js/home.js`
+- `js/stats-counter.js`
 
 ## Behavior and flow
 
@@ -36,6 +42,9 @@ Document the current theme architecture, file ownership, and runtime flow.
 - Property archive: `archive-property.php`
 - Testimonial archive: `archive-testimonial.php`
 - FAQ archive: `archive-faq.php`
+- About page: `page-about-us.php`
+- Services placeholder page: `page-services.php`
+- Contact placeholder page: `page-contact-us.php`
 - Core defaults remain for:
   - `index.php`
   - `page.php`
@@ -56,6 +65,7 @@ These tokens are used to align header, main content, and footer to a consistent 
 - `style.css`: base + global + footer + property archive + shared container rules
 - `css/header.css`: front-page header/nav/top banner styles only
 - `css/home.css`: front-page section styles and interactions only
+- `css/about.css`: about-page hero/journey/values/achievements/process styles
 
 ### Script enqueue flow
 From `functions.php`:
@@ -64,10 +74,14 @@ From `functions.php`:
   - `style.css`
   - `css/header.css`
   - `js/navigation.js`
+- Front-page and About page:
+  - `js/stats-counter.js`
 - Front-page only:
   - `css/home.css`
   - `js/home.js`
   - `js/vendor/alpine.min.js` (deferred, dependent on home script)
+- About page only:
+  - `css/about.css`
 
 ### Content module architecture
 - `property`, `testimonial`, and `faq` are registered as separate CPT modules in `inc/`.

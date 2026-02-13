@@ -8,12 +8,14 @@ Configure ACF-backed editable fields used by the current theme implementation.
 - Property card metadata fields
 - Testimonial metadata fields
 - FAQ metadata fields
+- About page Achievements/Process fields
 - Featured controls used by home carousel queries
 
 ## Source of truth files
 - `inc/acf-fields-properties.php`
 - `inc/acf-fields-testimonials.php`
 - `inc/acf-fields-faq.php`
+- `inc/acf-fields-about.php`
 - `front-page.php`
 - `archive-property.php`
 - `archive-testimonial.php`
@@ -56,6 +58,23 @@ The theme supports both:
 - `is_featured` (true/false)
 - `cta_label` (text, optional)
 
+### About page field group
+- `achievements_title` (text)
+- `achievements_description` (textarea)
+- `achievements_items` (repeater)
+  - `achievement_title` (text)
+  - `achievement_description` (textarea)
+- `steps_section_title` (text)
+- `steps_section_description` (textarea)
+- `process_steps` (repeater)
+  - `step_number` (text, optional)
+  - `step_title` (text)
+  - `step_description` (textarea)
+- optional process CTA:
+  - `cta_heading` (text)
+  - `cta_button_label` (text)
+  - `cta_button_link` (link)
+
 ## How featured query uses these fields
 Home featured cards in `front-page.php`:
 1. query `property` posts where `featured_on_home = 1`
@@ -97,6 +116,7 @@ After setup:
   - `rg -n "featured_section_description|property_price|featured_on_home|featured_order" wp-content/themes/real-estate-custom-theme/inc/acf-fields-properties.php`
   - `rg -n "testimonial_rating|testimonial_quote|is_featured" wp-content/themes/real-estate-custom-theme/inc/acf-fields-testimonials.php`
   - `rg -n "field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc/acf-fields-faq.php`
+  - `rg -n "group_rect_about_sections|field_rect_achievements_title|field_rect_process_steps|field_rect_about_cta_heading" wp-content/themes/real-estate-custom-theme/inc/acf-fields-about.php`
 - Confirm template usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
 

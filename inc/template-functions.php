@@ -12,6 +12,11 @@
  * @return array
  */
 function real_estate_custom_theme_body_classes( $classes ) {
+	// Apply front-header styling scope to routes that use the front-header shell.
+	if ( function_exists( 'real_estate_custom_theme_is_front_header_context' ) && real_estate_custom_theme_is_front_header_context() ) {
+		$classes[] = 'has-front-header';
+	}
+
 	// Adds a class of hfeed to non-singular pages.
 	if ( ! is_singular() ) {
 		$classes[] = 'hfeed';
