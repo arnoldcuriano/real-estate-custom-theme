@@ -12,6 +12,18 @@ This theme is a custom real estate site built on top of a WordPress theme struct
 This documentation reflects only what currently exists in the codebase.
 
 ## Latest Changes
+- Removed hover-lift card motion from Home page slider cards:
+  - featured properties
+  - testimonials
+  - FAQs
+  - card visuals now remain static on hover/focus.
+- Updated footer `About Us` submenu links to route directly to About page section anchors:
+  - `#about-journey-title`
+  - `#about-achievements-title`
+  - `#about-process-title`
+  - `#about-team-title`
+  - `#about-clients-title`
+- Added About section anchor offset handling so sticky front header does not cover targeted section headings on jump links.
 - Added About page implementation with reusable front-style header/footer integration:
   - template: `page-about-us.php`
   - styles: `css/about.css`
