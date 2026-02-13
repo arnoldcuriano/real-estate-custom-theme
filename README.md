@@ -25,6 +25,11 @@ This documentation reflects only what currently exists in the codebase.
 - New property rendering helpers and template:
   - `inc/property-helpers.php`
   - `single-property.php`
+- Added reusable FAQ content module:
+  - new `faq` CPT (`/faqs/` archive, `/faq/{slug}` single) and `faq_category` taxonomy
+  - ACF fields `is_featured` and `cta_label`
+  - homepage FAQ section now uses dynamic featured-only slider with shared carousel engine hooks
+  - new FAQ archive template with category query-pill filtering and pagination
 
 ## Tech stack
 - WordPress PHP templates and hooks
@@ -47,14 +52,22 @@ This documentation reflects only what currently exists in the codebase.
   - `footer.php`
   - `front-page.php`
   - `archive-property.php`
+  - `archive-testimonial.php`
+  - `archive-faq.php`
   - `single-property.php`
   - `index.php`
   - `page.php`
   - `single.php`
 - Theme modules:
   - `inc/cpt-property.php`
+  - `inc/cpt-testimonial.php`
+  - `inc/cpt-faq.php`
   - `inc/acf-fields-properties.php`
+  - `inc/acf-fields-testimonials.php`
+  - `inc/acf-fields-faq.php`
   - `inc/property-helpers.php`
+  - `inc/testimonial-helpers.php`
+  - `inc/faq-helpers.php`
   - `inc/template-functions.php`
   - `inc/template-tags.php`
 - Styles:
@@ -78,10 +91,16 @@ This documentation reflects only what currently exists in the codebase.
   - hero, quick-links, featured section cards/carousel, testimonials, FAQ, CTA
 
 ## Data model summary
-- Custom post type:
+- Custom post types:
   - slug: `property`
   - archive: `/properties/`
   - single: `/property/{slug}`
+  - slug: `testimonial`
+  - archive: `/testimonials/`
+  - single: `/testimonial/{slug}`
+  - slug: `faq`
+  - archive: `/faqs/`
+  - single: `/faq/{slug}`
 - Front-page featured section uses:
   - `featured_section_description` (ACF field on front page)
 - Property card fields:
@@ -92,6 +111,16 @@ This documentation reflects only what currently exists in the codebase.
   - `property_card_excerpt`
   - `featured_on_home`
   - `featured_order`
+- Testimonial fields:
+  - `testimonial_rating`
+  - `testimonial_quote`
+  - `client_name`
+  - `client_location`
+  - `client_photo`
+  - `is_featured`
+- FAQ fields:
+  - `is_featured`
+  - `cta_label`
 - Fallback behavior exists in templates if fields are empty.
 
 ## Front-page flow
@@ -99,8 +128,8 @@ This documentation reflects only what currently exists in the codebase.
 1. Hero
 2. Quick links loop (`data-quick-links-loop`, Alpine/fallback logic)
 3. Featured properties carousel (`data-featured-carousel`, auto + manual)
-4. Testimonials
-5. FAQ
+4. Testimonials carousel (`data-testimonials-carousel`, shared carousel engine)
+5. FAQ carousel (`data-faq-carousel`, shared carousel engine)
 6. CTA band
 7. Footer group
 
@@ -109,7 +138,7 @@ This documentation reflects only what currently exists in the codebase.
 2. Set a static front page in WordPress so `front-page.php` is used.
 3. Install and activate ACF if you need editable featured/property field values.
 4. Save permalinks (`Settings > Permalinks > Save Changes`) after CPT changes.
-5. If a static page uses slug `properties`, rename that page slug to avoid route conflicts.
+5. If static pages use slugs `properties`, `testimonials`, or `faqs`, rename those page slugs to avoid route conflicts.
 
 ## Validation checklist
 - PHP syntax:

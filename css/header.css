@@ -314,9 +314,9 @@ body.admin-bar.home .front-nav-row {
 
 @media (max-width: 1024px) {
 	.home .front-nav-row {
-		grid-template-columns: 1fr;
+		grid-template-columns: auto 1fr auto;
 		gap: 0.9rem;
-		min-height: auto;
+		min-height: 82px;
 		padding-block: 1rem;
 		padding-inline: var(--site-content-inline-pad);
 		width: var(--site-layout-width);
@@ -332,9 +332,16 @@ body.admin-bar.home .front-nav-row {
 		flex-wrap: wrap;
 	}
 
-	.home .site-branding,
-	.home .header-contact-btn {
+	.home .site-branding {
+		justify-self: start;
+	}
+
+	.home .main-navigation {
 		justify-self: center;
+	}
+
+	.home .header-contact-btn {
+		justify-self: end;
 	}
 }
 

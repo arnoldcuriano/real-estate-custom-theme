@@ -320,14 +320,64 @@
 // End of homepage quick-links loop interactions.
 
 /**
- * Homepage featured properties carousel interactions.
+ * Homepage card carousel interactions (featured properties + testimonials).
  */
 (function () {
-  const CAROUSEL_SELECTOR = "[data-featured-carousel]";
-  const TRACK_SELECTOR = ".featured-properties__track";
-  const SLIDE_SELECTOR = ".featured-properties__slide:not(.featured-properties__slide--clone)";
-  const PREV_SELECTOR = "[data-featured-prev]";
-  const NEXT_SELECTOR = "[data-featured-next]";
+  const CAROUSEL_CONFIGS = [
+    {
+      id: "featured",
+      rootSelector: "[data-featured-carousel]",
+      viewportSelector: ".featured-properties__viewport",
+      trackSelector: ".featured-properties__track",
+      slideSelector:
+        ".featured-properties__slide:not(.featured-properties__slide--clone)",
+      anySlideSelector: ".featured-properties__slide",
+      cloneClass: "featured-properties__slide--clone",
+      prevSelector: "[data-featured-prev]",
+      nextSelector: "[data-featured-next]",
+      currentSelector: "[data-featured-current]",
+      totalSelector: "[data-featured-total]",
+      alpineName: "featuredPropertiesCarousel",
+      globalName: "featuredPropertiesCarousel",
+      fallbackKey: "__featuredCarouselFallbackController",
+      initFlag: "featuredCarouselInit",
+    },
+    {
+      id: "testimonials",
+      rootSelector: "[data-testimonials-carousel]",
+      viewportSelector: ".testimonials__viewport",
+      trackSelector: ".testimonials__track",
+      slideSelector:
+        ".testimonials__slide:not(.testimonials__slide--clone)",
+      anySlideSelector: ".testimonials__slide",
+      cloneClass: "testimonials__slide--clone",
+      prevSelector: "[data-testimonials-prev]",
+      nextSelector: "[data-testimonials-next]",
+      currentSelector: "[data-testimonials-current]",
+      totalSelector: "[data-testimonials-total]",
+      alpineName: "testimonialsCarousel",
+      globalName: "testimonialsCarousel",
+      fallbackKey: "__testimonialsCarouselFallbackController",
+      initFlag: "testimonialsCarouselInit",
+    },
+    {
+      id: "faqs",
+      rootSelector: "[data-faq-carousel]",
+      viewportSelector: ".faqs__viewport",
+      trackSelector: ".faqs__track",
+      slideSelector: ".faqs__slide:not(.faqs__slide--clone)",
+      anySlideSelector: ".faqs__slide",
+      cloneClass: "faqs__slide--clone",
+      prevSelector: "[data-faq-prev]",
+      nextSelector: "[data-faq-next]",
+      currentSelector: "[data-faq-current]",
+      totalSelector: "[data-faq-total]",
+      alpineName: "faqCarousel",
+      globalName: "faqCarousel",
+      fallbackKey: "__faqCarouselFallbackController",
+      initFlag: "faqCarouselInit",
+    },
+  ];
   let isAlpineRegistered = false;
 
   function formatCounter(value) {
@@ -335,11 +385,11 @@
     return String(safeValue).padStart(2, "0");
   }
 
-  function makeFeaturedCarouselController(rootEl, trackEl, onStateChange) {
+  function makeCardCarouselController(config, rootEl, trackEl, onStateChange) {
     return {
       rootEl,
       trackEl,
-      viewportEl: rootEl ? rootEl.querySelector(".featured-properties__viewport") : null,
+      viewportEl: rootEl ? rootEl.querySelector(config.viewportSelector) : null,
       onStateChange,
       total: 0,
       currentIndex: 0,
@@ -359,11 +409,7 @@
       cleanupFns: [],
 
       getOriginalSlides() {
-        return Array.from(this.trackEl.querySelectorAll(SLIDE_SELECTOR));
-      },
-
-      getAllSlides() {
-        return Array.from(this.trackEl.querySelectorAll(".featured-properties__slide"));
+        return Array.from(this.trackEl.querySelectorAll(config.slideSelector));
       },
 
       computeCapabilities() {
@@ -401,10 +447,10 @@
           this.onStateChange(state);
         }
 
-        const currentTextEl = this.rootEl.querySelector("[data-featured-current]");
-        const totalTextEl = this.rootEl.querySelector("[data-featured-total]");
-        const prevButton = this.rootEl.querySelector(PREV_SELECTOR);
-        const nextButton = this.rootEl.querySelector(NEXT_SELECTOR);
+        const currentTextEl = this.rootEl.querySelector(config.currentSelector);
+        const totalTextEl = this.rootEl.querySelector(config.totalSelector);
+        const prevButton = this.rootEl.querySelector(config.prevSelector);
+        const nextButton = this.rootEl.querySelector(config.nextSelector);
 
         if (currentTextEl) {
           currentTextEl.textContent = formatCounter(state.current || 0);
@@ -430,7 +476,7 @@
 
       removeClones() {
         this.trackEl
-          .querySelectorAll(".featured-properties__slide--clone")
+          .querySelectorAll(`.${config.cloneClass}`)
           .forEach((clone) => clone.remove());
         delete this.trackEl.dataset.carouselPrepared;
         delete this.trackEl.dataset.visibleCount;
@@ -438,7 +484,7 @@
 
       cloneSlide(slide) {
         const clone = slide.cloneNode(true);
-        clone.classList.add("featured-properties__slide--clone");
+        clone.classList.add(config.cloneClass);
         clone.setAttribute("aria-hidden", "true");
         clone.setAttribute("tabindex", "-1");
 
@@ -461,7 +507,7 @@
       calculateDimensions() {
         const sampleSlide =
           this.getOriginalSlides()[0] ||
-          this.trackEl.querySelector(".featured-properties__slide");
+          this.trackEl.querySelector(config.anySlideSelector);
 
         if (!sampleSlide) {
           this.stepSize = 0;
@@ -729,7 +775,7 @@
     };
   }
 
-  function featuredPropertiesCarousel() {
+  function makeCarouselComponent(config) {
     return {
       controller: null,
       formattedCurrent: "01",
@@ -749,9 +795,9 @@
       },
 
       init() {
-        if (this.$root && this.$root.__featuredCarouselFallbackController) {
-          this.controller = this.$root.__featuredCarouselFallbackController;
-          this.$root.__featuredCarouselFallbackController = null;
+        if (this.$root && this.$root[config.fallbackKey]) {
+          this.controller = this.$root[config.fallbackKey];
+          this.$root[config.fallbackKey] = null;
           this.applyState({
             current: this.controller.getLogicalIndex(),
             total: this.controller.total,
@@ -767,7 +813,8 @@
           return;
         }
 
-        this.controller = makeFeaturedCarouselController(
+        this.controller = makeCardCarouselController(
+          config,
           this.$root,
           this.$refs.track,
           (state) => this.applyState(state),
@@ -816,50 +863,57 @@
       return;
     }
 
-    window.Alpine.data("featuredPropertiesCarousel", featuredPropertiesCarousel);
+    CAROUSEL_CONFIGS.forEach((config) => {
+      window.Alpine.data(config.alpineName, () => makeCarouselComponent(config));
+    });
     isAlpineRegistered = true;
   }
 
   function initFallbackCarousels() {
-    const carousels = document.querySelectorAll(CAROUSEL_SELECTOR);
+    CAROUSEL_CONFIGS.forEach((config) => {
+      const carousels = document.querySelectorAll(config.rootSelector);
 
-    carousels.forEach((carousel) => {
-      if (
-        carousel.__featuredCarouselFallbackController ||
-        "1" === carousel.dataset.carouselInit ||
-        carousel._x_dataStack
-      ) {
-        return;
-      }
+      carousels.forEach((carousel) => {
+        if (
+          carousel[config.fallbackKey] ||
+          "1" === carousel.dataset[config.initFlag] ||
+          carousel._x_dataStack
+        ) {
+          return;
+        }
 
-      const track = carousel.querySelector(TRACK_SELECTOR);
-      if (!track) {
-        return;
-      }
+        const track = carousel.querySelector(config.trackSelector);
+        if (!track) {
+          return;
+        }
 
-      const controller = makeFeaturedCarouselController(carousel, track);
-      const initialized = controller.init();
-      if (!initialized) {
-        return;
-      }
+        const controller = makeCardCarouselController(config, carousel, track);
+        const initialized = controller.init();
+        if (!initialized) {
+          return;
+        }
 
-      const prevButton = carousel.querySelector(PREV_SELECTOR);
-      const nextButton = carousel.querySelector(NEXT_SELECTOR);
+        const prevButton = carousel.querySelector(config.prevSelector);
+        const nextButton = carousel.querySelector(config.nextSelector);
 
-      if (prevButton) {
-        prevButton.addEventListener("click", () => controller.prev());
-      }
+        if (prevButton) {
+          prevButton.addEventListener("click", () => controller.prev());
+        }
 
-      if (nextButton) {
-        nextButton.addEventListener("click", () => controller.next());
-      }
+        if (nextButton) {
+          nextButton.addEventListener("click", () => controller.next());
+        }
 
-      carousel.__featuredCarouselFallbackController = controller;
-      carousel.dataset.carouselInit = "1";
+        carousel[config.fallbackKey] = controller;
+        carousel.dataset[config.initFlag] = "1";
+      });
     });
   }
 
-  window.featuredPropertiesCarousel = featuredPropertiesCarousel;
+  CAROUSEL_CONFIGS.forEach((config) => {
+    window[config.globalName] = () => makeCarouselComponent(config);
+  });
+
   document.addEventListener("alpine:init", registerAlpineComponent);
   registerAlpineComponent();
 
@@ -871,4 +925,4 @@
 
   window.addEventListener("load", initFallbackCarousels);
 })();
-// End of homepage featured properties carousel interactions.
+// End of homepage card carousel interactions.

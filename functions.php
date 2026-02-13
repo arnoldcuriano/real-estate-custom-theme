@@ -197,9 +197,39 @@ require get_template_directory() . '/inc/property-helpers.php';
 require get_template_directory() . '/inc/cpt-property.php';
 
 /**
+ * Register Testimonial custom post type.
+ */
+require get_template_directory() . '/inc/cpt-testimonial.php';
+
+/**
+ * Register FAQ custom post type and taxonomy.
+ */
+require get_template_directory() . '/inc/cpt-faq.php';
+
+/**
  * Register local ACF field groups for property content.
  */
 require get_template_directory() . '/inc/acf-fields-properties.php';
+
+/**
+ * Register local ACF field groups for testimonial content.
+ */
+require get_template_directory() . '/inc/acf-fields-testimonials.php';
+
+/**
+ * Register local ACF field groups for FAQ content.
+ */
+require get_template_directory() . '/inc/acf-fields-faq.php';
+
+/**
+ * Testimonial helpers.
+ */
+require get_template_directory() . '/inc/testimonial-helpers.php';
+
+/**
+ * FAQ helpers.
+ */
+require get_template_directory() . '/inc/faq-helpers.php';
 
 /**
  * Implement the Custom Header feature.

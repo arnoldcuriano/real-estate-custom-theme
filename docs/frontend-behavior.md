@@ -6,6 +6,8 @@ Document current interactive frontend behavior and event flow.
 ## Scope
 - Front-page quick-links infinite loop
 - Front-page featured properties carousel
+- Front-page testimonials carousel
+- Front-page FAQ carousel
 - Header top banner close and nav scroll/menu behavior
 - Existing accessibility hooks in interactive elements
 
@@ -36,12 +38,23 @@ Current behavior:
 - Fallback initializer exists in `js/home.js`.
 
 Current behavior:
-- auto advances every ~4 seconds
-- manual prev/next buttons
+- thresholds:
+  - `<= 4` items: static, autoplay off, manual nav disabled/muted
+  - `5..9` items: manual nav enabled, autoplay off
+  - `> 9` items: manual nav enabled, autoplay on (~4 seconds)
 - infinite wrap via slide clones
 - pauses on hover/focus and when tab is hidden
 - counter text updates (`01 of N`)
-- disables controls when there is only one slide
+
+### Testimonials carousel
+- Hook: `data-testimonials-carousel`
+- Alpine component: `testimonialsCarousel`
+- Uses the same shared carousel engine and thresholds as featured properties.
+
+### FAQ carousel
+- Hook: `data-faq-carousel`
+- Alpine component: `faqCarousel`
+- Uses the same shared carousel engine and thresholds as featured properties.
 
 ### Header and navigation behavior
 - Front header initialized in `js/navigation.js`.
@@ -62,6 +75,8 @@ Current behavior:
 - Keep hook attributes stable:
   - `data-quick-links-loop`
   - `data-featured-carousel`
+  - `data-testimonials-carousel`
+  - `data-faq-carousel`
 - Add new interactive components with:
   - deterministic selectors
   - Alpine registration + non-Alpine fallback where possible
@@ -70,17 +85,16 @@ Current behavior:
 ## Troubleshooting
 - Carousel not moving:
   - verify `js/home.js` is loaded on front page
-  - verify featured cards render and total slide count > 1
+  - verify section cards render and total slide count matches threshold behavior
 - Top banner close not working:
   - verify `js/navigation.js` is loaded
   - verify button class `.front-top-banner__close` exists in `header.php`
 
 ## Verification steps
 - Confirm interactive hooks in template:
-  - `rg -n "data-quick-links-loop|data-featured-carousel|x-data" wp-content/themes/real-estate-custom-theme/front-page.php`
+  - `rg -n "data-quick-links-loop|data-featured-carousel|data-testimonials-carousel|data-faq-carousel|x-data" wp-content/themes/real-estate-custom-theme/front-page.php`
 - Validate JS syntax:
   - `node --check wp-content/themes/real-estate-custom-theme/js/home.js`
   - `node --check wp-content/themes/real-estate-custom-theme/js/navigation.js`
 - Confirm component registrations:
   - `rg -n "window.Alpine.data\\(\" wp-content/themes/real-estate-custom-theme/js/home.js`
-

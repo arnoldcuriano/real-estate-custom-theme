@@ -8,6 +8,7 @@ Document the current theme architecture, file ownership, and runtime flow.
 - Layout/alignment token model
 - Header/footer ownership boundaries
 - CSS/JS enqueue flow
+- CPT/ACF module wiring ownership
 
 ## Source of truth files
 - `functions.php`
@@ -15,15 +16,26 @@ Document the current theme architecture, file ownership, and runtime flow.
 - `footer.php`
 - `front-page.php`
 - `archive-property.php`
+- `archive-testimonial.php`
+- `archive-faq.php`
+- `inc/cpt-property.php`
+- `inc/cpt-testimonial.php`
+- `inc/cpt-faq.php`
+- `inc/acf-fields-properties.php`
+- `inc/acf-fields-testimonials.php`
+- `inc/acf-fields-faq.php`
 - `style.css`
 - `css/header.css`
 - `css/home.css`
+- `js/home.js`
 
 ## Behavior and flow
 
 ### Template flow
 - Front page: `front-page.php`
 - Property archive: `archive-property.php`
+- Testimonial archive: `archive-testimonial.php`
+- FAQ archive: `archive-faq.php`
 - Core defaults remain for:
   - `index.php`
   - `page.php`
@@ -57,6 +69,14 @@ From `functions.php`:
   - `js/home.js`
   - `js/vendor/alpine.min.js` (deferred, dependent on home script)
 
+### Content module architecture
+- `property`, `testimonial`, and `faq` are registered as separate CPT modules in `inc/`.
+- ACF local field groups are module-specific and code-registered in `inc/acf-fields-*.php`.
+- Front-page dynamic sections reuse one shared carousel engine in `js/home.js`:
+  - featured properties: `data-featured-carousel`
+  - testimonials: `data-testimonials-carousel`
+  - FAQs: `data-faq-carousel`
+
 ## Extension guidance
 - Add sitewide component styles in `style.css` unless component-specific ownership is already defined.
 - Keep header/nav changes in `css/header.css`.
@@ -79,4 +99,3 @@ From `functions.php`:
 - Validate syntax:
   - `C:\xampp\php\php.exe -l wp-content/themes/real-estate-custom-theme/functions.php`
   - `node --check wp-content/themes/real-estate-custom-theme/js/navigation.js`
-

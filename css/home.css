@@ -8,7 +8,6 @@
 	--home-primary-2: var(--brand-primary-600);
 	--home-layout-max: var(--site-layout-max);
 	--home-layout-width: var(--site-layout-width);
-	--home-logo-line: calc((100vw - var(--home-layout-width)) / 2 + 1rem);
 	--home-stage-width: min(1920px, 100vw);
 	--home-hero-height: clamp(620px, 42.4vw, 814px);
 }
@@ -67,8 +66,8 @@
 	overflow: hidden;
 	position: relative;
 	z-index: 3;
-	width: var(--home-stage-width);
-	max-width: 1920px;
+	width: 100%;
+	max-width: none;
 	margin: 0 auto;
 	min-height: var(--home-hero-height);
 }
@@ -83,17 +82,19 @@
 	border-right: 1px solid var(--home-border);
 	display: flex;
 	flex-direction: column;
+	align-items: flex-start;
 	justify-content: center;
 	min-height: var(--home-hero-height);
 	height: var(--home-hero-height);
 	padding-top: clamp(2.4rem, 4vw, 3.2rem);
 	padding-bottom: clamp(2.1rem, 3vw, 2.8rem);
-	padding-left: clamp(1rem, 2.2vw, 2rem);
-	padding-right: clamp(1.25rem, 2.4vw, 2rem);
+	padding-left: var(--site-logo-line);
+	padding-right: clamp(0.9rem, 1.7vw, 1.5rem);
 	position: relative;
 	z-index: 4;
 	text-align: left;
 	overflow: hidden;
+	box-sizing: border-box;
 }
 
 .hero__content::before {
@@ -103,6 +104,15 @@
 .hero__content > * {
 	position: relative;
 	z-index: 1;
+}
+
+.hero__content .eyebrow,
+.hero__content h1,
+.hero__content .hero__lead,
+.hero__content .hero__actions,
+.hero__content .hero__stats {
+	margin-left: 0;
+	margin-right: auto;
 }
 
 .eyebrow {
@@ -115,17 +125,18 @@
 }
 
 .hero h1 {
-	font-size: clamp(2rem, 3.3vw, 3.4rem);
-	line-height: 1.08;
+	font-size: clamp(1.9rem, 3.05vw, 3rem);
+	line-height: 1.12;
 	margin: 0.5rem 0 1rem;
 	text-align: left;
-	max-width: 17ch;
+	max-width: 18ch;
 }
 
 .hero p {
 	color: #c6c6cc;
-	max-width: 62ch;
+	max-width: 58ch;
 	line-height: 1.6;
+	text-align: left;
 }
 
 .hero__lead {
@@ -169,6 +180,7 @@
 	flex-wrap: wrap;
 	gap: 0.75rem;
 	max-width: 760px;
+	justify-content: flex-start;
 }
 
 .btn {
@@ -212,6 +224,7 @@
 	padding: 0;
 	justify-content: flex-start;
 	width: min(100%, 740px);
+	text-align: left;
 }
 
 .hero__stats li {
@@ -423,6 +436,58 @@
 	pointer-events: none;
 }
 
+.testimonials {
+	display: grid;
+	gap: 1rem;
+}
+
+.testimonials__viewport {
+	overflow: hidden;
+}
+
+.testimonials__track {
+	display: flex;
+	align-items: stretch;
+	gap: 1rem;
+	transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+	will-change: transform;
+}
+
+.testimonials__slide {
+	flex: 0 0 calc((100% - 2rem) / 3);
+	min-width: calc((100% - 2rem) / 3);
+}
+
+.testimonials__slide--clone {
+	pointer-events: none;
+}
+
+.faqs {
+	display: grid;
+	gap: 1rem;
+}
+
+.faqs__viewport {
+	overflow: hidden;
+}
+
+.faqs__track {
+	display: flex;
+	align-items: stretch;
+	gap: 1rem;
+	transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+	will-change: transform;
+}
+
+.faqs__slide {
+	flex: 0 0 calc((100% - 2rem) / 3);
+	min-width: calc((100% - 2rem) / 3);
+}
+
+.faqs__slide--clone {
+	pointer-events: none;
+}
+
 .featured-properties__controls {
 	display: flex;
 	align-items: center;
@@ -599,13 +664,139 @@
 	font-size: 1rem;
 }
 
-.quote-card {
-	padding: 1rem;
+.testimonial-card {
+	height: 100%;
 }
 
-.quote-card h3 {
-	font-size: 1rem;
-	margin-bottom: 0.5rem;
+.testimonial-card .card__body {
+	display: grid;
+	grid-template-rows: auto auto 1fr auto;
+	gap: 0.75rem;
+	height: 100%;
+}
+
+.testimonial-card h3 {
+	font-size: 1.08rem;
+	margin: 0;
+}
+
+.testimonial-card__stars {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.3rem;
+}
+
+.testimonial-card__star {
+	width: 24px;
+	height: 24px;
+	border-radius: 999px;
+	display: grid;
+	place-items: center;
+	font-size: 0.75rem;
+	line-height: 1;
+	color: #7b7f8e;
+	background: transparent;
+	border: 1px solid #3a3f4c;
+}
+
+.testimonial-card__star.is-filled {
+	color: #f5c84c;
+	background: transparent;
+	border-color: #3a3f4c;
+}
+
+.testimonial-card__quote {
+	margin: 0;
+	color: #bfc1cb;
+	font-size: 0.92rem;
+	line-height: 1.56;
+	min-height: 5.1em;
+}
+
+.testimonial-card__client {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.65rem;
+}
+
+.testimonial-card__client img {
+	width: 46px;
+	height: 46px;
+	border-radius: 999px;
+	object-fit: cover;
+	flex: 0 0 auto;
+	border: 1px solid #2d3040;
+}
+
+.testimonial-card__client strong {
+	display: block;
+	font-size: 0.9rem;
+	font-weight: 600;
+	color: #f3f3f7;
+}
+
+.testimonial-card__client span {
+	display: block;
+	margin-top: 0.1rem;
+	font-size: 0.78rem;
+	color: #989cab;
+}
+
+.faq-card {
+	height: 100%;
+}
+
+.faq-card__body {
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	gap: 0.85rem;
+	height: 100%;
+	padding: 1.2rem;
+}
+
+.faq-card h3 {
+	margin: 0;
+	font-size: 1.15rem;
+	line-height: 1.35;
+}
+
+.faq-card h3 a {
+	text-decoration: none;
+	color: inherit;
+}
+
+.faq-card h3 a:hover {
+	color: var(--home-primary);
+}
+
+.faq-card__excerpt {
+	margin: 0;
+	color: #bfc1cb;
+	font-size: 0.95rem;
+	line-height: 1.6;
+	min-height: 4.8em;
+}
+
+.faq-card__cta {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 40px;
+	padding: 0.62rem 1rem;
+	border-radius: 10px;
+	border: 1px solid #2a2d38;
+	background: #14161d;
+	color: #f2f3f7;
+	text-decoration: none;
+	font-size: 0.88rem;
+	width: fit-content;
+}
+
+.faq-card__cta:hover {
+	background: #1a1d26;
 }
 
 .card-grid--tight .card {
@@ -669,8 +860,8 @@
 	}
 
 	.hero__content {
-		padding-left: 2rem;
-		padding-right: 2rem;
+		padding-left: var(--site-logo-line);
+		padding-right: var(--site-content-inline-pad);
 		min-height: auto;
 		height: auto;
 		justify-content: flex-start;
@@ -698,6 +889,16 @@
 	}
 
 	.featured-properties__slide {
+		flex: 0 0 calc((100% - 1rem) / 2);
+		min-width: calc((100% - 1rem) / 2);
+	}
+
+	.testimonials__slide {
+		flex: 0 0 calc((100% - 2rem) / 3);
+		min-width: calc((100% - 2rem) / 3);
+	}
+
+	.faqs__slide {
 		flex: 0 0 calc((100% - 1rem) / 2);
 		min-width: calc((100% - 1rem) / 2);
 	}
@@ -743,7 +944,7 @@
 @media (max-width: 680px) {
 	.hero__content {
 		order: 2;
-		padding: 1.45rem 1rem 1.15rem;
+		padding: 1.45rem var(--site-content-inline-pad) 1.15rem;
 		min-height: auto;
 		height: auto;
 	}
@@ -857,6 +1058,16 @@
 	}
 
 	.featured-properties__slide {
+		flex: 0 0 100%;
+		min-width: 100%;
+	}
+
+	.testimonials__slide {
+		flex: 0 0 100%;
+		min-width: 100%;
+	}
+
+	.faqs__slide {
 		flex: 0 0 100%;
 		min-width: 100%;
 	}

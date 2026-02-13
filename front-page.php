@@ -65,6 +65,9 @@ if ( function_exists( 'get_field' ) && $front_page_id > 0 ) {
 		$featured_section_description = $acf_featured_section_description;
 	}
 }
+
+$testimonial_section_description = __( 'Read the success stories and heartfelt testimonials from our valued clients. Discover why they chose Estatein for their real estate needs.', 'real-estate-custom-theme' );
+$faq_section_description         = __( 'Find answers to common questions about Estatein\'s services, property listings, and the real estate process. We\'re here to provide clarity and assist you every step of the way.', 'real-estate-custom-theme' );
 ?>
 
 <main id="primary" class="site-main homepage">
@@ -373,22 +376,125 @@ if ( function_exists( 'get_field' ) && $front_page_id > 0 ) {
 			<div>
 				<p class="eyebrow"><?php esc_html_e( 'Testimonials', 'real-estate-custom-theme' ); ?></p>
 				<h2 id="testimonials-title"><?php esc_html_e( 'What Our Clients Say', 'real-estate-custom-theme' ); ?></h2>
+				<p class="section-head__description"><?php echo esc_html( $testimonial_section_description ); ?></p>
 			</div>
+			<a class="btn btn--ghost" href="<?php echo esc_url( home_url( '/testimonials/' ) ); ?>"><?php esc_html_e( 'View All Testimonials', 'real-estate-custom-theme' ); ?></a>
 		</div>
-		<div class="card-grid card-grid--tight">
-			<article class="card quote-card">
-				<h3><?php esc_html_e( 'Exceptional Service!', 'real-estate-custom-theme' ); ?></h3>
-				<p><?php esc_html_e( 'Their team made finding our dream home a smooth, transparent process. Every step was clearly explained and fast.', 'real-estate-custom-theme' ); ?></p>
-			</article>
-			<article class="card quote-card">
-				<h3><?php esc_html_e( 'Efficient and Reliable', 'real-estate-custom-theme' ); ?></h3>
-				<p><?php esc_html_e( 'They helped us sell our property quickly and at a great price. Communication was excellent throughout the process.', 'real-estate-custom-theme' ); ?></p>
-			</article>
-			<article class="card quote-card">
-				<h3><?php esc_html_e( 'Trusted Advisors', 'real-estate-custom-theme' ); ?></h3>
-				<p><?php esc_html_e( 'From first call to closing, we felt supported and informed. Their market guidance gave us confidence in every decision.', 'real-estate-custom-theme' ); ?></p>
-			</article>
-		</div>
+
+		<?php
+		$testimonials_query = new WP_Query(
+			array(
+				'post_type'           => 'testimonial',
+				'post_status'         => 'publish',
+				'posts_per_page'      => 12,
+				'ignore_sticky_posts' => true,
+				'meta_query'          => array(
+					array(
+						'key'     => 'is_featured',
+						'value'   => '1',
+						'compare' => '=',
+					),
+				),
+				'orderby'             => array(
+					'date' => 'DESC',
+				),
+			)
+		);
+
+		if ( ! $testimonials_query->have_posts() ) {
+			$testimonials_query = new WP_Query(
+				array(
+					'post_type'           => 'testimonial',
+					'post_status'         => 'publish',
+					'posts_per_page'      => 12,
+					'ignore_sticky_posts' => true,
+					'orderby'             => array(
+						'date' => 'DESC',
+					),
+				)
+			);
+		}
+
+		if ( $testimonials_query->have_posts() ) :
+			$testimonials_total = (int) $testimonials_query->post_count;
+			?>
+			<div
+				class="testimonials"
+				data-testimonials-carousel
+				x-data="testimonialsCarousel"
+				x-init="init()"
+				@mouseenter="pause()"
+				@mouseleave="resume()"
+				@focusin="pause()"
+				@focusout="resume()"
+			>
+				<div class="testimonials__viewport" x-ref="viewport">
+					<div class="testimonials__track" x-ref="track">
+						<?php
+						while ( $testimonials_query->have_posts() ) :
+							$testimonials_query->the_post();
+
+							$testimonial_id       = get_the_ID();
+							$testimonial_rating   = function_exists( 'real_estate_custom_theme_get_testimonial_rating' ) ? real_estate_custom_theme_get_testimonial_rating( $testimonial_id ) : 5;
+							$testimonial_quote    = function_exists( 'real_estate_custom_theme_get_testimonial_quote' ) ? real_estate_custom_theme_get_testimonial_quote( $testimonial_id ) : wp_trim_words( get_the_excerpt(), 24 );
+							$client_name          = function_exists( 'real_estate_custom_theme_get_testimonial_client_name' ) ? real_estate_custom_theme_get_testimonial_client_name( $testimonial_id ) : get_the_title();
+							$client_location      = function_exists( 'real_estate_custom_theme_get_testimonial_client_location' ) ? real_estate_custom_theme_get_testimonial_client_location( $testimonial_id ) : '';
+							$testimonial_photo_url = function_exists( 'real_estate_custom_theme_get_testimonial_photo_url' ) ? real_estate_custom_theme_get_testimonial_photo_url( $testimonial_id ) : '';
+							?>
+							<article <?php post_class( 'card testimonial-card testimonials__slide' ); ?>>
+								<div class="card__body">
+									<ul class="testimonial-card__stars" aria-label="<?php echo esc_attr( sprintf( __( 'Rated %d out of 5', 'real-estate-custom-theme' ), (int) $testimonial_rating ) ); ?>">
+										<?php for ( $star_index = 1; $star_index <= 5; $star_index++ ) : ?>
+											<li class="testimonial-card__star<?php echo $star_index <= $testimonial_rating ? ' is-filled' : ''; ?>" aria-hidden="true">&#9733;</li>
+										<?php endfor; ?>
+									</ul>
+									<h3><?php the_title(); ?></h3>
+									<p class="testimonial-card__quote"><?php echo esc_html( $testimonial_quote ); ?></p>
+									<div class="testimonial-card__client">
+										<?php if ( '' !== $testimonial_photo_url ) : ?>
+											<img src="<?php echo esc_url( $testimonial_photo_url ); ?>" alt="<?php echo esc_attr( $client_name ); ?>" loading="lazy">
+										<?php endif; ?>
+										<div>
+											<strong><?php echo esc_html( $client_name ); ?></strong>
+											<?php if ( '' !== $client_location ) : ?>
+												<span><?php echo esc_html( $client_location ); ?></span>
+											<?php endif; ?>
+										</div>
+									</div>
+								</div>
+							</article>
+						<?php endwhile; ?>
+					</div>
+				</div>
+
+				<div class="featured-properties__controls testimonials__controls">
+					<p class="featured-properties__count testimonials__count">
+						<span data-testimonials-current x-text="formattedCurrent">01</span>
+						<?php esc_html_e( 'of', 'real-estate-custom-theme' ); ?>
+						<span data-testimonials-total x-text="formattedTotal"><?php echo esc_html( str_pad( (string) $testimonials_total, 2, '0', STR_PAD_LEFT ) ); ?></span>
+					</p>
+					<div class="featured-properties__actions testimonials__actions">
+						<button type="button" class="featured-properties__arrow testimonials__arrow" data-testimonials-prev @click="prev()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Previous testimonials', 'real-estate-custom-theme' ); ?>">
+							<svg class="featured-properties__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+								<path d="M15 6L9 12L15 18"></path>
+							</svg>
+						</button>
+						<button type="button" class="featured-properties__arrow testimonials__arrow" data-testimonials-next @click="next()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Next testimonials', 'real-estate-custom-theme' ); ?>">
+							<svg class="featured-properties__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+								<path d="M9 6L15 12L9 18"></path>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+			<?php
+			wp_reset_postdata();
+		else :
+			?>
+			<p><?php esc_html_e( 'No testimonials found yet.', 'real-estate-custom-theme' ); ?></p>
+			<?php
+		endif;
+		?>
 	</section>
 
 	<section class="section-shell" aria-labelledby="faq-title">
@@ -396,23 +502,92 @@ if ( function_exists( 'get_field' ) && $front_page_id > 0 ) {
 			<div>
 				<p class="eyebrow"><?php esc_html_e( 'FAQ', 'real-estate-custom-theme' ); ?></p>
 				<h2 id="faq-title"><?php esc_html_e( 'Frequently Asked Questions', 'real-estate-custom-theme' ); ?></h2>
+				<p class="section-head__description"><?php echo esc_html( $faq_section_description ); ?></p>
 			</div>
-			<a class="btn btn--ghost" href="<?php echo esc_url( home_url( '/faqs/' ) ); ?>"><?php esc_html_e( 'View All FAQs', 'real-estate-custom-theme' ); ?></a>
+			<a class="btn btn--ghost" href="<?php echo esc_url( home_url( '/faqs/' ) ); ?>"><?php esc_html_e( 'View All FAQ\'s', 'real-estate-custom-theme' ); ?></a>
 		</div>
-		<div class="card-grid card-grid--tight">
-			<article class="card">
-				<h3><?php esc_html_e( 'How do I search for properties?', 'real-estate-custom-theme' ); ?></h3>
-				<p><?php esc_html_e( 'Use filters such as location, budget, and property type to quickly narrow results to listings that match your needs.', 'real-estate-custom-theme' ); ?></p>
-			</article>
-			<article class="card">
-				<h3><?php esc_html_e( 'What documents are needed to sell?', 'real-estate-custom-theme' ); ?></h3>
-				<p><?php esc_html_e( 'Common documents include title deed, tax declarations, valid IDs, and signed listing agreements.', 'real-estate-custom-theme' ); ?></p>
-			</article>
-			<article class="card">
-				<h3><?php esc_html_e( 'How can I contact an agent?', 'real-estate-custom-theme' ); ?></h3>
-				<p><?php esc_html_e( 'You can use our contact form, call our office, or request a callback from any property details page.', 'real-estate-custom-theme' ); ?></p>
-			</article>
-		</div>
+
+		<?php
+		$faq_query = new WP_Query(
+			array(
+				'post_type'           => 'faq',
+				'post_status'         => 'publish',
+				'posts_per_page'      => 12,
+				'ignore_sticky_posts' => true,
+				'meta_query'          => array(
+					array(
+						'key'     => 'is_featured',
+						'value'   => '1',
+						'compare' => '=',
+					),
+				),
+				'orderby'             => array(
+					'date' => 'DESC',
+				),
+			)
+		);
+
+		if ( $faq_query->have_posts() ) :
+			$faq_total = (int) $faq_query->post_count;
+			?>
+			<div
+				class="faqs"
+				data-faq-carousel
+				x-data="faqCarousel"
+				x-init="init()"
+				@mouseenter="pause()"
+				@mouseleave="resume()"
+				@focusin="pause()"
+				@focusout="resume()"
+			>
+				<div class="faqs__viewport" x-ref="viewport">
+					<div class="faqs__track" x-ref="track">
+						<?php
+						while ( $faq_query->have_posts() ) :
+							$faq_query->the_post();
+							$faq_id          = get_the_ID();
+							$faq_excerpt     = function_exists( 'real_estate_custom_theme_get_faq_excerpt' ) ? real_estate_custom_theme_get_faq_excerpt( $faq_id, get_the_excerpt(), 150 ) : wp_trim_words( get_the_excerpt(), 24 );
+							$faq_button_text = function_exists( 'real_estate_custom_theme_get_faq_cta_label' ) ? real_estate_custom_theme_get_faq_cta_label( $faq_id ) : __( 'Read More', 'real-estate-custom-theme' );
+							?>
+							<article <?php post_class( 'card faq-card faqs__slide' ); ?>>
+								<div class="faq-card__body">
+									<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+									<p class="faq-card__excerpt"><?php echo esc_html( $faq_excerpt ); ?></p>
+									<a class="faq-card__cta" href="<?php the_permalink(); ?>"><?php echo esc_html( $faq_button_text ); ?></a>
+								</div>
+							</article>
+						<?php endwhile; ?>
+					</div>
+				</div>
+
+				<div class="featured-properties__controls faqs__controls">
+					<p class="featured-properties__count faqs__count">
+						<span data-faq-current x-text="formattedCurrent">01</span>
+						<?php esc_html_e( 'of', 'real-estate-custom-theme' ); ?>
+						<span data-faq-total x-text="formattedTotal"><?php echo esc_html( str_pad( (string) $faq_total, 2, '0', STR_PAD_LEFT ) ); ?></span>
+					</p>
+					<div class="featured-properties__actions faqs__actions">
+						<button type="button" class="featured-properties__arrow faqs__arrow" data-faq-prev @click="prev()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Previous FAQs', 'real-estate-custom-theme' ); ?>">
+							<svg class="featured-properties__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+								<path d="M15 6L9 12L15 18"></path>
+							</svg>
+						</button>
+						<button type="button" class="featured-properties__arrow faqs__arrow" data-faq-next @click="next()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Next FAQs', 'real-estate-custom-theme' ); ?>">
+							<svg class="featured-properties__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+								<path d="M9 6L15 12L9 18"></path>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</div>
+			<?php
+			wp_reset_postdata();
+		else :
+			?>
+			<p><?php esc_html_e( 'No featured FAQs found yet.', 'real-estate-custom-theme' ); ?></p>
+			<?php
+		endif;
+		?>
 	</section>
 
 	<section class="cta-band" aria-labelledby="cta-title">

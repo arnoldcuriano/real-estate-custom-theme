@@ -6,13 +6,21 @@ Configure ACF-backed editable fields used by the current theme implementation.
 ## Scope
 - Front-page featured section description field
 - Property card metadata fields
-- Featured-on-home controls used by the home carousel query
+- Testimonial metadata fields
+- FAQ metadata fields
+- Featured controls used by home carousel queries
 
 ## Source of truth files
 - `inc/acf-fields-properties.php`
+- `inc/acf-fields-testimonials.php`
+- `inc/acf-fields-faq.php`
 - `front-page.php`
 - `archive-property.php`
+- `archive-testimonial.php`
+- `archive-faq.php`
 - `inc/cpt-property.php`
+- `inc/cpt-testimonial.php`
+- `inc/cpt-faq.php`
 
 ## Plugin requirement
 Install and activate:
@@ -36,16 +44,40 @@ The theme supports both:
 - `featured_on_home` (true/false)
 - `featured_order` (number, optional)
 
+### Testimonial field group
+- `testimonial_rating` (select 1..5)
+- `testimonial_quote` (textarea)
+- `client_name` (text)
+- `client_location` (text, optional)
+- `client_photo` (image)
+- `is_featured` (true/false)
+
+### FAQ field group
+- `is_featured` (true/false)
+- `cta_label` (text, optional)
+
 ## How featured query uses these fields
 Home featured cards in `front-page.php`:
 1. query `property` posts where `featured_on_home = 1`
 2. order by `featured_order` ascending, then date descending
 3. fallback to latest published `property` posts if no featured flag exists
 
+Home testimonials in `front-page.php`:
+1. query `testimonial` posts where `is_featured = 1`
+2. fallback to latest published testimonials if none are featured
+
+Home FAQs in `front-page.php`:
+1. query `faq` posts where `is_featured = 1`
+2. no fallback to non-featured FAQs (shows empty-state if none featured)
+
 ## Routing and slug note
 - CPT archive route is `/properties/`
 - CPT single route is `/property/{slug}`
-- If a static page slug is `properties`, rename it to avoid route conflict.
+- CPT archive route is `/testimonials/`
+- CPT single route is `/testimonial/{slug}`
+- CPT archive route is `/faqs/`
+- CPT single route is `/faq/{slug}`
+- If static page slugs are `properties`, `testimonials`, or `faqs`, rename them to avoid route conflicts.
 
 After setup:
 - Save permalinks: `Settings > Permalinks > Save Changes`
@@ -63,11 +95,12 @@ After setup:
 ## Verification steps
 - Confirm field registration keys:
   - `rg -n "featured_section_description|property_price|featured_on_home|featured_order" wp-content/themes/real-estate-custom-theme/inc/acf-fields-properties.php`
+  - `rg -n "testimonial_rating|testimonial_quote|is_featured" wp-content/themes/real-estate-custom-theme/inc/acf-fields-testimonials.php`
+  - `rg -n "field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc/acf-fields-faq.php`
 - Confirm template usage:
-  - `rg -n "featured_section_description|property_price|property_bedrooms|featured_on_home" wp-content/themes/real-estate-custom-theme/front-page.php`
+  - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
 
 ## Related
 - `README.md`
 - `docs/content-model.md`
 - `docs/setup-and-operations.md`
-
