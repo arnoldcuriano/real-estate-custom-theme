@@ -1055,6 +1055,14 @@
 
 	.cta-band {
 		padding: 2.2rem var(--site-content-inline-pad);
+		align-items: stretch;
+		gap: 1.05rem;
+	}
+
+	.cta-band .btn {
+		width: 100%;
+		min-height: 48px;
+		font-size: 1rem;
 	}
 
 	.card-grid {
