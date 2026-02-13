@@ -120,6 +120,8 @@ Contract:
 
 #### Client fields
 - `client_since`
+- `client_domain`
+- `client_category`
 - `client_industry`
 - `client_service_type`
 - `client_testimonial`
@@ -174,7 +176,10 @@ Contract:
 - Clients:
   - `page-about-us.php`
   - featured-first query (`is_featured=1`) with fallback to latest clients
-  - helper fallbacks in `inc/client-helpers.php` for since/industry/service/testimonial/url
+  - helper fallbacks in `inc/client-helpers.php` for since/domain/category/testimonial/url
+  - field fallback chain:
+    - `client_domain` -> `client_industry`
+    - `client_category` -> `client_service_type`
 - About page:
   - `page-about-us.php`
   - ACF values override hardcoded defaults for achievements/process sections

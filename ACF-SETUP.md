@@ -9,6 +9,7 @@ Configure ACF-backed editable fields used by the current theme implementation.
 - Front-page featured section description field
 - Property card metadata fields
 - Testimonial metadata fields
+- Client metadata fields
 - Team member metadata fields
 - FAQ metadata fields
 - About page Achievements/Process fields
@@ -19,6 +20,7 @@ Configure ACF-backed editable fields used by the current theme implementation.
 
 - `inc/acf-fields-properties.php`
 - `inc/acf-fields-testimonials.php`
+- `inc/acf-fields-clients.php`
 - `inc/acf-fields-team-members.php`
 - `inc/acf-fields-faq.php`
 - `inc/acf-fields-about.php`
@@ -29,6 +31,7 @@ Configure ACF-backed editable fields used by the current theme implementation.
 - `archive-faq.php`
 - `inc/cpt-property.php`
 - `inc/cpt-testimonial.php`
+- `inc/cpt-client.php`
 - `inc/cpt-team-member.php`
 - `inc/cpt-faq.php`
 - `page-about-us.php`
@@ -74,6 +77,17 @@ The theme supports both:
 
 - `is_featured` (true/false)
 - `cta_label` (text, optional)
+
+### Client field group
+
+- `client_since` (text)
+- `client_domain` (text)
+- `client_category` (text)
+- `client_industry` (text, legacy fallback)
+- `client_service_type` (text, legacy fallback)
+- `client_testimonial` (textarea)
+- `client_website` (url)
+- `is_featured` (true/false)
 
 ### Team Member field group
 
@@ -129,6 +143,14 @@ Home FAQs in `front-page.php`:
 1. query `faq` posts where `is_featured = 1`
 2. no fallback to non-featured FAQs (shows empty-state if none featured)
 
+About clients in `page-about-us.php`:
+
+1. query `client` posts where `is_featured = 1`
+2. fallback to latest published `client` posts if none are featured
+3. field fallback chain:
+   - `client_domain` -> `client_industry`
+   - `client_category` -> `client_service_type`
+
 About Team cards in `page-about-us.php`:
 
 1. query `team_member` posts (`post_status=publish`)
@@ -183,12 +205,14 @@ After setup:
 - Confirm field registration keys:
   - `rg -n "featured_section_description|property_price|featured_on_home|featured_order" wp-content/themes/real-estate-custom-theme/inc/acf-fields-properties.php`
   - `rg -n "testimonial_rating|testimonial_quote|is_featured" wp-content/themes/real-estate-custom-theme/inc/acf-fields-testimonials.php`
+  - `rg -n "client_since|client_domain|client_category|client_industry|client_service_type|client_testimonial|client_website|is_featured" wp-content/themes/real-estate-custom-theme/inc/acf-fields-clients.php`
   - `rg -n "position_title|profile_icon_source|profile_icon_platform|profile_icon_custom|social_links|cta_label|cta_url" wp-content/themes/real-estate-custom-theme/inc/acf-fields-team-members.php`
   - `rg -n "field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc/acf-fields-faq.php`
   - `rg -n "group_rect_about_sections|field_rect_achievements_title|field_rect_process_steps|field_rect_about_cta_heading" wp-content/themes/real-estate-custom-theme/inc/acf-fields-about.php`
   - `rg -n "group_rect_services_page_hero|services_hero_title|services_hero_description" wp-content/themes/real-estate-custom-theme/inc/acf-fields-services.php`
 - Confirm template usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
+  - `rg -n "about-clients|client_domain|client_category|client_industry|client_service_type" wp-content/themes/real-estate-custom-theme/page-about-us.php`
   - `rg -n "about-team|team_member|position_title|social_links|cta_url" wp-content/themes/real-estate-custom-theme/page-about-us.php`
   - `rg -n "services_hero_title|services_hero_description|data-quick-links-loop" wp-content/themes/real-estate-custom-theme/page-services.php`
 

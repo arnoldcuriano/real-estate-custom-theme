@@ -33,19 +33,35 @@ function real_estate_custom_theme_register_client_acf_fields() {
 					'required'     => 0,
 				),
 				array(
-					'key'          => 'field_rect_client_industry',
-					'label'        => __( 'Industry', 'real-estate-custom-theme' ),
-					'name'         => 'client_industry',
+					'key'          => 'field_rect_client_domain',
+					'label'        => __( 'Domain', 'real-estate-custom-theme' ),
+					'name'         => 'client_domain',
 					'type'         => 'text',
 					'instructions' => __( 'Example: Commercial Real Estate', 'real-estate-custom-theme' ),
 					'required'     => 0,
 				),
 				array(
-					'key'          => 'field_rect_client_service_type',
-					'label'        => __( 'Service Type', 'real-estate-custom-theme' ),
-					'name'         => 'client_service_type',
+					'key'          => 'field_rect_client_category',
+					'label'        => __( 'Category', 'real-estate-custom-theme' ),
+					'name'         => 'client_category',
 					'type'         => 'text',
 					'instructions' => __( 'Example: Luxury Home Development', 'real-estate-custom-theme' ),
+					'required'     => 0,
+				),
+				array(
+					'key'          => 'field_rect_client_industry',
+					'label'        => __( 'Industry (Legacy)', 'real-estate-custom-theme' ),
+					'name'         => 'client_industry',
+					'type'         => 'text',
+					'instructions' => __( 'Legacy fallback for Domain. Optional for backward compatibility.', 'real-estate-custom-theme' ),
+					'required'     => 0,
+				),
+				array(
+					'key'          => 'field_rect_client_service_type',
+					'label'        => __( 'Service Type (Legacy)', 'real-estate-custom-theme' ),
+					'name'         => 'client_service_type',
+					'type'         => 'text',
+					'instructions' => __( 'Legacy fallback for Category. Optional for backward compatibility.', 'real-estate-custom-theme' ),
 					'required'     => 0,
 				),
 				array(
@@ -98,4 +114,3 @@ function real_estate_custom_theme_register_client_acf_fields() {
 	);
 }
 add_action( 'acf/init', 'real_estate_custom_theme_register_client_acf_fields' );
-

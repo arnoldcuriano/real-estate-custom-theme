@@ -34,25 +34,57 @@ function real_estate_custom_theme_get_client_since( $post_id ) {
 }
 
 /**
- * Get client industry label.
+ * Get client domain label with legacy fallback.
+ *
+ * @param int $post_id Client post ID.
+ *
+ * @return string
+ */
+function real_estate_custom_theme_get_client_domain( $post_id ) {
+	$domain = trim( (string) get_post_meta( $post_id, 'client_domain', true ) );
+	if ( '' !== $domain ) {
+		return $domain;
+	}
+
+	return trim( (string) get_post_meta( $post_id, 'client_industry', true ) );
+}
+
+/**
+ * Get client category label with legacy fallback.
+ *
+ * @param int $post_id Client post ID.
+ *
+ * @return string
+ */
+function real_estate_custom_theme_get_client_category( $post_id ) {
+	$category = trim( (string) get_post_meta( $post_id, 'client_category', true ) );
+	if ( '' !== $category ) {
+		return $category;
+	}
+
+	return trim( (string) get_post_meta( $post_id, 'client_service_type', true ) );
+}
+
+/**
+ * Get client industry label (legacy wrapper).
  *
  * @param int $post_id Client post ID.
  *
  * @return string
  */
 function real_estate_custom_theme_get_client_industry( $post_id ) {
-	return trim( (string) get_post_meta( $post_id, 'client_industry', true ) );
+	return real_estate_custom_theme_get_client_domain( $post_id );
 }
 
 /**
- * Get client service type label.
+ * Get client service type label (legacy wrapper).
  *
  * @param int $post_id Client post ID.
  *
  * @return string
  */
 function real_estate_custom_theme_get_client_service_type( $post_id ) {
-	return trim( (string) get_post_meta( $post_id, 'client_service_type', true ) );
+	return real_estate_custom_theme_get_client_category( $post_id );
 }
 
 /**
@@ -96,4 +128,3 @@ function real_estate_custom_theme_get_client_website_url( $post_id ) {
 
 	return esc_url_raw( $url );
 }
-

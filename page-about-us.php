@@ -551,12 +551,12 @@ if ( -1 === $featured_step_index ) {
 
 								$client_id            = get_the_ID();
 								$client_since         = function_exists( 'real_estate_custom_theme_get_client_since' ) ? real_estate_custom_theme_get_client_since( $client_id ) : '';
-								$client_industry      = function_exists( 'real_estate_custom_theme_get_client_industry' ) ? real_estate_custom_theme_get_client_industry( $client_id ) : '';
-								$client_service_type  = function_exists( 'real_estate_custom_theme_get_client_service_type' ) ? real_estate_custom_theme_get_client_service_type( $client_id ) : '';
+								$client_domain        = function_exists( 'real_estate_custom_theme_get_client_domain' ) ? real_estate_custom_theme_get_client_domain( $client_id ) : '';
+								$client_category      = function_exists( 'real_estate_custom_theme_get_client_category' ) ? real_estate_custom_theme_get_client_category( $client_id ) : '';
 								$client_testimonial   = function_exists( 'real_estate_custom_theme_get_client_testimonial' ) ? real_estate_custom_theme_get_client_testimonial( $client_id ) : wp_trim_words( get_the_excerpt(), 24 );
 								$client_website_url   = function_exists( 'real_estate_custom_theme_get_client_website_url' ) ? real_estate_custom_theme_get_client_website_url( $client_id ) : '';
-								$client_industry      = '' !== $client_industry ? $client_industry : esc_html__( 'Not specified', 'real-estate-custom-theme' );
-								$client_service_type  = '' !== $client_service_type ? $client_service_type : esc_html__( 'Not specified', 'real-estate-custom-theme' );
+								$client_domain        = '' !== $client_domain ? $client_domain : esc_html__( 'Not specified', 'real-estate-custom-theme' );
+								$client_category      = '' !== $client_category ? $client_category : esc_html__( 'Not specified', 'real-estate-custom-theme' );
 								$client_testimonial   = '' !== trim( $client_testimonial ) ? $client_testimonial : esc_html__( 'Client testimonial will appear here once provided.', 'real-estate-custom-theme' );
 								?>
 								<article <?php post_class( 'about-client-card about-clients__slide' ); ?> data-about-carousel-slide>
@@ -575,12 +575,29 @@ if ( -1 === $featured_step_index ) {
 
 									<ul class="about-client-card__meta">
 										<li>
-											<span><?php esc_html_e( 'Industry', 'real-estate-custom-theme' ); ?></span>
-											<strong><?php echo esc_html( $client_industry ); ?></strong>
+											<span class="about-client-card__meta-label">
+												<span class="about-client-card__meta-icon" aria-hidden="true">
+													<svg viewBox="0 0 24 24" focusable="false">
+														<rect x="3.5" y="3.5" width="7" height="7" rx="1"></rect>
+														<rect x="13.5" y="3.5" width="7" height="7" rx="1"></rect>
+														<rect x="3.5" y="13.5" width="7" height="7" rx="1"></rect>
+														<rect x="13.5" y="13.5" width="7" height="7" rx="1"></rect>
+													</svg>
+												</span>
+												<?php esc_html_e( 'Domain', 'real-estate-custom-theme' ); ?>
+											</span>
+											<strong><?php echo esc_html( $client_domain ); ?></strong>
 										</li>
 										<li>
-											<span><?php esc_html_e( 'Service', 'real-estate-custom-theme' ); ?></span>
-											<strong><?php echo esc_html( $client_service_type ); ?></strong>
+											<span class="about-client-card__meta-label">
+												<span class="about-client-card__meta-icon" aria-hidden="true">
+													<svg viewBox="0 0 24 24" focusable="false">
+														<path d="M13.4 2L5.5 13H11L9.7 22L18.5 9H12.8L13.4 2Z"></path>
+													</svg>
+												</span>
+												<?php esc_html_e( 'Category', 'real-estate-custom-theme' ); ?>
+											</span>
+											<strong><?php echo esc_html( $client_category ); ?></strong>
 										</li>
 									</ul>
 
