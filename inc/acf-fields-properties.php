@@ -84,6 +84,60 @@ function real_estate_custom_theme_register_property_acf_fields() {
 					'required'     => 0,
 				),
 				array(
+					'key'           => 'field_rect_property_bedrooms_icon_source',
+					'label'         => __( 'Bedrooms Icon Source', 'real-estate-custom-theme' ),
+					'name'          => 'property_bedrooms_icon_source',
+					'type'          => 'select',
+					'choices'       => array(
+						'predefined' => __( 'Predefined Icon', 'real-estate-custom-theme' ),
+						'custom'     => __( 'Custom Upload', 'real-estate-custom-theme' ),
+					),
+					'default_value' => 'predefined',
+					'allow_null'    => 0,
+					'ui'            => 1,
+				),
+				array(
+					'key'               => 'field_rect_property_bedrooms_icon_preset',
+					'label'             => __( 'Bedrooms Predefined Icon', 'real-estate-custom-theme' ),
+					'name'              => 'property_bedrooms_icon_preset',
+					'type'              => 'select',
+					'choices'           => array(
+						'bed'      => __( 'Bed', 'real-estate-custom-theme' ),
+						'building' => __( 'Building', 'real-estate-custom-theme' ),
+						'tag'      => __( 'Tag', 'real-estate-custom-theme' ),
+					),
+					'default_value'     => 'bed',
+					'allow_null'        => 0,
+					'ui'                => 1,
+					'conditional_logic' => array(
+						array(
+							array(
+								'field'    => 'field_rect_property_bedrooms_icon_source',
+								'operator' => '==',
+								'value'    => 'predefined',
+							),
+						),
+					),
+				),
+				array(
+					'key'               => 'field_rect_property_bedrooms_icon_custom',
+					'label'             => __( 'Bedrooms Custom Icon', 'real-estate-custom-theme' ),
+					'name'              => 'property_bedrooms_icon_custom',
+					'type'              => 'image',
+					'return_format'     => 'id',
+					'preview_size'      => 'thumbnail',
+					'library'           => 'all',
+					'conditional_logic' => array(
+						array(
+							array(
+								'field'    => 'field_rect_property_bedrooms_icon_source',
+								'operator' => '==',
+								'value'    => 'custom',
+							),
+						),
+					),
+				),
+				array(
 					'key'          => 'field_rect_property_bathrooms',
 					'label'        => __( 'Bathrooms', 'real-estate-custom-theme' ),
 					'name'         => 'property_bathrooms',
@@ -92,12 +146,121 @@ function real_estate_custom_theme_register_property_acf_fields() {
 					'required'     => 0,
 				),
 				array(
+					'key'           => 'field_rect_property_bathrooms_icon_source',
+					'label'         => __( 'Bathrooms Icon Source', 'real-estate-custom-theme' ),
+					'name'          => 'property_bathrooms_icon_source',
+					'type'          => 'select',
+					'choices'       => array(
+						'predefined' => __( 'Predefined Icon', 'real-estate-custom-theme' ),
+						'custom'     => __( 'Custom Upload', 'real-estate-custom-theme' ),
+					),
+					'default_value' => 'predefined',
+					'allow_null'    => 0,
+					'ui'            => 1,
+				),
+				array(
+					'key'               => 'field_rect_property_bathrooms_icon_preset',
+					'label'             => __( 'Bathrooms Predefined Icon', 'real-estate-custom-theme' ),
+					'name'              => 'property_bathrooms_icon_preset',
+					'type'              => 'select',
+					'choices'           => array(
+						'bath'     => __( 'Bath', 'real-estate-custom-theme' ),
+						'building' => __( 'Building', 'real-estate-custom-theme' ),
+						'tag'      => __( 'Tag', 'real-estate-custom-theme' ),
+					),
+					'default_value'     => 'bath',
+					'allow_null'        => 0,
+					'ui'                => 1,
+					'conditional_logic' => array(
+						array(
+							array(
+								'field'    => 'field_rect_property_bathrooms_icon_source',
+								'operator' => '==',
+								'value'    => 'predefined',
+							),
+						),
+					),
+				),
+				array(
+					'key'               => 'field_rect_property_bathrooms_icon_custom',
+					'label'             => __( 'Bathrooms Custom Icon', 'real-estate-custom-theme' ),
+					'name'              => 'property_bathrooms_icon_custom',
+					'type'              => 'image',
+					'return_format'     => 'id',
+					'preview_size'      => 'thumbnail',
+					'library'           => 'all',
+					'conditional_logic' => array(
+						array(
+							array(
+								'field'    => 'field_rect_property_bathrooms_icon_source',
+								'operator' => '==',
+								'value'    => 'custom',
+							),
+						),
+					),
+				),
+				array(
 					'key'          => 'field_rect_property_type',
 					'label'        => __( 'Property Type', 'real-estate-custom-theme' ),
 					'name'         => 'property_type',
 					'type'         => 'text',
 					'instructions' => __( 'Example: Villa, Apartment, Townhouse', 'real-estate-custom-theme' ),
 					'required'     => 0,
+				),
+				array(
+					'key'           => 'field_rect_property_type_icon_source',
+					'label'         => __( 'Property Type Icon Source', 'real-estate-custom-theme' ),
+					'name'          => 'property_type_icon_source',
+					'type'          => 'select',
+					'choices'       => array(
+						'predefined' => __( 'Predefined Icon', 'real-estate-custom-theme' ),
+						'custom'     => __( 'Custom Upload', 'real-estate-custom-theme' ),
+					),
+					'default_value' => 'predefined',
+					'allow_null'    => 0,
+					'ui'            => 1,
+				),
+				array(
+					'key'               => 'field_rect_property_type_icon_preset',
+					'label'             => __( 'Property Type Predefined Icon', 'real-estate-custom-theme' ),
+					'name'              => 'property_type_icon_preset',
+					'type'              => 'select',
+					'choices'           => array(
+						'building' => __( 'Building', 'real-estate-custom-theme' ),
+						'tag'      => __( 'Tag', 'real-estate-custom-theme' ),
+						'bed'      => __( 'Bed', 'real-estate-custom-theme' ),
+						'bath'     => __( 'Bath', 'real-estate-custom-theme' ),
+					),
+					'default_value'     => 'building',
+					'allow_null'        => 0,
+					'ui'                => 1,
+					'conditional_logic' => array(
+						array(
+							array(
+								'field'    => 'field_rect_property_type_icon_source',
+								'operator' => '==',
+								'value'    => 'predefined',
+							),
+						),
+					),
+				),
+				array(
+					'key'               => 'field_rect_property_type_icon_custom',
+					'label'             => __( 'Property Type Custom Icon', 'real-estate-custom-theme' ),
+					'name'              => 'property_type_icon_custom',
+					'type'              => 'image',
+					'return_format'     => 'id',
+					'preview_size'      => 'thumbnail',
+					'library'           => 'all',
+					'conditional_logic' => array(
+						array(
+							array(
+								'field'    => 'field_rect_property_type_icon_source',
+								'operator' => '==',
+								'value'    => 'custom',
+							),
+						),
+					),
 				),
 				array(
 					'key'          => 'field_rect_property_card_excerpt',
@@ -174,4 +337,3 @@ function real_estate_custom_theme_acf_missing_notice() {
 	<?php
 }
 add_action( 'admin_notices', 'real_estate_custom_theme_acf_missing_notice' );
-

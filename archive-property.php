@@ -26,7 +26,6 @@ get_header();
 					$property_bedrooms = trim( (string) get_post_meta( $property_id, 'property_bedrooms', true ) );
 					$property_bathroom = trim( (string) get_post_meta( $property_id, 'property_bathrooms', true ) );
 					$property_type     = trim( (string) get_post_meta( $property_id, 'property_type', true ) );
-					$card_excerpt      = trim( (string) get_post_meta( $property_id, 'property_card_excerpt', true ) );
 
 					if ( '' === $property_price ) {
 						$property_price = trim( (string) get_post_meta( $property_id, 'price', true ) );
@@ -37,10 +36,12 @@ get_header();
 					if ( '' === $property_bathroom ) {
 						$property_bathroom = trim( (string) get_post_meta( $property_id, 'bathrooms', true ) );
 					}
-
-					if ( '' === $card_excerpt ) {
-						$card_excerpt = wp_trim_words( get_the_excerpt(), 20 );
-					}
+					$card_excerpt_data = function_exists( 'real_estate_custom_theme_get_property_card_excerpt_data' )
+						? real_estate_custom_theme_get_property_card_excerpt_data( $property_id, get_the_excerpt(), 150 )
+						: array(
+							'text'     => wp_trim_words( get_the_excerpt(), 20 ),
+							'has_more' => false,
+						);
 					?>
 					<article <?php post_class( 'property-archive__card' ); ?>>
 						<a class="property-archive__image" href="<?php the_permalink(); ?>">
@@ -61,16 +62,63 @@ get_header();
 						</a>
 						<div class="property-archive__body">
 							<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
-							<p><?php echo esc_html( $card_excerpt ); ?></p>
+							<p class="property-archive__excerpt">
+								<?php echo esc_html( $card_excerpt_data['text'] ); ?>
+								<?php if ( ! empty( $card_excerpt_data['has_more'] ) ) : ?>
+									<a class="property-archive__read-more" href="<?php the_permalink(); ?>"><?php esc_html_e( 'Read More', 'real-estate-custom-theme' ); ?></a>
+								<?php endif; ?>
+							</p>
 							<ul class="property-archive__meta">
 								<?php if ( '' !== $property_bedrooms ) : ?>
-									<li><?php echo esc_html( $property_bedrooms ); ?></li>
+									<li>
+										<?php
+										if ( function_exists( 'real_estate_custom_theme_get_property_meta_icon_markup' ) ) {
+											echo wp_kses(
+												real_estate_custom_theme_get_property_meta_icon_markup( $property_id, 'property_bedrooms', 'bed' ),
+												array(
+													'svg'  => array( 'class' => array(), 'viewBox' => array(), 'focusable' => array(), 'aria-hidden' => array() ),
+													'path' => array( 'd' => array() ),
+													'img'  => array( 'class' => array(), 'src' => array(), 'alt' => array(), 'loading' => array(), 'aria-hidden' => array() ),
+												)
+											);
+										}
+										?>
+										<span><?php echo esc_html( $property_bedrooms ); ?></span>
+									</li>
 								<?php endif; ?>
 								<?php if ( '' !== $property_bathroom ) : ?>
-									<li><?php echo esc_html( $property_bathroom ); ?></li>
+									<li>
+										<?php
+										if ( function_exists( 'real_estate_custom_theme_get_property_meta_icon_markup' ) ) {
+											echo wp_kses(
+												real_estate_custom_theme_get_property_meta_icon_markup( $property_id, 'property_bathrooms', 'bath' ),
+												array(
+													'svg'  => array( 'class' => array(), 'viewBox' => array(), 'focusable' => array(), 'aria-hidden' => array() ),
+													'path' => array( 'd' => array() ),
+													'img'  => array( 'class' => array(), 'src' => array(), 'alt' => array(), 'loading' => array(), 'aria-hidden' => array() ),
+												)
+											);
+										}
+										?>
+										<span><?php echo esc_html( $property_bathroom ); ?></span>
+									</li>
 								<?php endif; ?>
 								<?php if ( '' !== $property_type ) : ?>
-									<li><?php echo esc_html( $property_type ); ?></li>
+									<li>
+										<?php
+										if ( function_exists( 'real_estate_custom_theme_get_property_meta_icon_markup' ) ) {
+											echo wp_kses(
+												real_estate_custom_theme_get_property_meta_icon_markup( $property_id, 'property_type', 'building' ),
+												array(
+													'svg'  => array( 'class' => array(), 'viewBox' => array(), 'focusable' => array(), 'aria-hidden' => array() ),
+													'path' => array( 'd' => array() ),
+													'img'  => array( 'class' => array(), 'src' => array(), 'alt' => array(), 'loading' => array(), 'aria-hidden' => array() ),
+												)
+											);
+										}
+										?>
+										<span><?php echo esc_html( $property_type ); ?></span>
+									</li>
 								<?php endif; ?>
 							</ul>
 							<div class="property-archive__footer">

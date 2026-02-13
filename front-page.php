@@ -229,7 +229,6 @@ if ( function_exists( 'get_field' ) && $front_page_id > 0 ) {
 							$property_bedrooms = trim( (string) get_post_meta( $property_id, 'property_bedrooms', true ) );
 							$property_bathroom = trim( (string) get_post_meta( $property_id, 'property_bathrooms', true ) );
 							$property_type     = trim( (string) get_post_meta( $property_id, 'property_type', true ) );
-							$card_excerpt      = trim( (string) get_post_meta( $property_id, 'property_card_excerpt', true ) );
 
 							if ( '' === $property_price ) {
 								$property_price = trim( (string) get_post_meta( $property_id, 'price', true ) );
@@ -241,9 +240,12 @@ if ( function_exists( 'get_field' ) && $front_page_id > 0 ) {
 								$property_bathroom = trim( (string) get_post_meta( $property_id, 'bathrooms', true ) );
 							}
 
-							if ( '' === $card_excerpt ) {
-								$card_excerpt = wp_trim_words( get_the_excerpt(), 18 );
-							}
+							$card_excerpt_data = function_exists( 'real_estate_custom_theme_get_property_card_excerpt_data' )
+								? real_estate_custom_theme_get_property_card_excerpt_data( $property_id, get_the_excerpt(), 150 )
+								: array(
+									'text'     => wp_trim_words( get_the_excerpt(), 18 ),
+									'has_more' => false,
+								);
 							?>
 							<article <?php post_class( 'card featured-properties__slide' ); ?>>
 								<a class="card__image" href="<?php the_permalink(); ?>">
@@ -264,16 +266,63 @@ if ( function_exists( 'get_field' ) && $front_page_id > 0 ) {
 								</a>
 								<div class="card__body">
 									<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-									<p><?php echo esc_html( $card_excerpt ); ?></p>
+									<p class="card__excerpt">
+										<?php echo esc_html( $card_excerpt_data['text'] ); ?>
+										<?php if ( ! empty( $card_excerpt_data['has_more'] ) ) : ?>
+											<a class="card__read-more" href="<?php the_permalink(); ?>"><?php esc_html_e( 'Read More', 'real-estate-custom-theme' ); ?></a>
+										<?php endif; ?>
+									</p>
 									<ul class="meta-pills">
 										<?php if ( '' !== $property_bedrooms ) : ?>
-											<li><?php echo esc_html( $property_bedrooms ); ?></li>
+											<li>
+												<?php
+												if ( function_exists( 'real_estate_custom_theme_get_property_meta_icon_markup' ) ) {
+													echo wp_kses(
+														real_estate_custom_theme_get_property_meta_icon_markup( $property_id, 'property_bedrooms', 'bed' ),
+														array(
+															'svg'  => array( 'class' => array(), 'viewBox' => array(), 'focusable' => array(), 'aria-hidden' => array() ),
+															'path' => array( 'd' => array() ),
+															'img'  => array( 'class' => array(), 'src' => array(), 'alt' => array(), 'loading' => array(), 'aria-hidden' => array() ),
+														)
+													);
+												}
+												?>
+												<span><?php echo esc_html( $property_bedrooms ); ?></span>
+											</li>
 										<?php endif; ?>
 										<?php if ( '' !== $property_bathroom ) : ?>
-											<li><?php echo esc_html( $property_bathroom ); ?></li>
+											<li>
+												<?php
+												if ( function_exists( 'real_estate_custom_theme_get_property_meta_icon_markup' ) ) {
+													echo wp_kses(
+														real_estate_custom_theme_get_property_meta_icon_markup( $property_id, 'property_bathrooms', 'bath' ),
+														array(
+															'svg'  => array( 'class' => array(), 'viewBox' => array(), 'focusable' => array(), 'aria-hidden' => array() ),
+															'path' => array( 'd' => array() ),
+															'img'  => array( 'class' => array(), 'src' => array(), 'alt' => array(), 'loading' => array(), 'aria-hidden' => array() ),
+														)
+													);
+												}
+												?>
+												<span><?php echo esc_html( $property_bathroom ); ?></span>
+											</li>
 										<?php endif; ?>
 										<?php if ( '' !== $property_type ) : ?>
-											<li><?php echo esc_html( $property_type ); ?></li>
+											<li>
+												<?php
+												if ( function_exists( 'real_estate_custom_theme_get_property_meta_icon_markup' ) ) {
+													echo wp_kses(
+														real_estate_custom_theme_get_property_meta_icon_markup( $property_id, 'property_type', 'building' ),
+														array(
+															'svg'  => array( 'class' => array(), 'viewBox' => array(), 'focusable' => array(), 'aria-hidden' => array() ),
+															'path' => array( 'd' => array() ),
+															'img'  => array( 'class' => array(), 'src' => array(), 'alt' => array(), 'loading' => array(), 'aria-hidden' => array() ),
+														)
+													);
+												}
+												?>
+												<span><?php echo esc_html( $property_type ); ?></span>
+											</li>
 										<?php endif; ?>
 									</ul>
 									<div class="card__footer">
@@ -296,11 +345,15 @@ if ( function_exists( 'get_field' ) && $front_page_id > 0 ) {
 						<span data-featured-total x-text="formattedTotal"><?php echo esc_html( str_pad( (string) $featured_total, 2, '0', STR_PAD_LEFT ) ); ?></span>
 					</p>
 					<div class="featured-properties__actions">
-						<button type="button" class="featured-properties__arrow" data-featured-prev @click="prev()" :disabled="!canSlide" aria-label="<?php esc_attr_e( 'Previous featured properties', 'real-estate-custom-theme' ); ?>">
-							<span aria-hidden="true">&larr;</span>
+						<button type="button" class="featured-properties__arrow" data-featured-prev @click="prev()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Previous featured properties', 'real-estate-custom-theme' ); ?>">
+							<svg class="featured-properties__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+								<path d="M15 6L9 12L15 18"></path>
+							</svg>
 						</button>
-						<button type="button" class="featured-properties__arrow" data-featured-next @click="next()" :disabled="!canSlide" aria-label="<?php esc_attr_e( 'Next featured properties', 'real-estate-custom-theme' ); ?>">
-							<span aria-hidden="true">&rarr;</span>
+						<button type="button" class="featured-properties__arrow" data-featured-next @click="next()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Next featured properties', 'real-estate-custom-theme' ); ?>">
+							<svg class="featured-properties__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+								<path d="M9 6L15 12L9 18"></path>
+							</svg>
 						</button>
 					</div>
 				</div>

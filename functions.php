@@ -187,6 +187,11 @@ add_action( 'admin_head', 'real_estate_custom_theme_output_favicon' );
 add_action( 'login_head', 'real_estate_custom_theme_output_favicon' );
 
 /**
+ * Property helpers (meta icons and card excerpt truncation).
+ */
+require get_template_directory() . '/inc/property-helpers.php';
+
+/**
  * Register Property custom post type.
  */
 require get_template_directory() . '/inc/cpt-property.php';

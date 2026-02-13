@@ -11,6 +11,21 @@ This theme is a custom real estate site built on top of a WordPress theme struct
 
 This documentation reflects only what currently exists in the codebase.
 
+## Latest Changes
+- Featured properties carousel threshold behavior in `js/home.js`:
+  - `items <= 4`: static layout, autoplay off, navigation controls disabled/muted.
+  - `5 <= items <= 9`: manual navigation enabled, autoplay off.
+  - `items > 9`: manual navigation enabled and autoplay on.
+- Featured slider loop stability and responsive behavior improved to avoid empty slide spaces across desktop, tablet, and mobile.
+- Featured slider nav arrows updated for consistent icon centering in controls.
+- Property meta icon selection implemented for `Bedrooms`, `Bathrooms`, and `Property Type`:
+  - supports preset icons and custom-upload icons via post meta/ACF fields.
+  - renders consistently on featured cards, archive cards, and single property view.
+- Property card excerpts now use fixed-length truncation with `Read More` linking to the property detail page when content exceeds the limit.
+- New property rendering helpers and template:
+  - `inc/property-helpers.php`
+  - `single-property.php`
+
 ## Tech stack
 - WordPress PHP templates and hooks
 - CSS split by ownership:
@@ -32,12 +47,14 @@ This documentation reflects only what currently exists in the codebase.
   - `footer.php`
   - `front-page.php`
   - `archive-property.php`
+  - `single-property.php`
   - `index.php`
   - `page.php`
   - `single.php`
 - Theme modules:
   - `inc/cpt-property.php`
   - `inc/acf-fields-properties.php`
+  - `inc/property-helpers.php`
   - `inc/template-functions.php`
   - `inc/template-tags.php`
 - Styles:
@@ -112,4 +129,3 @@ This documentation reflects only what currently exists in the codebase.
 - Frontend behavior: `docs/frontend-behavior.md`
 - Setup and operations: `docs/setup-and-operations.md`
 - ACF setup details: `ACF-SETUP.md`
-

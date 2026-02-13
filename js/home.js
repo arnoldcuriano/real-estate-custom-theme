@@ -339,13 +339,20 @@
     return {
       rootEl,
       trackEl,
+      viewportEl: rootEl ? rootEl.querySelector(".featured-properties__viewport") : null,
       onStateChange,
       total: 0,
       currentIndex: 0,
+      visibleCount: 1,
       stepSize: 0,
+      gapSize: 0,
       autoIntervalMs: 4000,
       autoTimerId: null,
       paused: false,
+      canAuto: false,
+      canManual: false,
+      isStatic: true,
+      isInteractive: false,
       transitionHandler: null,
       resizeHandler: null,
       visibilityHandler: null,
@@ -359,31 +366,35 @@
         return Array.from(this.trackEl.querySelectorAll(".featured-properties__slide"));
       },
 
-      shouldSlide() {
-        return this.total > 1;
+      computeCapabilities() {
+        this.canAuto = this.total > 9;
+        this.canManual = this.total >= 5;
+        this.isStatic = this.total <= 4;
+        this.isInteractive = this.canAuto || this.canManual;
       },
 
       getLogicalIndex() {
-        if (!this.shouldSlide()) {
+        if (this.total <= 0) {
+          return 0;
+        }
+
+        if (!this.isInteractive) {
           return this.total > 0 ? 1 : 0;
         }
 
-        if (this.currentIndex <= 0) {
-          return this.total;
-        }
-
-        if (this.currentIndex >= this.total + 1) {
-          return 1;
-        }
-
-        return this.currentIndex;
+        const baseIndex = this.currentIndex - this.visibleCount;
+        const normalizedIndex = ((baseIndex % this.total) + this.total) % this.total;
+        return normalizedIndex + 1;
       },
 
       emitState() {
         const state = {
           current: this.getLogicalIndex(),
           total: this.total,
-          canSlide: this.shouldSlide(),
+          canManual: this.canManual,
+          canAuto: this.canAuto,
+          isStatic: this.isStatic,
+          isInteractive: this.isInteractive,
         };
 
         if ("function" === typeof this.onStateChange) {
@@ -396,7 +407,7 @@
         const nextButton = this.rootEl.querySelector(NEXT_SELECTOR);
 
         if (currentTextEl) {
-          currentTextEl.textContent = formatCounter(state.current);
+          currentTextEl.textContent = formatCounter(state.current || 0);
         }
 
         if (totalTextEl) {
@@ -404,96 +415,153 @@
         }
 
         if (prevButton) {
-          prevButton.disabled = !state.canSlide;
+          prevButton.disabled = !state.canManual;
+          prevButton.classList.toggle("is-muted", !state.canManual);
         }
 
         if (nextButton) {
-          nextButton.disabled = !state.canSlide;
+          nextButton.disabled = !state.canManual;
+          nextButton.classList.toggle("is-muted", !state.canManual);
         }
+
+        this.rootEl.classList.toggle("is-static", state.isStatic);
+        this.rootEl.classList.toggle("is-interactive", state.isInteractive);
       },
 
-      prepareTrack() {
-        if (!this.shouldSlide() || "1" === this.trackEl.dataset.carouselPrepared) {
-          return;
-        }
-
-        const slides = this.getOriginalSlides();
-        if (slides.length < 2) {
-          return;
-        }
-
-        const firstClone = slides[0].cloneNode(true);
-        const lastClone = slides[slides.length - 1].cloneNode(true);
-
-        firstClone.classList.add("featured-properties__slide--clone");
-        lastClone.classList.add("featured-properties__slide--clone");
-        firstClone.setAttribute("aria-hidden", "true");
-        lastClone.setAttribute("aria-hidden", "true");
-
-        this.trackEl.insertBefore(lastClone, slides[0]);
-        this.trackEl.appendChild(firstClone);
-        this.trackEl.dataset.carouselPrepared = "1";
-        this.currentIndex = 1;
+      removeClones() {
+        this.trackEl
+          .querySelectorAll(".featured-properties__slide--clone")
+          .forEach((clone) => clone.remove());
+        delete this.trackEl.dataset.carouselPrepared;
+        delete this.trackEl.dataset.visibleCount;
       },
 
-      recalculate() {
-        const firstSlide = this.trackEl.querySelector(".featured-properties__slide");
-        if (!firstSlide) {
+      cloneSlide(slide) {
+        const clone = slide.cloneNode(true);
+        clone.classList.add("featured-properties__slide--clone");
+        clone.setAttribute("aria-hidden", "true");
+        clone.setAttribute("tabindex", "-1");
+
+        clone
+          .querySelectorAll("a, button, input, select, textarea")
+          .forEach((focusable) => {
+            focusable.setAttribute("tabindex", "-1");
+            focusable.setAttribute("aria-hidden", "true");
+          });
+
+        return clone;
+      },
+
+      setTransition(isEnabled) {
+        this.trackEl.style.transition = isEnabled
+          ? "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)"
+          : "none";
+      },
+
+      calculateDimensions() {
+        const sampleSlide =
+          this.getOriginalSlides()[0] ||
+          this.trackEl.querySelector(".featured-properties__slide");
+
+        if (!sampleSlide) {
           this.stepSize = 0;
+          this.gapSize = 0;
           return;
         }
 
         const trackStyle = window.getComputedStyle(this.trackEl);
-        const gap =
+        this.gapSize =
           parseFloat(trackStyle.columnGap || "") ||
           parseFloat(trackStyle.gap || "") ||
           0;
-        this.stepSize = firstSlide.getBoundingClientRect().width + gap;
+        this.stepSize = sampleSlide.getBoundingClientRect().width + this.gapSize;
+      },
 
-        if (this.stepSize <= 0) {
+      calculateVisibleCount() {
+        if (!this.viewportEl || this.stepSize <= 0) {
+          return 1;
+        }
+
+        const viewportWidth = this.viewportEl.getBoundingClientRect().width;
+        const estimatedVisible = Math.round(
+          (viewportWidth + this.gapSize) / this.stepSize,
+        );
+
+        return Math.max(1, Math.min(this.total, estimatedVisible || 1));
+      },
+
+      prepareTrack() {
+        if (!this.isInteractive) {
+          this.removeClones();
           return;
         }
 
-        this.trackEl.style.transition = "none";
-        this.applyTransform();
-        window.requestAnimationFrame(() => {
-          this.trackEl.style.transition = "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)";
+        const preparedForVisible = Number(this.trackEl.dataset.visibleCount || "0");
+        if ("1" === this.trackEl.dataset.carouselPrepared && preparedForVisible === this.visibleCount) {
+          return;
+        }
+
+        this.removeClones();
+
+        const originals = this.getOriginalSlides();
+        if (originals.length < 2) {
+          return;
+        }
+
+        const prependSlides = originals.slice(-this.visibleCount);
+        const appendSlides = originals.slice(0, this.visibleCount);
+
+        prependSlides.forEach((slide) => {
+          const clone = this.cloneSlide(slide);
+          this.trackEl.insertBefore(clone, this.trackEl.firstChild);
         });
+
+        appendSlides.forEach((slide) => {
+          this.trackEl.appendChild(this.cloneSlide(slide));
+        });
+
+        this.trackEl.dataset.carouselPrepared = "1";
+        this.trackEl.dataset.visibleCount = String(this.visibleCount);
       },
 
       applyTransform() {
-        if (this.stepSize <= 0) {
+        if (this.stepSize <= 0 || !this.isInteractive) {
+          this.trackEl.style.transform = "translate3d(0, 0, 0)";
           return;
         }
+
         const offset = -this.currentIndex * this.stepSize;
         this.trackEl.style.transform = `translate3d(${offset}px, 0, 0)`;
       },
 
       normalizeAfterTransition() {
-        if (!this.shouldSlide()) {
+        if (!this.isInteractive) {
           this.emitState();
           return;
         }
 
-        if (this.currentIndex === 0) {
-          this.trackEl.style.transition = "none";
-          this.currentIndex = this.total;
+        let requiresJump = false;
+
+        if (this.currentIndex < this.visibleCount) {
+          this.currentIndex += this.total;
+          requiresJump = true;
+        } else if (this.currentIndex >= this.total + this.visibleCount) {
+          this.currentIndex -= this.total;
+          requiresJump = true;
+        }
+
+        if (requiresJump) {
+          this.setTransition(false);
           this.applyTransform();
           this.trackEl.getBoundingClientRect();
-          this.trackEl.style.transition = "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)";
-        } else if (this.currentIndex === this.total + 1) {
-          this.trackEl.style.transition = "none";
-          this.currentIndex = 1;
-          this.applyTransform();
-          this.trackEl.getBoundingClientRect();
-          this.trackEl.style.transition = "transform 420ms cubic-bezier(0.22, 1, 0.36, 1)";
+          this.setTransition(true);
         }
 
         this.emitState();
       },
 
       next() {
-        if (!this.shouldSlide()) {
+        if (!this.canManual) {
           return;
         }
 
@@ -502,7 +570,7 @@
       },
 
       prev() {
-        if (!this.shouldSlide()) {
+        if (!this.canManual) {
           return;
         }
 
@@ -519,16 +587,17 @@
       },
 
       startAuto() {
-        if (!this.shouldSlide()) {
+        if (!this.canAuto) {
           return;
         }
 
         this.stopAuto();
         this.autoTimerId = window.setInterval(() => {
-          if (this.paused || document.hidden) {
+          if (this.paused || document.hidden || !this.canAuto) {
             return;
           }
-          this.next();
+          this.currentIndex += 1;
+          this.applyTransform();
         }, this.autoIntervalMs);
       },
 
@@ -539,8 +608,42 @@
         }
       },
 
+      recalculate() {
+        if (this.total <= 0) {
+          return;
+        }
+
+        const previousLogical = this.currentIndex > 0 ? this.getLogicalIndex() || 1 : 1;
+        this.calculateDimensions();
+
+        if (this.stepSize <= 0) {
+          this.emitState();
+          return;
+        }
+
+        this.visibleCount = this.isInteractive ? this.calculateVisibleCount() : 1;
+        this.prepareTrack();
+
+        if (this.isInteractive) {
+          this.currentIndex = this.visibleCount + Math.max(0, Math.min(this.total - 1, previousLogical - 1));
+          this.setTransition(false);
+          this.applyTransform();
+          this.trackEl.getBoundingClientRect();
+          this.setTransition(true);
+        } else {
+          this.currentIndex = 0;
+          this.setTransition(false);
+          this.applyTransform();
+        }
+
+        this.emitState();
+      },
+
       bindEvents() {
-        this.transitionHandler = () => {
+        this.transitionHandler = (event) => {
+          if (event.target !== this.trackEl) {
+            return;
+          }
           this.normalizeAfterTransition();
         };
         this.trackEl.addEventListener("transitionend", this.transitionHandler);
@@ -581,19 +684,21 @@
 
         const originalSlides = this.getOriginalSlides();
         this.total = originalSlides.length;
+        this.computeCapabilities();
 
         if (this.total === 0) {
           this.emitState();
           return false;
         }
 
-        this.currentIndex = this.shouldSlide() ? 1 : 0;
-        this.prepareTrack();
+        this.currentIndex = this.isInteractive ? 1 : 0;
         this.recalculate();
-        this.emitState();
 
-        if (this.shouldSlide()) {
+        if (this.isInteractive) {
           this.bindEvents();
+        }
+
+        if (this.canAuto) {
           this.startAuto();
         }
 
@@ -629,12 +734,18 @@
       controller: null,
       formattedCurrent: "01",
       formattedTotal: "00",
-      canSlide: false,
+      canManual: false,
+      canAuto: false,
+      isStatic: true,
+      isInteractive: false,
 
       applyState(state) {
         this.formattedCurrent = formatCounter(state.current);
         this.formattedTotal = formatCounter(state.total);
-        this.canSlide = !!state.canSlide;
+        this.canManual = !!state.canManual;
+        this.canAuto = !!state.canAuto;
+        this.isStatic = !!state.isStatic;
+        this.isInteractive = !!state.isInteractive;
       },
 
       init() {
@@ -644,7 +755,10 @@
           this.applyState({
             current: this.controller.getLogicalIndex(),
             total: this.controller.total,
-            canSlide: this.controller.shouldSlide(),
+            canManual: this.controller.canManual,
+            canAuto: this.controller.canAuto,
+            isStatic: this.controller.isStatic,
+            isInteractive: this.controller.isInteractive,
           });
           return;
         }
