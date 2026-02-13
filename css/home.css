@@ -385,6 +385,10 @@
 	box-sizing: border-box;
 }
 
+.section-shell--faq {
+	padding-bottom: clamp(2rem, 3.5vw, 3.5rem);
+}
+
 .section-head {
 	display: flex;
 	align-items: flex-end;
@@ -1035,6 +1039,10 @@
 	.section-head {
 		flex-direction: column;
 		align-items: flex-start;
+	}
+
+	.section-shell--faq {
+		padding-bottom: 1.75rem;
 	}
 
 	.card__footer {

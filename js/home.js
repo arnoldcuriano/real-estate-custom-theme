@@ -394,6 +394,7 @@
       total: 0,
       currentIndex: 0,
       visibleCount: 1,
+      counterVisibleCount: 1,
       stepSize: 0,
       gapSize: 0,
       autoIntervalMs: 4000,
@@ -433,10 +434,38 @@
         return normalizedIndex + 1;
       },
 
+      getPageTotal() {
+        if (this.total <= 0) {
+          return 0;
+        }
+
+        return Math.max(
+          1,
+          Math.ceil(this.total / Math.max(1, this.counterVisibleCount || 1)),
+        );
+      },
+
+      getCurrentPage() {
+        if (this.total <= 0) {
+          return 0;
+        }
+
+        if (!this.isInteractive) {
+          return 1;
+        }
+
+        const logicalIndex = Math.max(1, this.getLogicalIndex() || 1);
+        const pageSize = Math.max(1, this.counterVisibleCount || 1);
+        const pageTotal = this.getPageTotal();
+        const pageIndex = Math.floor((logicalIndex - 1) / pageSize) + 1;
+        return Math.max(1, Math.min(pageTotal, pageIndex));
+      },
+
       emitState() {
+        const pageTotal = this.getPageTotal();
         const state = {
-          current: this.getLogicalIndex(),
-          total: this.total,
+          current: this.getCurrentPage(),
+          total: pageTotal,
           canManual: this.canManual,
           canAuto: this.canAuto,
           isStatic: this.isStatic,
@@ -663,10 +692,12 @@
         this.calculateDimensions();
 
         if (this.stepSize <= 0) {
+          this.counterVisibleCount = 1;
           this.emitState();
           return;
         }
 
+        this.counterVisibleCount = this.calculateVisibleCount();
         this.visibleCount = this.isInteractive ? this.calculateVisibleCount() : 1;
         this.prepareTrack();
 
@@ -799,8 +830,8 @@
           this.controller = this.$root[config.fallbackKey];
           this.$root[config.fallbackKey] = null;
           this.applyState({
-            current: this.controller.getLogicalIndex(),
-            total: this.controller.total,
+            current: this.controller.getCurrentPage(),
+            total: this.controller.getPageTotal(),
             canManual: this.controller.canManual,
             canAuto: this.controller.canAuto,
             isStatic: this.controller.isStatic,

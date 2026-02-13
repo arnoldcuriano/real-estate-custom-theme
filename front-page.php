@@ -213,7 +213,6 @@ $faq_section_description         = __( 'Find answers to common questions about E
 		}
 
 		if ( $property_query->have_posts() ) :
-			$featured_total = (int) $property_query->post_count;
 			?>
 			<div
 				class="featured-properties"
@@ -349,7 +348,7 @@ $faq_section_description         = __( 'Find answers to common questions about E
 					<p class="featured-properties__count">
 						<span data-featured-current x-text="formattedCurrent">01</span>
 						<?php esc_html_e( 'of', 'real-estate-custom-theme' ); ?>
-						<span data-featured-total x-text="formattedTotal"><?php echo esc_html( str_pad( (string) $featured_total, 2, '0', STR_PAD_LEFT ) ); ?></span>
+						<span data-featured-total x-text="formattedTotal">01</span>
 					</p>
 					<div class="featured-properties__actions">
 						<button type="button" class="featured-properties__arrow" data-featured-prev @click="prev()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Previous featured properties', 'real-estate-custom-theme' ); ?>">
@@ -420,7 +419,6 @@ $faq_section_description         = __( 'Find answers to common questions about E
 		}
 
 		if ( $testimonials_query->have_posts() ) :
-			$testimonials_total = (int) $testimonials_query->post_count;
 			?>
 			<div
 				class="testimonials"
@@ -475,7 +473,7 @@ $faq_section_description         = __( 'Find answers to common questions about E
 					<p class="featured-properties__count testimonials__count">
 						<span data-testimonials-current x-text="formattedCurrent">01</span>
 						<?php esc_html_e( 'of', 'real-estate-custom-theme' ); ?>
-						<span data-testimonials-total x-text="formattedTotal"><?php echo esc_html( str_pad( (string) $testimonials_total, 2, '0', STR_PAD_LEFT ) ); ?></span>
+						<span data-testimonials-total x-text="formattedTotal">01</span>
 					</p>
 					<div class="featured-properties__actions testimonials__actions">
 						<button type="button" class="featured-properties__arrow testimonials__arrow" data-testimonials-prev @click="prev()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Previous testimonials', 'real-estate-custom-theme' ); ?>">
@@ -501,7 +499,7 @@ $faq_section_description         = __( 'Find answers to common questions about E
 		?>
 	</section>
 
-	<section class="section-shell" aria-labelledby="faq-title">
+	<section class="section-shell section-shell--faq" aria-labelledby="faq-title">
 		<div class="section-head">
 			<div>
 				<p class="eyebrow"><?php esc_html_e( 'FAQ', 'real-estate-custom-theme' ); ?></p>
@@ -532,7 +530,6 @@ $faq_section_description         = __( 'Find answers to common questions about E
 		);
 
 		if ( $faq_query->have_posts() ) :
-			$faq_total = (int) $faq_query->post_count;
 			?>
 			<div
 				class="faqs"
@@ -568,7 +565,7 @@ $faq_section_description         = __( 'Find answers to common questions about E
 					<p class="featured-properties__count faqs__count">
 						<span data-faq-current x-text="formattedCurrent">01</span>
 						<?php esc_html_e( 'of', 'real-estate-custom-theme' ); ?>
-						<span data-faq-total x-text="formattedTotal"><?php echo esc_html( str_pad( (string) $faq_total, 2, '0', STR_PAD_LEFT ) ); ?></span>
+						<span data-faq-total x-text="formattedTotal">01</span>
 					</p>
 					<div class="featured-properties__actions faqs__actions">
 						<button type="button" class="featured-properties__arrow faqs__arrow" data-faq-prev @click="prev()" :disabled="!canManual" aria-label="<?php esc_attr_e( 'Previous FAQs', 'real-estate-custom-theme' ); ?>">
