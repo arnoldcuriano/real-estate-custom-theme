@@ -12,6 +12,7 @@ Configure ACF-backed editable fields used by the current theme implementation.
 - Team member metadata fields
 - FAQ metadata fields
 - About page Achievements/Process fields
+- Services page hero metadata fields
 - Featured controls used by home carousel queries
 
 ## Source of truth files
@@ -21,6 +22,7 @@ Configure ACF-backed editable fields used by the current theme implementation.
 - `inc/acf-fields-team-members.php`
 - `inc/acf-fields-faq.php`
 - `inc/acf-fields-about.php`
+- `inc/acf-fields-services.php`
 - `front-page.php`
 - `archive-property.php`
 - `archive-testimonial.php`
@@ -30,6 +32,7 @@ Configure ACF-backed editable fields used by the current theme implementation.
 - `inc/cpt-team-member.php`
 - `inc/cpt-faq.php`
 - `page-about-us.php`
+- `page-services.php`
 
 ## Plugin requirement
 
@@ -103,6 +106,11 @@ The theme supports both:
   - `cta_button_label` (text)
   - `cta_button_link` (link)
 
+### Services page field group
+
+- `services_hero_title` (text)
+- `services_hero_description` (textarea)
+
 ## How featured query uses these fields
 
 Home featured cards in `front-page.php`:
@@ -131,6 +139,11 @@ About Team cards in `page-about-us.php`:
    - otherwise platform icon (`profile_icon_platform`)
    - if custom source has no icon upload, fallback to LinkedIn icon
 5. `cta_url` fallback: first social link -> contact page URL
+
+Services hero in `page-services.php`:
+
+1. reads `services_hero_title` and `services_hero_description` from the Services page
+2. fallback to default hardcoded copy when ACF is inactive or fields are empty
 
 ## Global slider logic contract
 
@@ -173,9 +186,11 @@ After setup:
   - `rg -n "position_title|profile_icon_source|profile_icon_platform|profile_icon_custom|social_links|cta_label|cta_url" wp-content/themes/real-estate-custom-theme/inc/acf-fields-team-members.php`
   - `rg -n "field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc/acf-fields-faq.php`
   - `rg -n "group_rect_about_sections|field_rect_achievements_title|field_rect_process_steps|field_rect_about_cta_heading" wp-content/themes/real-estate-custom-theme/inc/acf-fields-about.php`
+  - `rg -n "group_rect_services_page_hero|services_hero_title|services_hero_description" wp-content/themes/real-estate-custom-theme/inc/acf-fields-services.php`
 - Confirm template usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
   - `rg -n "about-team|team_member|position_title|social_links|cta_url" wp-content/themes/real-estate-custom-theme/page-about-us.php`
+  - `rg -n "services_hero_title|services_hero_description|data-quick-links-loop" wp-content/themes/real-estate-custom-theme/page-services.php`
 
 ## Related
 

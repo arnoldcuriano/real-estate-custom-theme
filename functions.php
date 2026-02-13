@@ -399,6 +399,8 @@ function real_estate_custom_theme_scripts()
 		$header_style_version
 	);
 
+	$should_load_home_experience_assets = is_front_page() || is_page( 'services' );
+
 	if ( is_page( 'about-us' ) ) {
 		wp_enqueue_style(
 			'real-estate-custom-theme-about',
@@ -416,7 +418,7 @@ function real_estate_custom_theme_scripts()
 		);
 	}
 
-	if ( is_front_page() ) {
+	if ( $should_load_home_experience_assets ) {
 		wp_enqueue_style(
 			'real-estate-custom-theme-home',
 			$theme_uri . '/css/home.css',
@@ -432,14 +434,16 @@ function real_estate_custom_theme_scripts()
 			true
 		);
 
-		wp_enqueue_script(
-			'real-estate-custom-theme-alpine',
-			$theme_uri . '/js/vendor/alpine.min.js',
-			array( 'real-estate-custom-theme-home-script' ),
-			'3.14.8',
-			true
-		);
-		wp_script_add_data( 'real-estate-custom-theme-alpine', 'defer', true );
+		if ( is_front_page() ) {
+			wp_enqueue_script(
+				'real-estate-custom-theme-alpine',
+				$theme_uri . '/js/vendor/alpine.min.js',
+				array( 'real-estate-custom-theme-home-script' ),
+				'3.14.8',
+				true
+			);
+			wp_script_add_data( 'real-estate-custom-theme-alpine', 'defer', true );
+		}
 	}
 
 	wp_enqueue_script('real-estate-custom-theme-navigation', $theme_uri . '/js/navigation.js', array(), $nav_js_version, true);
@@ -593,6 +597,11 @@ require get_template_directory() . '/inc/acf-fields-faq.php';
  * Register local ACF field groups for About page content.
  */
 require get_template_directory() . '/inc/acf-fields-about.php';
+
+/**
+ * Register local ACF field groups for Services page content.
+ */
+require get_template_directory() . '/inc/acf-fields-services.php';
 
 /**
  * Testimonial helpers.

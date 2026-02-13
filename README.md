@@ -23,6 +23,10 @@ This documentation reflects only what currently exists in the codebase.
   - `#about-process-title`
   - `#about-team-title`
   - `#about-clients-title`
+- Services hero heading and description are now ACF-editable on the Services page:
+  - fields: `services_hero_title`, `services_hero_description`
+  - safe fallback to default copy when fields are empty or ACF is inactive
+- Quick-links card titles are normalized to explicit white text in shared module usage (Home + Services).
 - Added About section anchor offset handling so sticky front header does not cover targeted section headings on jump links.
 - Added About page implementation with reusable front-style header/footer integration:
   - template: `page-about-us.php`
@@ -92,6 +96,7 @@ This documentation reflects only what currently exists in the codebase.
   - `inc/acf-fields-testimonials.php`
   - `inc/acf-fields-faq.php`
   - `inc/acf-fields-about.php`
+  - `inc/acf-fields-services.php`
   - `inc/property-helpers.php`
   - `inc/testimonial-helpers.php`
   - `inc/faq-helpers.php`
@@ -160,6 +165,9 @@ This documentation reflects only what currently exists in the codebase.
   - `steps_section_description`
   - `process_steps` (`step_number`, `step_title`, `step_description`)
   - optional process CTA (`cta_heading`, `cta_button_label`, `cta_button_link`)
+- Services page fields:
+  - `services_hero_title`
+  - `services_hero_description`
 - Fallback behavior exists in templates if fields are empty.
 
 ## Front-page flow

@@ -22,6 +22,7 @@ Document current data structures used by the theme for dynamic home/archive cont
 - `inc/acf-fields-team-members.php`
 - `inc/acf-fields-faq.php`
 - `inc/acf-fields-about.php`
+- `inc/acf-fields-services.php`
 - `inc/property-helpers.php`
 - `inc/testimonial-helpers.php`
 - `inc/client-helpers.php`
@@ -29,6 +30,7 @@ Document current data structures used by the theme for dynamic home/archive cont
 - `inc/faq-helpers.php`
 - `front-page.php`
 - `page-about-us.php`
+- `page-services.php`
 - `archive-property.php`
 - `archive-testimonial.php`
 - `archive-faq.php`
@@ -153,6 +155,10 @@ Contract:
   - `cta_button_label`
   - `cta_button_link`
 
+#### Services page fields
+- `services_hero_title`
+- `services_hero_description`
+
 ### Template field usage and fallbacks
 - Properties:
   - `front-page.php`, `archive-property.php`, `single-property.php`
@@ -183,6 +189,13 @@ Contract:
   - featured process card is deterministic in template:
     - prefers a step label containing `03`
     - otherwise falls back to the third card index
+- Services page:
+  - `page-services.php`
+  - hero title/description source:
+    - `services_hero_title`
+    - `services_hero_description`
+  - fallback to default template copy when fields are empty or ACF is inactive
+  - quick-links loop reuses shared Home module styling/logic
 
 ### Home query logic
 - Featured Properties:
