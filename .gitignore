@@ -1,6 +1,10 @@
 # Dependencies
 node_modules/
 vendor/
+package.json
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
 # Build outputs / caches
 dist/
