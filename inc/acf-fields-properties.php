@@ -331,7 +331,7 @@ function real_estate_custom_theme_acf_missing_notice() {
 	?>
 	<div class="notice notice-info">
 		<p>
-			<?php esc_html_e( 'Property, testimonial, and FAQ custom fields require the "Advanced Custom Fields" plugin. Install and activate ACF to populate dynamic slider and card data.', 'real-estate-custom-theme' ); ?>
+			<?php esc_html_e( 'Property, testimonial, client, team member, about, and FAQ custom fields require the "Advanced Custom Fields" plugin. Install and activate ACF to populate dynamic slider and card data.', 'real-estate-custom-theme' ); ?>
 		</p>
 	</div>
 	<?php

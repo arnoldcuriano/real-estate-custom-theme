@@ -22,8 +22,52 @@ if (! defined('_S_VERSION')) {
  */
 function real_estate_custom_theme_setup() {
 	add_theme_support( 'post-thumbnails' );
+	add_theme_support(
+		'admin-bar',
+		array(
+			'callback' => '__return_false',
+		)
+	);
 }
 add_action( 'after_setup_theme', 'real_estate_custom_theme_setup' );
+
+/**
+ * Disable core admin-bar bump styles in favor of theme-controlled offsets.
+ *
+ * @return void
+ */
+function real_estate_custom_theme_disable_core_admin_bar_bump() {
+	remove_action( 'wp_enqueue_scripts', 'wp_enqueue_admin_bar_bump_styles' );
+	remove_action( 'wp_head', '_admin_bar_bump_cb' );
+}
+add_action( 'wp', 'real_estate_custom_theme_disable_core_admin_bar_bump', 99 );
+
+/**
+ * Output deterministic admin-bar offset rules after all head styles.
+ *
+ * @return void
+ */
+function real_estate_custom_theme_admin_bar_offset_css() {
+	if ( ! is_admin_bar_showing() ) {
+		return;
+	}
+	?>
+	<style media="screen">
+		html {
+			margin-top: 0 !important;
+		}
+		body.admin-bar {
+			padding-top: 32px;
+		}
+		@media screen and (max-width: 782px) {
+			body.admin-bar {
+				padding-top: 46px;
+			}
+		}
+	</style>
+	<?php
+}
+add_action( 'wp_head', 'real_estate_custom_theme_admin_bar_offset_css', 999 );
 
 /**
  * Get About Us page URL with permalink-safe fallback.
@@ -102,27 +146,140 @@ function real_estate_custom_theme_is_front_header_context() {
  *
  * @return void
  */
+function real_estate_custom_theme_get_route_page_ids_by_slug( $slug ) {
+	global $wpdb;
+
+	$ids = $wpdb->get_col(
+		$wpdb->prepare(
+			"SELECT ID FROM {$wpdb->posts} WHERE post_type = 'page' AND post_status NOT IN ( 'trash', 'auto-draft', 'inherit' ) AND post_name = %s ORDER BY ID ASC",
+			$slug
+		)
+	);
+
+	return array_map( 'intval', $ids );
+}
+
+/**
+ * Show one-time admin notice when duplicate route pages are repaired.
+ *
+ * @return void
+ */
+function real_estate_custom_theme_route_slug_conflicts_admin_notice() {
+	if ( ! is_admin() || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
+	$conflicts = get_transient( 'real_estate_custom_theme_route_slug_conflicts' );
+	if ( ! is_array( $conflicts ) || empty( $conflicts ) ) {
+		return;
+	}
+
+	delete_transient( 'real_estate_custom_theme_route_slug_conflicts' );
+
+	echo '<div class="notice notice-warning"><p>';
+	echo esc_html__( 'Route page slug conflicts were detected and repaired automatically.', 'real-estate-custom-theme' );
+	echo '</p><ul style="margin:0.4rem 0 0 1.2rem;list-style:disc;">';
+
+	foreach ( $conflicts as $slug => $conflict ) {
+		$canonical_id = isset( $conflict['canonical'] ) ? (int) $conflict['canonical'] : 0;
+		$duplicates   = isset( $conflict['duplicates'] ) && is_array( $conflict['duplicates'] ) ? implode( ', ', array_map( 'intval', $conflict['duplicates'] ) ) : '';
+
+		echo '<li>';
+		echo esc_html(
+			sprintf(
+				/* translators: 1: route slug, 2: canonical page ID, 3: duplicate page IDs. */
+				__( 'Slug "%1$s": canonical page #%2$d kept, duplicates re-slugged (%3$s).', 'real-estate-custom-theme' ),
+				$slug,
+				$canonical_id,
+				$duplicates
+			)
+		);
+		echo '</li>';
+	}
+
+	echo '</ul></div>';
+}
+add_action( 'admin_notices', 'real_estate_custom_theme_route_slug_conflicts_admin_notice' );
+
+/**
+ * Create or repair required route pages used by template-controlled shells.
+ *
+ * @return void
+ */
 function real_estate_custom_theme_seed_navigation_placeholder_pages() {
 	$required_pages = array(
+		'about-us'   => esc_html__( 'About Us', 'real-estate-custom-theme' ),
 		'services'   => esc_html__( 'Services', 'real-estate-custom-theme' ),
 		'contact-us' => esc_html__( 'Contact Us', 'real-estate-custom-theme' ),
 	);
+	$slug_conflicts = array();
 
 	foreach ( $required_pages as $slug => $title ) {
-		$existing_page = get_page_by_path( $slug, OBJECT, 'page' );
-		if ( $existing_page instanceof WP_Post ) {
+		$page_ids = real_estate_custom_theme_get_route_page_ids_by_slug( $slug );
+
+		if ( empty( $page_ids ) ) {
+			$inserted_page_id = wp_insert_post(
+				array(
+					'post_type'    => 'page',
+					'post_status'  => 'publish',
+					'post_title'   => $title,
+					'post_name'    => $slug,
+					'post_content' => '',
+				)
+			);
+
+			if ( ! is_wp_error( $inserted_page_id ) && $inserted_page_id > 0 ) {
+				$page_ids = array( (int) $inserted_page_id );
+			}
+		}
+
+		if ( ! empty( $page_ids ) ) {
+			$canonical_id = (int) $page_ids[0];
+			if ( 'publish' !== get_post_status( $canonical_id ) ) {
+				wp_update_post(
+					array(
+						'ID'          => $canonical_id,
+						'post_status' => 'publish',
+					)
+				);
+			}
+		}
+
+		if ( count( $page_ids ) <= 1 ) {
 			continue;
 		}
 
-		wp_insert_post(
-			array(
-				'post_type'    => 'page',
-				'post_status'  => 'publish',
-				'post_title'   => $title,
-				'post_name'    => $slug,
-				'post_content' => '',
+		$canonical_id  = (int) $page_ids[0];
+		$duplicate_ids = array_slice( $page_ids, 1 );
+
+		foreach ( $duplicate_ids as $duplicate_id ) {
+			$duplicate_id = (int) $duplicate_id;
+			wp_update_post(
+				array(
+					'ID'        => $duplicate_id,
+					'post_name' => sanitize_title( $slug . '-duplicate-' . $duplicate_id ),
+				)
+			);
+		}
+
+		$slug_conflicts[ $slug ] = array(
+			'canonical'  => $canonical_id,
+			'duplicates' => array_map( 'intval', $duplicate_ids ),
+		);
+
+		error_log(
+			sprintf(
+				'[%s] Repaired route slug conflict for "%s": canonical page #%d, duplicates re-slugged (%s).',
+				__FUNCTION__,
+				$slug,
+				$canonical_id,
+				implode( ',', array_map( 'intval', $duplicate_ids ) )
 			)
 		);
+	}
+
+	if ( ! empty( $slug_conflicts ) ) {
+		set_transient( 'real_estate_custom_theme_route_slug_conflicts', $slug_conflicts, DAY_IN_SECONDS );
 	}
 }
 add_action( 'after_switch_theme', 'real_estate_custom_theme_seed_navigation_placeholder_pages', 20 );
@@ -136,6 +293,40 @@ function real_estate_custom_theme_ensure_navigation_placeholder_pages() {
 	real_estate_custom_theme_seed_navigation_placeholder_pages();
 }
 add_action( 'init', 'real_estate_custom_theme_ensure_navigation_placeholder_pages', 20 );
+
+/**
+ * Force route shell templates so editor template changes cannot cause layout regressions.
+ *
+ * @param string $template Path to the template file.
+ * @return string
+ */
+function real_estate_custom_theme_force_route_shell_templates( $template ) {
+	if ( is_admin() ) {
+		return $template;
+	}
+
+	$template_map = array(
+		'about-us'   => 'page-about-us.php',
+		'services'   => 'page-services.php',
+		'contact-us' => 'page-contact-us.php',
+	);
+
+	foreach ( $template_map as $slug => $template_file ) {
+		if ( ! is_page( $slug ) ) {
+			continue;
+		}
+
+		$forced_template = get_theme_file_path( $template_file );
+		if ( file_exists( $forced_template ) ) {
+			return $forced_template;
+		}
+
+		break;
+	}
+
+	return $template;
+}
+add_filter( 'template_include', 'real_estate_custom_theme_force_route_shell_templates', 99 );
 
 /**
  * Flush rewrite rules once per theme version to ensure archive/page routes resolve.
@@ -187,6 +378,7 @@ function real_estate_custom_theme_scripts()
 	$home_style_version = file_exists( $theme_dir . '/css/home.css' ) ? (string) filemtime( $theme_dir . '/css/home.css' ) : _S_VERSION;
 	$about_style_version = file_exists( $theme_dir . '/css/about.css' ) ? (string) filemtime( $theme_dir . '/css/about.css' ) : _S_VERSION;
 	$home_js_version    = file_exists( $theme_dir . '/js/home.js' ) ? (string) filemtime( $theme_dir . '/js/home.js' ) : _S_VERSION;
+	$about_js_version   = file_exists( $theme_dir . '/js/about.js' ) ? (string) filemtime( $theme_dir . '/js/about.js' ) : _S_VERSION;
 	$nav_js_version     = file_exists( $theme_dir . '/js/navigation.js' ) ? (string) filemtime( $theme_dir . '/js/navigation.js' ) : _S_VERSION;
 	$stats_js_version   = file_exists( $theme_dir . '/js/stats-counter.js' ) ? (string) filemtime( $theme_dir . '/js/stats-counter.js' ) : _S_VERSION;
 
@@ -213,6 +405,14 @@ function real_estate_custom_theme_scripts()
 			$theme_uri . '/css/about.css',
 			array( 'real-estate-custom-theme-style', 'real-estate-custom-theme-header' ),
 			$about_style_version
+		);
+
+		wp_enqueue_script(
+			'real-estate-custom-theme-about-script',
+			$theme_uri . '/js/about.js',
+			array(),
+			$about_js_version,
+			true
 		);
 	}
 
@@ -350,6 +550,16 @@ require get_template_directory() . '/inc/cpt-property.php';
 require get_template_directory() . '/inc/cpt-testimonial.php';
 
 /**
+ * Register Client custom post type.
+ */
+require get_template_directory() . '/inc/cpt-client.php';
+
+/**
+ * Register Team Member custom post type.
+ */
+require get_template_directory() . '/inc/cpt-team-member.php';
+
+/**
  * Register FAQ custom post type and taxonomy.
  */
 require get_template_directory() . '/inc/cpt-faq.php';
@@ -365,6 +575,16 @@ require get_template_directory() . '/inc/acf-fields-properties.php';
 require get_template_directory() . '/inc/acf-fields-testimonials.php';
 
 /**
+ * Register local ACF field groups for client content.
+ */
+require get_template_directory() . '/inc/acf-fields-clients.php';
+
+/**
+ * Register local ACF field groups for team member content.
+ */
+require get_template_directory() . '/inc/acf-fields-team-members.php';
+
+/**
  * Register local ACF field groups for FAQ content.
  */
 require get_template_directory() . '/inc/acf-fields-faq.php';
@@ -378,6 +598,16 @@ require get_template_directory() . '/inc/acf-fields-about.php';
  * Testimonial helpers.
  */
 require get_template_directory() . '/inc/testimonial-helpers.php';
+
+/**
+ * Client helpers.
+ */
+require get_template_directory() . '/inc/client-helpers.php';
+
+/**
+ * Team Member helpers.
+ */
+require get_template_directory() . '/inc/team-member-helpers.php';
 
 /**
  * FAQ helpers.

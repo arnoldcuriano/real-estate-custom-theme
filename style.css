@@ -70,6 +70,7 @@ html {
 	line-height: 1.15;
 	-webkit-text-size-adjust: 100%;
 	scroll-behavior: smooth;
+	background: #0b0d12;
 }
 
 :root {
@@ -77,6 +78,7 @@ html {
 	--site-layout-max: 1600px;
 	--site-layout-width: min(var(--site-layout-max), calc(100% - 2rem));
 	--site-content-inline-pad: 1rem;
+	--site-admin-offset: 0px;
 	--site-logo-line: calc(
 		(100vw - min(var(--site-layout-max), calc(100vw - 2rem))) / 2 + var(--site-content-inline-pad)
 	);
@@ -120,6 +122,31 @@ html {
  */
 body {
 	margin: 0;
+}
+
+#page {
+	min-height: calc(100vh - var(--site-admin-offset));
+	display: flex;
+	flex-direction: column;
+	background: inherit;
+}
+
+body.admin-bar {
+	--site-admin-offset: 32px;
+}
+
+@media screen and (max-width: 782px) {
+	body.admin-bar {
+		--site-admin-offset: 46px;
+	}
+}
+
+#page > .site-main {
+	flex: 1 0 auto;
+}
+
+#page > .site-footer {
+	margin-top: auto;
 }
 
 .scroll-animate {
@@ -720,8 +747,48 @@ textarea {
 	padding-bottom: 2.5rem;
 }
 
+.site-main.about-page,
+.site-main.nav-placeholder-page {
+	padding-bottom: 0;
+}
+
+body.page-about-us .site-main,
+body.page-services .site-main,
+body.page-contact-us .site-main {
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+
+/* Prevent collapsed default-page margins from creating footer bottom bump. */
+body.page-template-default.has-front-header {
+	margin-bottom: 0 !important;
+}
+
+body.page-template-default.has-front-header #page,
+body.page-template-default.has-front-header #colophon,
+body.page-template-default.has-front-header .home-footer {
+	margin-bottom: 0 !important;
+}
+
+body.page-template-default.has-front-header .site-main > :last-child {
+	margin-bottom: 0 !important;
+}
+
+.has-front-header,
+.has-front-header #page {
+	background: #0b0d12;
+}
+
 .nav-placeholder-page {
 	color: #eef0f4;
+	padding-bottom: 0;
+}
+
+body.page-services,
+body.page-contact-us,
+body.page-services #page,
+body.page-contact-us #page {
+	background: #0b0d12;
 }
 
 .nav-placeholder-page__shell {
@@ -1531,6 +1598,7 @@ textarea {
 	background: #0c0d12;
 	border-top: 0;
 	margin-top: 0;
+	margin-bottom: 0;
 }
 
 .home-footer__cta {

@@ -17,6 +17,11 @@ $about_page_url = function_exists( 'real_estate_custom_theme_get_about_page_url'
 $properties_page_url = function_exists( 'real_estate_custom_theme_get_properties_archive_url' ) ? real_estate_custom_theme_get_properties_archive_url() : home_url( '/properties/' );
 $services_page_url = function_exists( 'real_estate_custom_theme_get_services_page_url' ) ? real_estate_custom_theme_get_services_page_url() : home_url( '/services/' );
 $contact_page_url = function_exists( 'real_estate_custom_theme_get_contact_page_url' ) ? real_estate_custom_theme_get_contact_page_url() : home_url( '/contact-us/' );
+$about_story_url = $about_page_url . '#about-journey-title';
+$about_works_url = $about_page_url . '#about-achievements-title';
+$about_process_url = $about_page_url . '#about-process-title';
+$about_team_url = $about_page_url . '#about-team-title';
+$about_clients_url = $about_page_url . '#about-clients-title';
 ?>
 <footer id="colophon" class="site-footer home-footer">
 	<div class="home-footer__cta" aria-labelledby="footer-cta-title">
@@ -62,11 +67,11 @@ $contact_page_url = function_exists( 'real_estate_custom_theme_get_contact_page_
 			<div class="home-footer__col">
 				<h3><?php esc_html_e( 'About Us', 'real-estate-custom-theme' ); ?></h3>
 				<ul>
-					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Our Story', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Our Works', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'How It Works', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Our Team', 'real-estate-custom-theme' ); ?></a></li>
-					<li><a href="<?php echo esc_url( $about_page_url ); ?>"><?php esc_html_e( 'Our Clients', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_story_url ); ?>"><?php esc_html_e( 'Our Story', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_works_url ); ?>"><?php esc_html_e( 'Our Works', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_process_url ); ?>"><?php esc_html_e( 'How It Works', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_team_url ); ?>"><?php esc_html_e( 'Our Team', 'real-estate-custom-theme' ); ?></a></li>
+					<li><a href="<?php echo esc_url( $about_clients_url ); ?>"><?php esc_html_e( 'Our Clients', 'real-estate-custom-theme' ); ?></a></li>
 				</ul>
 			</div>
 			<div class="home-footer__col">

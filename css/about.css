@@ -34,6 +34,34 @@ body.page-id-29 #page {
 	overflow: hidden;
 }
 
+#about-journey-title,
+#about-achievements-title,
+#about-process-title,
+#about-team-title,
+#about-clients-title {
+	scroll-margin-top: calc(var(--site-admin-offset, 0px) + 148px);
+}
+
+@media (max-width: 1024px) {
+	#about-journey-title,
+	#about-achievements-title,
+	#about-process-title,
+	#about-team-title,
+	#about-clients-title {
+		scroll-margin-top: calc(var(--site-admin-offset, 0px) + 132px);
+	}
+}
+
+@media (max-width: 680px) {
+	#about-journey-title,
+	#about-achievements-title,
+	#about-process-title,
+	#about-team-title,
+	#about-clients-title {
+		scroll-margin-top: calc(var(--site-admin-offset, 0px) + 116px);
+	}
+}
+
 .about-hero {
 	padding: clamp(2rem, 3.4vw, 3rem) 0 clamp(1.4rem, 2.2vw, 2rem);
 	position: relative;
@@ -317,6 +345,11 @@ body.page-id-29 #page {
 	padding: 0 0 clamp(2.3rem, 3.6vw, 3.3rem);
 }
 
+.about-page .about-process:last-of-type {
+	padding-bottom: clamp(1.4rem, 2.8vw, 2.4rem);
+	margin-bottom: 0;
+}
+
 .about-achievements__shell,
 .about-process__shell {
 	width: var(--site-layout-width);
@@ -364,6 +397,17 @@ body.page-id-29 #page {
 	gap: 0.7rem;
 	text-align: left;
 	box-shadow: none;
+}
+
+.about-team-card,
+.about-achievement-card,
+.about-step-card {
+	transition:
+		transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+		border-color 220ms ease,
+		box-shadow 220ms ease,
+		background-color 220ms ease;
+	will-change: transform;
 }
 
 .about-achievement-card > * {
@@ -447,6 +491,56 @@ body.page-id-29 #page {
 	color: #b5b8c7;
 }
 
+@media (hover: hover) and (pointer: fine) {
+	.about-team-card:hover,
+	.about-team-card:focus-within,
+	.about-achievement-card:hover,
+	.about-achievement-card:focus-within,
+	.about-step-card:hover,
+	.about-step-card:focus-within {
+		transform: translateY(-4px);
+		border-color: rgba(111, 70, 255, 0.72);
+	}
+
+	.about-team-card:hover,
+	.about-team-card:focus-within {
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+			0 18px 28px rgba(8, 10, 18, 0.34);
+	}
+
+	.about-achievement-card:hover,
+	.about-achievement-card:focus-within {
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+			0 18px 28px rgba(8, 10, 18, 0.3);
+	}
+
+	.about-step-card:hover,
+	.about-step-card:focus-within {
+		box-shadow:
+			inset 0 0 0 1px rgba(255, 255, 255, 0.02),
+			0 20px 32px rgba(8, 10, 18, 0.34);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.about-team-card,
+	.about-achievement-card,
+	.about-step-card {
+		transition: border-color 0.01ms linear, box-shadow 0.01ms linear, background-color 0.01ms linear;
+	}
+
+	.about-team-card:hover,
+	.about-team-card:focus-within,
+	.about-achievement-card:hover,
+	.about-achievement-card:focus-within,
+	.about-step-card:hover,
+	.about-step-card:focus-within {
+		transform: none;
+	}
+}
+
 .about-process__cta {
 	margin-top: 1.25rem;
 	border: 1px solid #232634;
@@ -495,6 +589,409 @@ body.page-id-29 #page {
 	filter: brightness(1.06);
 }
 
+.about-team {
+	padding: 0 0 clamp(2.3rem, 3.5vw, 3.2rem);
+}
+
+.about-team__shell {
+	width: var(--site-layout-width);
+	max-width: var(--site-layout-max);
+	margin: 0 auto;
+	padding-inline: var(--site-content-inline-pad);
+	box-sizing: border-box;
+}
+
+.about-team__grid {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: clamp(1rem, 1.8vw, 1.35rem);
+}
+
+.about-team-card {
+	border: 1px solid #242736;
+	border-radius: 14px;
+	background: linear-gradient(180deg, #12141c 0%, #10121a 100%);
+	padding: 1.18rem 1.1rem 1.18rem;
+	display: flex;
+	flex-direction: column;
+	min-height: 376px;
+	box-sizing: border-box;
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.012);
+}
+
+.about-team-card__media {
+	position: relative;
+	border-radius: 10px;
+	overflow: visible;
+	background: radial-gradient(circle at 16% 16%, rgba(111, 70, 255, 0.24), rgba(16, 18, 28, 0.95) 58%);
+	height: clamp(182px, 15vw, 216px);
+	aspect-ratio: auto;
+	flex: 0 0 auto;
+	margin-bottom: 1.72rem;
+}
+
+.about-team-card__media img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center 16%;
+	display: block;
+	border-radius: 10px;
+}
+
+.about-team-card__media-placeholder {
+	width: 100%;
+	height: 100%;
+	display: grid;
+	place-items: center;
+	border-radius: 10px;
+}
+
+.about-team-card__media-placeholder span {
+	font-size: 1.05rem;
+	letter-spacing: 0.08em;
+	font-weight: 600;
+	color: #d8dcff;
+}
+
+.about-team-card__social {
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	transform: translate(-50%, 50%);
+	z-index: 2;
+}
+
+.about-team-card__social-badge {
+	width: 48px;
+	height: 48px;
+	border-radius: 999px;
+	display: inline-grid;
+	place-items: center;
+	background: linear-gradient(135deg, var(--brand-primary-700), var(--brand-primary-600));
+	border: 1px solid rgba(130, 100, 255, 0.9);
+	color: #fff;
+	text-decoration: none;
+	box-shadow: 0 8px 16px rgba(36, 20, 91, 0.3);
+}
+
+.about-team-card__social-badge--static {
+	pointer-events: none;
+}
+
+.about-team-card__social-icon {
+	display: grid;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+}
+
+.about-team-card__social-icon svg {
+	display: block;
+	width: 22px;
+	height: 22px;
+	fill: currentColor;
+	stroke: currentColor;
+	stroke-width: 1.7;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.about-team-card__social-icon img {
+	display: block;
+	width: 22px;
+	height: 22px;
+	object-fit: contain;
+}
+
+.about-team-card__name {
+	margin: 0;
+	font-size: 1.04rem;
+	line-height: 1.2;
+	font-weight: 600;
+	color: #f5f6fb;
+	text-align: center;
+}
+
+.about-team-card__role {
+	margin: 0.48rem 0 0;
+	font-size: 0.77rem;
+	line-height: 1.4;
+	color: #a5a8b7;
+	text-align: center;
+	min-height: 2.2em;
+}
+
+.about-team-card__actions {
+	margin-top: auto;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.76rem;
+	padding-top: 1.15rem;
+	border-top: 1px solid #202330;
+}
+
+.about-team-card__cta {
+	flex: 1;
+	min-height: 36px;
+	border: 1px solid #2a2d3b;
+	border-radius: 999px;
+	display: inline-flex;
+	align-items: center;
+	padding: 0 0.95rem;
+	font-size: 0.74rem;
+	color: #d8dbe7;
+	text-decoration: none;
+	background: rgba(12, 14, 22, 0.75);
+	transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.about-team-card__cta:hover,
+.about-team-card__cta:focus-visible {
+	border-color: rgba(111, 70, 255, 0.75);
+	color: #fff;
+}
+
+.about-team-card__cta-icon {
+	flex: 0 0 auto;
+	width: 28px;
+	height: 28px;
+	border-radius: 999px;
+	display: inline-grid;
+	place-items: center;
+	background: linear-gradient(135deg, var(--brand-primary-700), var(--brand-primary-600));
+	border: 1px solid rgba(130, 100, 255, 0.9);
+	color: #fff;
+	text-decoration: none;
+}
+
+.about-team-card__cta-icon svg {
+	width: 13px;
+	height: 13px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.9;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.about-clients-section {
+	padding: 0 0 clamp(2.7rem, 4vw, 4rem);
+}
+
+.about-clients__shell {
+	width: var(--site-layout-width);
+	max-width: var(--site-layout-max);
+	margin: 0 auto;
+	padding-inline: var(--site-content-inline-pad);
+	box-sizing: border-box;
+}
+
+.about-clients {
+	margin-top: 1rem;
+}
+
+.about-clients__viewport {
+	overflow: hidden;
+}
+
+.about-clients__track {
+	display: flex;
+	gap: 1rem;
+	transition: transform 0.38s ease;
+	will-change: transform;
+}
+
+.about-clients__slide {
+	flex: 0 0 calc((100% - 1rem) / 2);
+	min-width: 0;
+}
+
+.about-client-card {
+	border: 1px solid #242736;
+	border-radius: 14px;
+	background:
+		radial-gradient(120% 160% at 100% 0%, rgba(111, 70, 255, 0.12) 0%, rgba(111, 70, 255, 0) 55%),
+		linear-gradient(180deg, #12141c 0%, #10121a 100%);
+	padding: 1.35rem;
+	min-height: 318px;
+	display: flex;
+	flex-direction: column;
+	gap: 0.95rem;
+	box-sizing: border-box;
+	box-shadow:
+		inset 0 0 0 1px rgba(255, 255, 255, 0.015),
+		0 16px 26px rgba(0, 0, 0, 0.18);
+}
+
+.about-client-card__head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.9rem;
+}
+
+.about-client-card__since {
+	margin: 0;
+	font-size: 0.75rem;
+	color: #a7acbc;
+	line-height: 1.3;
+}
+
+.about-client-card__visit {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 35px;
+	padding: 0.45rem 0.78rem;
+	border: 1px solid #2f3241;
+	border-radius: 10px;
+	background: #191c28;
+	color: #f3f4f9;
+	font-size: 0.76rem;
+	font-weight: 500;
+	text-decoration: none;
+	white-space: nowrap;
+	transition: border-color 0.2s ease, background-color 0.2s ease, transform 0.2s ease;
+}
+
+.about-client-card__visit:hover,
+.about-client-card__visit:focus-visible {
+	border-color: rgba(111, 70, 255, 0.75);
+	background: #202434;
+	transform: translateY(-1px);
+}
+
+.about-client-card h3 {
+	margin: 0;
+	font-size: 1.22rem;
+	line-height: 1.2;
+	font-weight: 600;
+	color: #f4f5f8;
+	letter-spacing: -0.01em;
+}
+
+.about-client-card__meta {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.75rem;
+}
+
+.about-client-card__meta li {
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+}
+
+.about-client-card__meta span {
+	display: block;
+	margin: 0 0 0.2rem;
+	font-size: 0.7rem;
+	line-height: 1.25;
+	color: #a3a7b7;
+}
+
+.about-client-card__meta strong {
+	display: block;
+	font-size: 0.9rem;
+	font-weight: 500;
+	line-height: 1.45;
+	color: #e3e5ee;
+	word-break: break-word;
+}
+
+.about-client-card__quote-wrap {
+	border: 1px solid #222532;
+	border-radius: 12px;
+	background: rgba(11, 13, 20, 0.55);
+	padding: 0.8rem 0.9rem;
+	margin-top: auto;
+}
+
+.about-client-card__quote-label {
+	margin: 0;
+	font-size: 0.72rem;
+	line-height: 1.25;
+	color: #9ea3b3;
+}
+
+.about-client-card__quote {
+	margin: 0.4rem 0 0;
+	font-size: 0.86rem;
+	line-height: 1.55;
+	color: #d4d7e2;
+}
+
+.about-clients__controls {
+	margin-top: 1rem;
+	padding-top: 1rem;
+	border-top: 1px solid #1f222e;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.about-clients__count {
+	margin: 0;
+	font-size: 0.9rem;
+	color: #d3d5de;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	letter-spacing: 0.01em;
+}
+
+.about-clients__actions {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.55rem;
+}
+
+.about-clients__arrow {
+	width: 42px;
+	height: 42px;
+	padding: 0;
+	border-radius: 999px;
+	border: 1px solid #2f3242;
+	background: #141721;
+	color: #eceef6;
+	display: grid;
+	place-items: center;
+	line-height: 0;
+	cursor: pointer;
+	transition: border-color 0.2s ease, background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.about-clients__arrow:hover:not(:disabled),
+.about-clients__arrow:focus-visible:not(:disabled) {
+	border-color: rgba(111, 70, 255, 0.75);
+	background: #1c2030;
+}
+
+.about-clients__arrow:disabled,
+.about-clients__arrow.is-muted {
+	opacity: 0.42;
+	cursor: not-allowed;
+}
+
+.about-clients__arrow-icon {
+	width: 16px;
+	height: 16px;
+	display: block;
+	margin: 0;
+	pointer-events: none;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 2;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
 @media (max-width: 1024px) {
 	.about-hero__split {
 		grid-template-columns: 1fr;
@@ -525,6 +1022,14 @@ body.page-id-29 #page {
 
 	.about-process__grid {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.about-team__grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.about-team-card__media {
+		height: clamp(220px, 32vw, 266px);
 	}
 
 	.about-process__cta {
@@ -591,7 +1096,9 @@ body.page-id-29 #page {
 
 	.about-values__shell,
 	.about-achievements__shell,
-	.about-process__shell {
+	.about-process__shell,
+	.about-team__shell,
+	.about-clients__shell {
 		padding-inline: var(--site-content-inline-pad);
 	}
 
@@ -628,6 +1135,28 @@ body.page-id-29 #page {
 		grid-template-columns: 1fr;
 	}
 
+	.about-team {
+		padding-bottom: 2rem;
+	}
+
+	.about-team__grid {
+		grid-template-columns: 1fr;
+	}
+
+	.about-team-card {
+		min-height: auto;
+		padding: 1.02rem 0.96rem 1.02rem;
+	}
+
+	.about-team-card__media {
+		height: clamp(214px, 56vw, 272px);
+		margin-bottom: 1.6rem;
+	}
+
+	.about-team-card__role {
+		min-height: 0;
+	}
+
 	.about-step-card {
 		min-height: auto;
 	}
@@ -642,5 +1171,28 @@ body.page-id-29 #page {
 
 	.about-process__cta-action {
 		width: 100%;
+	}
+
+	.about-clients-section {
+		padding-bottom: 2.2rem;
+	}
+
+	.about-clients__slide {
+		flex: 0 0 100%;
+	}
+
+	.about-client-card {
+		min-height: auto;
+		padding: 1.12rem 1rem;
+	}
+
+	.about-client-card__meta {
+		grid-template-columns: 1fr;
+		gap: 0.58rem;
+	}
+
+	.about-clients__controls {
+		margin-top: 0.85rem;
+		padding-top: 0.85rem;
 	}
 }

@@ -4,24 +4,31 @@
 Document current data structures used by the theme for dynamic home/archive content.
 
 ## Scope
-- `property`, `testimonial`, and `faq` CPT contracts
+- `property`, `testimonial`, `client`, `team_member`, and `faq` CPT contracts
 - `faq_category` taxonomy contract
 - ACF field contracts and fallback behavior
-- Home section query rules
+- Home/About section query rules
 - Slug conflict rules for CPT archives
 
 ## Source of truth files
 - `inc/cpt-property.php`
 - `inc/cpt-testimonial.php`
+- `inc/cpt-client.php`
+- `inc/cpt-team-member.php`
 - `inc/cpt-faq.php`
 - `inc/acf-fields-properties.php`
 - `inc/acf-fields-testimonials.php`
+- `inc/acf-fields-clients.php`
+- `inc/acf-fields-team-members.php`
 - `inc/acf-fields-faq.php`
 - `inc/acf-fields-about.php`
 - `inc/property-helpers.php`
 - `inc/testimonial-helpers.php`
+- `inc/client-helpers.php`
+- `inc/team-member-helpers.php`
 - `inc/faq-helpers.php`
 - `front-page.php`
+- `page-about-us.php`
 - `archive-property.php`
 - `archive-testimonial.php`
 - `archive-faq.php`
@@ -45,6 +52,24 @@ Contract:
 - archive path: `/testimonials/`
 - single path: `/testimonial/{slug}`
 - supports: title, editor, excerpt, thumbnail
+
+### Custom post type: `client`
+Registered in `inc/cpt-client.php`.
+
+Contract:
+- post type key: `client`
+- archive path: `/clients/`
+- single path: `/client/{slug}`
+- supports: title, editor, excerpt, thumbnail
+
+### Custom post type: `team_member`
+Registered in `inc/cpt-team-member.php`.
+
+Contract:
+- post type key: `team_member`
+- archive path: `/team-members/`
+- single path: `/team-member/{slug}`
+- supports: title, editor, excerpt, thumbnail, page-attributes
 
 ### Custom post type: `faq`
 Registered in `inc/cpt-faq.php`.
@@ -91,6 +116,26 @@ Contract:
 - `is_featured`
 - `cta_label`
 
+#### Client fields
+- `client_since`
+- `client_industry`
+- `client_service_type`
+- `client_testimonial`
+- `client_website`
+- `is_featured`
+
+#### Team Member fields
+- `position_title`
+- `photo`
+- `profile_icon_source`
+- `profile_icon_platform`
+- `profile_icon_custom`
+- `social_links`:
+  - `platform`
+  - `url`
+- `cta_label`
+- `cta_url`
+
 #### About page fields
 - `achievements_title`
 - `achievements_description`
@@ -120,9 +165,21 @@ Contract:
   - `front-page.php`, `archive-faq.php`
   - excerpt fallback: excerpt -> content trim (`real_estate_custom_theme_get_faq_excerpt()`)
   - CTA label fallback: `Read More` (`real_estate_custom_theme_get_faq_cta_label()`)
+- Clients:
+  - `page-about-us.php`
+  - featured-first query (`is_featured=1`) with fallback to latest clients
+  - helper fallbacks in `inc/client-helpers.php` for since/industry/service/testimonial/url
 - About page:
   - `page-about-us.php`
   - ACF values override hardcoded defaults for achievements/process sections
+  - Team section uses `team_member` CPT query (`menu_order ASC`, `date DESC`)
+  - Team helper fallbacks:
+    - photo -> featured image -> theme symbol asset
+    - profile icon:
+      - custom upload when `profile_icon_source=custom`
+      - platform icon when default source
+      - fallback to LinkedIn when custom source has no upload
+    - CTA URL -> first social link -> contact page
   - featured process card is deterministic in template:
     - prefers a step label containing `03`
     - otherwise falls back to the third card index
@@ -138,6 +195,11 @@ Contract:
 - FAQs:
   1. `faq` with `is_featured = 1`
   2. no fallback to non-featured posts (empty state shown if none)
+
+### Slider behavior contract
+- Counters are page-based (`01 of totalPages`) and not raw item-based.
+- Navigation is enabled only when `totalPages > 1`.
+- Autoplay policy follows existing threshold logic and is additionally gated by page availability.
 
 ## Extension guidance
 - Keep field names stable to avoid template breakage.
@@ -162,11 +224,11 @@ Contract:
 
 ## Verification steps
 - Confirm CPT registrations:
-  - `rg -n "register_post_type\\( 'property'|register_post_type\\( 'testimonial'|register_post_type\\( 'faq'" wp-content/themes/real-estate-custom-theme/inc`
+  - `rg -n "register_post_type\\( 'property'|register_post_type\\( 'testimonial'|register_post_type\\( 'client'|register_post_type\\( 'team_member'|register_post_type\\( 'faq'" wp-content/themes/real-estate-custom-theme/inc`
 - Confirm FAQ taxonomy registration:
   - `rg -n "register_taxonomy\\( 'faq_category'" wp-content/themes/real-estate-custom-theme/inc/cpt-faq.php`
 - Confirm ACF keys:
-  - `rg -n "featured_on_home|testimonial_rating|field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc`
+  - `rg -n "featured_on_home|testimonial_rating|client_since|position_title|profile_icon_source|profile_icon_platform|profile_icon_custom|social_links|field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc`
 - Confirm home hook usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel" wp-content/themes/real-estate-custom-theme/front-page.php`
 

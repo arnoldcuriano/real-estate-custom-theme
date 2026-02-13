@@ -71,6 +71,12 @@ $process_steps             = array(
 	),
 );
 
+$team_section_title       = __( 'Meet the Estatein Team', 'real-estate-custom-theme' );
+$team_section_description = __( 'At Estatein, our success is driven by the dedication and expertise of our team. Get to know the people behind our mission to make your real estate dreams a reality.', 'real-estate-custom-theme' );
+
+$clients_section_title       = __( 'Our Valued Clients', 'real-estate-custom-theme' );
+$clients_section_description = __( 'At Estatein, we have had the privilege of working with a diverse range of clients across various industries. Here are some of the clients we have had the pleasure of serving.', 'real-estate-custom-theme' );
+
 $about_cta_heading      = '';
 $about_cta_button_label = '';
 $about_cta_button_url   = '';
@@ -315,6 +321,306 @@ if ( -1 === $featured_step_index ) {
 					<?php endif; ?>
 				</div>
 			<?php endif; ?>
+		</div>
+	</section>
+
+	<section class="about-team" aria-labelledby="about-team-title">
+		<div class="about-team__shell">
+			<header class="about-section-head">
+				<h2 id="about-team-title"><?php echo esc_html( $team_section_title ); ?></h2>
+				<p><?php echo esc_html( $team_section_description ); ?></p>
+			</header>
+
+			<?php
+			$team_query = new WP_Query(
+				array(
+					'post_type'           => 'team_member',
+					'post_status'         => 'publish',
+					'posts_per_page'      => -1,
+					'ignore_sticky_posts' => true,
+					'orderby'             => array(
+						'menu_order' => 'ASC',
+						'date'       => 'DESC',
+					),
+				)
+			);
+
+			if ( $team_query->have_posts() ) :
+				?>
+				<div class="about-team__grid">
+					<?php
+					while ( $team_query->have_posts() ) :
+						$team_query->the_post();
+
+						$team_member_id        = get_the_ID();
+						$team_member_name      = get_the_title();
+						$team_member_role      = function_exists( 'real_estate_custom_theme_get_team_member_position_title' ) ? real_estate_custom_theme_get_team_member_position_title( $team_member_id ) : '';
+						$team_member_role      = '' !== $team_member_role ? $team_member_role : __( 'Team Member', 'real-estate-custom-theme' );
+						$team_member_photo_url = function_exists( 'real_estate_custom_theme_get_team_member_photo_url' ) ? real_estate_custom_theme_get_team_member_photo_url( $team_member_id ) : '';
+						$team_member_cta_label = function_exists( 'real_estate_custom_theme_get_team_member_cta_label' ) ? real_estate_custom_theme_get_team_member_cta_label( $team_member_id ) : __( 'Say Hello', 'real-estate-custom-theme' );
+						$team_member_cta_url   = function_exists( 'real_estate_custom_theme_get_team_member_cta_url' ) ? real_estate_custom_theme_get_team_member_cta_url( $team_member_id ) : home_url( '/contact-us/' );
+						$team_member_icon_data  = function_exists( 'real_estate_custom_theme_get_team_member_profile_icon_data' )
+							? real_estate_custom_theme_get_team_member_profile_icon_data( $team_member_id )
+							: array(
+								'type'       => 'svg',
+								'platform'   => 'linkedin',
+								'icon_url'   => '',
+								'link_url'   => '',
+								'aria_label' => __( 'Open LinkedIn profile', 'real-estate-custom-theme' ),
+							);
+
+						$team_member_icon_type      = isset( $team_member_icon_data['type'] ) ? (string) $team_member_icon_data['type'] : 'svg';
+						$team_member_icon_platform  = isset( $team_member_icon_data['platform'] ) ? sanitize_key( (string) $team_member_icon_data['platform'] ) : 'linkedin';
+						$team_member_icon_custom    = isset( $team_member_icon_data['icon_url'] ) ? (string) $team_member_icon_data['icon_url'] : '';
+						$team_member_icon_link      = isset( $team_member_icon_data['link_url'] ) ? (string) $team_member_icon_data['link_url'] : '';
+						$team_member_icon_aria      = isset( $team_member_icon_data['aria_label'] ) ? (string) $team_member_icon_data['aria_label'] : __( 'Open LinkedIn profile', 'real-estate-custom-theme' );
+						$team_member_icon_target    = 0 === strpos( $team_member_icon_link, 'http' ) ? '_blank' : '_self';
+						$team_member_icon_rel       = '_blank' === $team_member_icon_target ? 'noopener noreferrer' : '';
+						$team_member_cta_target    = 0 === strpos( $team_member_cta_url, 'http' ) ? '_blank' : '_self';
+						$team_member_cta_rel       = '_blank' === $team_member_cta_target ? 'noopener noreferrer' : '';
+
+						$team_member_initials = '';
+						$team_name_parts      = preg_split( '/\s+/', trim( wp_strip_all_tags( $team_member_name ) ) );
+						if ( is_array( $team_name_parts ) ) {
+							foreach ( array_slice( $team_name_parts, 0, 2 ) as $name_part ) {
+								$team_member_initials .= strtoupper( substr( (string) $name_part, 0, 1 ) );
+							}
+						}
+
+						if ( '' === $team_member_initials ) {
+							$team_member_initials = 'TM';
+						}
+						?>
+						<article <?php post_class( 'about-team-card' ); ?>>
+							<div class="about-team-card__media">
+								<?php if ( '' !== $team_member_photo_url ) : ?>
+									<img src="<?php echo esc_url( $team_member_photo_url ); ?>" alt="<?php echo esc_attr( $team_member_name ); ?>" loading="lazy">
+								<?php else : ?>
+									<div class="about-team-card__media-placeholder">
+										<span><?php echo esc_html( $team_member_initials ); ?></span>
+									</div>
+								<?php endif; ?>
+
+								<div class="about-team-card__social">
+									<?php if ( '' !== $team_member_icon_link ) : ?>
+										<a
+											class="about-team-card__social-badge about-team-card__social-badge--<?php echo esc_attr( $team_member_icon_platform ); ?><?php echo 'image' === $team_member_icon_type ? ' about-team-card__social-badge--custom' : ''; ?>"
+											href="<?php echo esc_url( $team_member_icon_link ); ?>"
+											target="<?php echo esc_attr( $team_member_icon_target ); ?>"
+											<?php if ( '' !== $team_member_icon_rel ) : ?>
+												rel="<?php echo esc_attr( $team_member_icon_rel ); ?>"
+											<?php endif; ?>
+											aria-label="<?php echo esc_attr( $team_member_icon_aria ); ?>"
+										>
+											<span class="about-team-card__social-icon" aria-hidden="true">
+												<?php if ( 'image' === $team_member_icon_type && '' !== $team_member_icon_custom ) : ?>
+													<img src="<?php echo esc_url( $team_member_icon_custom ); ?>" alt="">
+												<?php elseif ( 'x' === $team_member_icon_platform ) : ?>
+													<svg viewBox="0 0 24 24" focusable="false">
+														<path fill="currentColor" stroke="none" d="M18.2 3H21L14.9 9.9L22 21H16.5L12.2 14.5L6.5 21H3.7L10.2 13.7L3.4 3H9L12.9 8.9L18.2 3ZM17.3 19H18.9L8.1 4.9H6.4L17.3 19Z"></path>
+													</svg>
+												<?php elseif ( 'email' === $team_member_icon_platform ) : ?>
+													<svg viewBox="0 0 24 24" focusable="false">
+														<rect x="3.5" y="6.5" width="17" height="11" rx="1.2" ry="1.2" fill="none"></rect>
+														<path fill="none" d="M4.6 7.5L12 13.2L19.4 7.5"></path>
+													</svg>
+												<?php else : ?>
+													<svg viewBox="0 0 24 24" focusable="false">
+														<path fill="currentColor" stroke="none" d="M6.9 8.2A1.9 1.9 0 1 1 6.9 4.4A1.9 1.9 0 0 1 6.9 8.2ZM5.2 9.6H8.6V19.2H5.2V9.6ZM10.4 9.6H13.6V10.9H13.7C14.1 10.1 15 9.3 16.7 9.3C20 9.3 20.6 11.4 20.6 14.1V19.2H17.2V14.8C17.2 13.7 17.2 12.3 15.7 12.3C14.2 12.3 14 13.4 14 14.7V19.2H10.4V9.6Z"></path>
+													</svg>
+												<?php endif; ?>
+											</span>
+										</a>
+									<?php else : ?>
+										<span class="about-team-card__social-badge about-team-card__social-badge--static<?php echo 'image' === $team_member_icon_type ? ' about-team-card__social-badge--custom' : ''; ?>" aria-hidden="true">
+											<span class="about-team-card__social-icon" aria-hidden="true">
+												<?php if ( 'image' === $team_member_icon_type && '' !== $team_member_icon_custom ) : ?>
+													<img src="<?php echo esc_url( $team_member_icon_custom ); ?>" alt="">
+												<?php elseif ( 'x' === $team_member_icon_platform ) : ?>
+													<svg viewBox="0 0 24 24" focusable="false">
+														<path fill="currentColor" stroke="none" d="M18.2 3H21L14.9 9.9L22 21H16.5L12.2 14.5L6.5 21H3.7L10.2 13.7L3.4 3H9L12.9 8.9L18.2 3ZM17.3 19H18.9L8.1 4.9H6.4L17.3 19Z"></path>
+													</svg>
+												<?php elseif ( 'email' === $team_member_icon_platform ) : ?>
+													<svg viewBox="0 0 24 24" focusable="false">
+														<rect x="3.5" y="6.5" width="17" height="11" rx="1.2" ry="1.2" fill="none"></rect>
+														<path fill="none" d="M4.6 7.5L12 13.2L19.4 7.5"></path>
+													</svg>
+												<?php else : ?>
+													<svg viewBox="0 0 24 24" focusable="false">
+														<path fill="currentColor" stroke="none" d="M6.9 8.2A1.9 1.9 0 1 1 6.9 4.4A1.9 1.9 0 0 1 6.9 8.2ZM5.2 9.6H8.6V19.2H5.2V9.6ZM10.4 9.6H13.6V10.9H13.7C14.1 10.1 15 9.3 16.7 9.3C20 9.3 20.6 11.4 20.6 14.1V19.2H17.2V14.8C17.2 13.7 17.2 12.3 15.7 12.3C14.2 12.3 14 13.4 14 14.7V19.2H10.4V9.6Z"></path>
+													</svg>
+												<?php endif; ?>
+											</span>
+										</span>
+									<?php endif; ?>
+								</div>
+							</div>
+
+							<h3 class="about-team-card__name"><?php echo esc_html( $team_member_name ); ?></h3>
+							<p class="about-team-card__role"><?php echo esc_html( $team_member_role ); ?></p>
+
+							<div class="about-team-card__actions">
+								<a
+									class="about-team-card__cta"
+									href="<?php echo esc_url( $team_member_cta_url ); ?>"
+									target="<?php echo esc_attr( $team_member_cta_target ); ?>"
+									<?php if ( '' !== $team_member_cta_rel ) : ?>
+										rel="<?php echo esc_attr( $team_member_cta_rel ); ?>"
+									<?php endif; ?>
+								>
+									<?php echo esc_html( $team_member_cta_label ); ?>
+								</a>
+								<a
+									class="about-team-card__cta-icon"
+									href="<?php echo esc_url( $team_member_cta_url ); ?>"
+									target="<?php echo esc_attr( $team_member_cta_target ); ?>"
+									<?php if ( '' !== $team_member_cta_rel ) : ?>
+										rel="<?php echo esc_attr( $team_member_cta_rel ); ?>"
+									<?php endif; ?>
+									aria-label="<?php echo esc_attr( $team_member_cta_label ); ?>"
+								>
+									<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+										<path d="M20.1 4.5L10.2 14.4"></path>
+										<path d="M20.1 4.5L14.1 20L10.2 14.4L4.5 10.5L20.1 4.5Z"></path>
+									</svg>
+								</a>
+							</div>
+						</article>
+					<?php endwhile; ?>
+				</div>
+				<?php
+				wp_reset_postdata();
+			else :
+				?>
+				<p><?php esc_html_e( 'No team members found yet.', 'real-estate-custom-theme' ); ?></p>
+				<?php
+			endif;
+			?>
+		</div>
+	</section>
+
+	<section class="about-clients-section" aria-labelledby="about-clients-title">
+		<div class="about-clients__shell">
+			<header class="about-section-head">
+				<h2 id="about-clients-title"><?php echo esc_html( $clients_section_title ); ?></h2>
+				<p><?php echo esc_html( $clients_section_description ); ?></p>
+			</header>
+
+			<?php
+			$clients_query = new WP_Query(
+				array(
+					'post_type'           => 'client',
+					'post_status'         => 'publish',
+					'posts_per_page'      => 12,
+					'ignore_sticky_posts' => true,
+					'meta_query'          => array(
+						array(
+							'key'     => 'is_featured',
+							'value'   => '1',
+							'compare' => '=',
+						),
+					),
+					'orderby'             => array(
+						'date' => 'DESC',
+					),
+				)
+			);
+
+			if ( ! $clients_query->have_posts() ) {
+				$clients_query = new WP_Query(
+					array(
+						'post_type'           => 'client',
+						'post_status'         => 'publish',
+						'posts_per_page'      => 12,
+						'ignore_sticky_posts' => true,
+						'orderby'             => array(
+							'date' => 'DESC',
+						),
+					)
+				);
+			}
+
+			if ( $clients_query->have_posts() ) :
+				?>
+				<div class="about-clients" data-about-carousel>
+					<div class="about-clients__viewport" data-about-carousel-viewport>
+						<div class="about-clients__track" data-about-carousel-track>
+							<?php
+							while ( $clients_query->have_posts() ) :
+								$clients_query->the_post();
+
+								$client_id            = get_the_ID();
+								$client_since         = function_exists( 'real_estate_custom_theme_get_client_since' ) ? real_estate_custom_theme_get_client_since( $client_id ) : '';
+								$client_industry      = function_exists( 'real_estate_custom_theme_get_client_industry' ) ? real_estate_custom_theme_get_client_industry( $client_id ) : '';
+								$client_service_type  = function_exists( 'real_estate_custom_theme_get_client_service_type' ) ? real_estate_custom_theme_get_client_service_type( $client_id ) : '';
+								$client_testimonial   = function_exists( 'real_estate_custom_theme_get_client_testimonial' ) ? real_estate_custom_theme_get_client_testimonial( $client_id ) : wp_trim_words( get_the_excerpt(), 24 );
+								$client_website_url   = function_exists( 'real_estate_custom_theme_get_client_website_url' ) ? real_estate_custom_theme_get_client_website_url( $client_id ) : '';
+								$client_industry      = '' !== $client_industry ? $client_industry : esc_html__( 'Not specified', 'real-estate-custom-theme' );
+								$client_service_type  = '' !== $client_service_type ? $client_service_type : esc_html__( 'Not specified', 'real-estate-custom-theme' );
+								$client_testimonial   = '' !== trim( $client_testimonial ) ? $client_testimonial : esc_html__( 'Client testimonial will appear here once provided.', 'real-estate-custom-theme' );
+								?>
+								<article <?php post_class( 'about-client-card about-clients__slide' ); ?> data-about-carousel-slide>
+									<div class="about-client-card__head">
+										<p class="about-client-card__since">
+											<?php echo '' !== $client_since ? esc_html( $client_since ) : esc_html__( 'Since -', 'real-estate-custom-theme' ); ?>
+										</p>
+										<?php if ( '' !== $client_website_url ) : ?>
+											<a class="about-client-card__visit" href="<?php echo esc_url( $client_website_url ); ?>" target="_blank" rel="noopener noreferrer">
+												<?php esc_html_e( 'Visit Website', 'real-estate-custom-theme' ); ?>
+											</a>
+										<?php endif; ?>
+									</div>
+
+									<h3><?php the_title(); ?></h3>
+
+									<ul class="about-client-card__meta">
+										<li>
+											<span><?php esc_html_e( 'Industry', 'real-estate-custom-theme' ); ?></span>
+											<strong><?php echo esc_html( $client_industry ); ?></strong>
+										</li>
+										<li>
+											<span><?php esc_html_e( 'Service', 'real-estate-custom-theme' ); ?></span>
+											<strong><?php echo esc_html( $client_service_type ); ?></strong>
+										</li>
+									</ul>
+
+									<div class="about-client-card__quote-wrap">
+										<p class="about-client-card__quote-label"><?php esc_html_e( 'What They Said', 'real-estate-custom-theme' ); ?></p>
+										<p class="about-client-card__quote"><?php echo esc_html( $client_testimonial ); ?></p>
+									</div>
+								</article>
+							<?php endwhile; ?>
+						</div>
+					</div>
+
+					<div class="about-clients__controls">
+						<p class="about-clients__count">
+							<span data-about-carousel-current>01</span>
+							<?php esc_html_e( 'of', 'real-estate-custom-theme' ); ?>
+							<span data-about-carousel-total>01</span>
+						</p>
+						<div class="about-clients__actions">
+							<button type="button" class="about-clients__arrow" data-about-carousel-prev aria-label="<?php esc_attr_e( 'Previous clients', 'real-estate-custom-theme' ); ?>">
+								<svg class="about-clients__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+									<path d="M15 6L9 12L15 18"></path>
+								</svg>
+							</button>
+							<button type="button" class="about-clients__arrow" data-about-carousel-next aria-label="<?php esc_attr_e( 'Next clients', 'real-estate-custom-theme' ); ?>">
+								<svg class="about-clients__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+									<path d="M9 6L15 12L9 18"></path>
+								</svg>
+							</button>
+						</div>
+					</div>
+				</div>
+				<?php
+				wp_reset_postdata();
+			else :
+				?>
+				<p><?php esc_html_e( 'No clients found yet.', 'real-estate-custom-theme' ); ?></p>
+				<?php
+			endif;
+			?>
 		</div>
 	</section>
 </main>

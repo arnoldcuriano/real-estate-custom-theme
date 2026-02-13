@@ -400,6 +400,7 @@
       autoIntervalMs: 4000,
       autoTimerId: null,
       paused: false,
+      autoEligible: false,
       canAuto: false,
       canManual: false,
       isStatic: true,
@@ -414,10 +415,19 @@
       },
 
       computeCapabilities() {
-        this.canAuto = this.total > 9;
-        this.canManual = this.total >= 5;
-        this.isStatic = this.total <= 4;
-        this.isInteractive = this.canAuto || this.canManual;
+        this.autoEligible = this.total > 9;
+        this.canAuto = false;
+        this.canManual = false;
+        this.isStatic = true;
+        this.isInteractive = false;
+      },
+
+      applyPageCapabilities() {
+        const hasMultiplePages = this.getPageTotal() > 1;
+        this.canManual = hasMultiplePages;
+        this.canAuto = this.autoEligible && hasMultiplePages;
+        this.isStatic = !this.canManual;
+        this.isInteractive = this.canManual || this.canAuto;
       },
 
       getLogicalIndex() {
@@ -683,6 +693,15 @@
         }
       },
 
+      syncAutoPlayback() {
+        if (this.canAuto) {
+          this.startAuto();
+          return;
+        }
+
+        this.stopAuto();
+      },
+
       recalculate() {
         if (this.total <= 0) {
           return;
@@ -693,12 +712,16 @@
 
         if (this.stepSize <= 0) {
           this.counterVisibleCount = 1;
+          this.visibleCount = 1;
+          this.applyPageCapabilities();
           this.emitState();
+          this.syncAutoPlayback();
           return;
         }
 
         this.counterVisibleCount = this.calculateVisibleCount();
-        this.visibleCount = this.isInteractive ? this.calculateVisibleCount() : 1;
+        this.applyPageCapabilities();
+        this.visibleCount = this.isInteractive ? this.counterVisibleCount : 1;
         this.prepareTrack();
 
         if (this.isInteractive) {
@@ -714,6 +737,7 @@
         }
 
         this.emitState();
+        this.syncAutoPlayback();
       },
 
       bindEvents() {
@@ -768,16 +792,9 @@
           return false;
         }
 
-        this.currentIndex = this.isInteractive ? 1 : 0;
+        this.currentIndex = 0;
         this.recalculate();
-
-        if (this.isInteractive) {
-          this.bindEvents();
-        }
-
-        if (this.canAuto) {
-          this.startAuto();
-        }
+        this.bindEvents();
 
         return true;
       },
