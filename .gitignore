@@ -1,7 +1,41 @@
+# Dependencies
 node_modules/
 vendor/
+
+# Build outputs / caches
+dist/
+build/
+coverage/
+.cache/
+.sass-cache/
+*.map
+
+# Logs
 *.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Local editor / OS files
 .DS_Store
 Thumbs.db
 .idea/
 .vscode/
+*.swp
+*.swo
+*.tmp
+*.temp
+
+# Local env and secrets
+.env
+.env.*
+
+# Packaged artifacts (theme zips, archives)
+*.zip
+*.tar
+*.tgz
+*.gz
+*.bz2
+*.7z
+*.rar
