@@ -8,6 +8,7 @@ Configure ACF-backed editable fields used by the current theme implementation.
 
 - Front-page featured section description field
 - Property card metadata fields
+- Property archive filters (taxonomy + numeric ranges)
 - Testimonial metadata fields
 - Client metadata fields
 - Team member metadata fields
@@ -57,12 +58,23 @@ The theme supports both:
 ### Property field group
 
 - `property_price` (text)
+- `price` (number, archive filter source)
+- `size_sqm` (number, archive filter source)
+- `build_year` (number, archive filter source)
 - `property_bedrooms` (text/number)
 - `property_bathrooms` (text/number)
-- `property_type` (text/select)
+- `property_type` (text/select, legacy fallback display source)
 - `property_card_excerpt` (textarea, optional)
 - `featured_on_home` (true/false)
 - `featured_order` (number, optional)
+
+### Property taxonomy contract
+
+- `property_location` (taxonomy, archive filter source)
+- `property_type` (taxonomy, archive filter source)
+- one-time backfill:
+  - existing legacy `property_type` meta values are migrated into `property_type` taxonomy terms
+  - completion flag option: `real_estate_custom_theme_property_type_backfilled`
 
 ### Testimonial field group
 
@@ -167,6 +179,21 @@ Services hero in `page-services.php`:
 1. reads `services_hero_title` and `services_hero_description` from the Services page
 2. fallback to default hardcoded copy when ACF is inactive or fields are empty
 
+Property archive filters in `archive-property.php` + `inc/cpt-property.php`:
+
+1. search/filter module submits via query string (`GET`)
+2. accepted params:
+   - `s`
+   - `location` (`property_location` term slug)
+   - `type` (`property_type` term slug)
+   - `price_range`
+   - `size_range`
+   - `build_year_range`
+3. archive query applies:
+   - `tax_query` for `location` + `type`
+   - `meta_query` for numeric range keys on `price`, `size_sqm`, `build_year`
+4. pagination preserves active filter query args
+
 ## Global slider logic contract
 
 - Pagination is based on slide pages/groups, not raw item count.
@@ -177,13 +204,15 @@ Services hero in `page-services.php`:
 
 - CPT archive route is `/properties/`
 - CPT single route is `/property/{slug}`
+- Property Location taxonomy archive uses `/property-location/{slug}`
+- Property Type taxonomy archive uses `/property-type/{slug}`
 - CPT archive route is `/testimonials/`
 - CPT single route is `/testimonial/{slug}`
 - CPT archive route is `/team-members/`
 - CPT single route is `/team-member/{slug}`
 - CPT archive route is `/faqs/`
 - CPT single route is `/faq/{slug}`
-- If static page slugs are `properties`, `testimonials`, `team-members`, or `faqs`, rename them to avoid route conflicts.
+- If static page slugs are `properties`, `property-location`, `property-type`, `testimonials`, `team-members`, or `faqs`, rename them to avoid route conflicts.
 
 After setup:
 
@@ -203,7 +232,7 @@ After setup:
 ## Verification steps
 
 - Confirm field registration keys:
-  - `rg -n "featured_section_description|property_price|featured_on_home|featured_order" wp-content/themes/real-estate-custom-theme/inc/acf-fields-properties.php`
+  - `rg -n "featured_section_description|property_price|price|size_sqm|build_year|featured_on_home|featured_order" wp-content/themes/real-estate-custom-theme/inc/acf-fields-properties.php`
   - `rg -n "testimonial_rating|testimonial_quote|is_featured" wp-content/themes/real-estate-custom-theme/inc/acf-fields-testimonials.php`
   - `rg -n "client_since|client_domain|client_category|client_industry|client_service_type|client_testimonial|client_website|is_featured" wp-content/themes/real-estate-custom-theme/inc/acf-fields-clients.php`
   - `rg -n "position_title|profile_icon_source|profile_icon_platform|profile_icon_custom|social_links|cta_label|cta_url" wp-content/themes/real-estate-custom-theme/inc/acf-fields-team-members.php`
@@ -212,6 +241,7 @@ After setup:
   - `rg -n "group_rect_services_page_hero|services_hero_title|services_hero_description" wp-content/themes/real-estate-custom-theme/inc/acf-fields-services.php`
 - Confirm template usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
+  - `rg -n "property_location|property_type|location|type|price_range|size_range|build_year_range" wp-content/themes/real-estate-custom-theme/archive-property.php wp-content/themes/real-estate-custom-theme/inc/cpt-property.php`
   - `rg -n "about-clients|client_domain|client_category|client_industry|client_service_type" wp-content/themes/real-estate-custom-theme/page-about-us.php`
   - `rg -n "about-team|team_member|position_title|social_links|cta_url" wp-content/themes/real-estate-custom-theme/page-about-us.php`
   - `rg -n "services_hero_title|services_hero_description|data-quick-links-loop" wp-content/themes/real-estate-custom-theme/page-services.php`

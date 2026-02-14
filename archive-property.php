@@ -6,14 +6,214 @@
  */
 
 get_header();
+
+$properties_hero_title       = post_type_archive_title( '', false );
+$properties_hero_description = __( 'Explore our latest listings and discover exceptional homes and investment opportunities.', 'real-estate-custom-theme' );
+
+if ( '' === trim( (string) $properties_hero_title ) ) {
+	$properties_hero_title = __( 'Properties', 'real-estate-custom-theme' );
+}
+
+$property_archive_url = function_exists( 'real_estate_custom_theme_get_properties_archive_url' )
+	? real_estate_custom_theme_get_properties_archive_url()
+	: get_post_type_archive_link( 'property' );
+
+$filter_state = function_exists( 'real_estate_custom_theme_get_property_archive_filter_state' )
+	? real_estate_custom_theme_get_property_archive_filter_state()
+	: array(
+		's'                => isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '',
+		'location'         => isset( $_GET['location'] ) ? sanitize_title( wp_unslash( $_GET['location'] ) ) : '',
+		'type'             => isset( $_GET['type'] ) ? sanitize_title( wp_unslash( $_GET['type'] ) ) : '',
+		'price_range'      => isset( $_GET['price_range'] ) ? sanitize_title( wp_unslash( $_GET['price_range'] ) ) : '',
+		'size_range'       => isset( $_GET['size_range'] ) ? sanitize_title( wp_unslash( $_GET['size_range'] ) ) : '',
+		'build_year_range' => isset( $_GET['build_year_range'] ) ? sanitize_title( wp_unslash( $_GET['build_year_range'] ) ) : '',
+	);
+
+$location_terms = get_terms(
+	array(
+		'taxonomy'   => 'property_location',
+		'hide_empty' => false,
+		'orderby'    => 'name',
+		'order'      => 'ASC',
+	)
+);
+
+$type_terms = get_terms(
+	array(
+		'taxonomy'   => 'property_type',
+		'hide_empty' => false,
+		'orderby'    => 'name',
+		'order'      => 'ASC',
+	)
+);
+
+$price_ranges = function_exists( 'real_estate_custom_theme_get_property_price_ranges' )
+	? real_estate_custom_theme_get_property_price_ranges()
+	: array();
+$size_ranges  = function_exists( 'real_estate_custom_theme_get_property_size_ranges' )
+	? real_estate_custom_theme_get_property_size_ranges()
+	: array();
+$year_ranges  = function_exists( 'real_estate_custom_theme_get_property_build_year_ranges' )
+	? real_estate_custom_theme_get_property_build_year_ranges()
+	: array();
+
+$active_filter_args = array_filter(
+	array(
+		's'                => $filter_state['s'],
+		'location'         => $filter_state['location'],
+		'type'             => $filter_state['type'],
+		'price_range'      => $filter_state['price_range'],
+		'size_range'       => $filter_state['size_range'],
+		'build_year_range' => $filter_state['build_year_range'],
+	),
+	static function( $value ) {
+		return '' !== (string) $value;
+	}
+);
 ?>
 
 <main id="primary" class="site-main property-archive">
-	<section class="property-archive__shell" aria-labelledby="property-archive-title">
-		<header class="property-archive__head">
-			<h1 id="property-archive-title"><?php post_type_archive_title(); ?></h1>
-			<p><?php esc_html_e( 'Explore our latest listings and discover exceptional homes and investment opportunities.', 'real-estate-custom-theme' ); ?></p>
-		</header>
+	<?php
+	get_template_part(
+		'template-parts/page-hero',
+		null,
+		array(
+			'id'            => 'property-archive-title',
+			'title'         => $properties_hero_title,
+			'description'   => $properties_hero_description,
+			'section_class' => 'property-archive__hero',
+		)
+	);
+	?>
+
+	<section class="property-archive__shell" aria-label="<?php esc_attr_e( 'Property listings', 'real-estate-custom-theme' ); ?>">
+		<form class="property-archive__filters" method="get" action="<?php echo esc_url( $property_archive_url ); ?>">
+			<div class="property-archive__search-wrap">
+				<div class="property-archive__search-inner">
+					<div class="property-archive__search-group">
+						<div class="property-archive__search-row">
+							<label class="property-archive__search-field" for="property-search">
+								<span class="property-archive__search-icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24" focusable="false">
+										<circle cx="11" cy="11" r="6"></circle>
+										<path d="M20 20L16.6 16.6"></path>
+									</svg>
+								</span>
+								<input id="property-search" class="property-archive__search-input" type="search" name="s" value="<?php echo esc_attr( $filter_state['s'] ); ?>" placeholder="<?php esc_attr_e( 'Search for a property', 'real-estate-custom-theme' ); ?>">
+							</label>
+							<button class="property-archive__search-submit" type="submit"><?php esc_html_e( 'Find Property', 'real-estate-custom-theme' ); ?></button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="property-archive__filters-row-wrap">
+				<div class="property-archive__filters-group">
+					<div class="property-archive__filter-grid">
+						<label class="property-archive__filter-control" for="property-filter-location">
+							<span class="property-archive__filter-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" focusable="false">
+									<path d="M12 22C12 22 6 16.6 6 11A6 6 0 1 1 18 11C18 16.6 12 22 12 22z"></path>
+									<circle cx="12" cy="11" r="2.5"></circle>
+								</svg>
+							</span>
+							<select id="property-filter-location" class="property-archive__filter-select" name="location" aria-label="<?php esc_attr_e( 'Location', 'real-estate-custom-theme' ); ?>">
+								<option value=""><?php esc_html_e( 'Location', 'real-estate-custom-theme' ); ?></option>
+								<?php if ( ! is_wp_error( $location_terms ) && ! empty( $location_terms ) ) : ?>
+									<?php foreach ( $location_terms as $location_term ) : ?>
+										<option value="<?php echo esc_attr( $location_term->slug ); ?>"<?php selected( $filter_state['location'], (string) $location_term->slug ); ?>>
+											<?php echo esc_html( $location_term->name ); ?>
+										</option>
+									<?php endforeach; ?>
+								<?php endif; ?>
+							</select>
+						</label>
+
+						<label class="property-archive__filter-control" for="property-filter-type">
+							<span class="property-archive__filter-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" focusable="false">
+									<path d="M4 20H20"></path>
+									<path d="M5 20V8L12 4L19 8V20"></path>
+									<path d="M9 12H11"></path>
+									<path d="M13 12H15"></path>
+								</svg>
+							</span>
+							<select id="property-filter-type" class="property-archive__filter-select" name="type" aria-label="<?php esc_attr_e( 'Property type', 'real-estate-custom-theme' ); ?>">
+								<option value=""><?php esc_html_e( 'Property Type', 'real-estate-custom-theme' ); ?></option>
+								<?php if ( ! is_wp_error( $type_terms ) && ! empty( $type_terms ) ) : ?>
+									<?php foreach ( $type_terms as $type_term ) : ?>
+										<option value="<?php echo esc_attr( $type_term->slug ); ?>"<?php selected( $filter_state['type'], (string) $type_term->slug ); ?>>
+											<?php echo esc_html( $type_term->name ); ?>
+										</option>
+									<?php endforeach; ?>
+								<?php endif; ?>
+							</select>
+						</label>
+
+						<label class="property-archive__filter-control" for="property-filter-price">
+							<span class="property-archive__filter-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" focusable="false">
+									<rect x="3" y="6" width="18" height="12" rx="2"></rect>
+									<path d="M8 12H16"></path>
+								</svg>
+							</span>
+							<select id="property-filter-price" class="property-archive__filter-select" name="price_range" aria-label="<?php esc_attr_e( 'Pricing range', 'real-estate-custom-theme' ); ?>">
+								<option value=""><?php esc_html_e( 'Pricing Range', 'real-estate-custom-theme' ); ?></option>
+								<?php foreach ( $price_ranges as $range_key => $range_data ) : ?>
+									<option value="<?php echo esc_attr( $range_key ); ?>"<?php selected( $filter_state['price_range'], (string) $range_key ); ?>>
+										<?php echo esc_html( $range_data['label'] ); ?>
+									</option>
+								<?php endforeach; ?>
+							</select>
+						</label>
+
+						<label class="property-archive__filter-control" for="property-filter-size">
+							<span class="property-archive__filter-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" focusable="false">
+									<path d="M4 8H20"></path>
+									<path d="M4 16H20"></path>
+									<path d="M8 4V20"></path>
+									<path d="M16 4V20"></path>
+								</svg>
+							</span>
+							<select id="property-filter-size" class="property-archive__filter-select" name="size_range" aria-label="<?php esc_attr_e( 'Property size', 'real-estate-custom-theme' ); ?>">
+								<option value=""><?php esc_html_e( 'Property Size', 'real-estate-custom-theme' ); ?></option>
+								<?php foreach ( $size_ranges as $range_key => $range_data ) : ?>
+									<option value="<?php echo esc_attr( $range_key ); ?>"<?php selected( $filter_state['size_range'], (string) $range_key ); ?>>
+										<?php echo esc_html( $range_data['label'] ); ?>
+									</option>
+								<?php endforeach; ?>
+							</select>
+						</label>
+
+						<label class="property-archive__filter-control" for="property-filter-year">
+							<span class="property-archive__filter-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" focusable="false">
+									<rect x="3" y="5" width="18" height="16" rx="2"></rect>
+									<path d="M7 3V7"></path>
+									<path d="M17 3V7"></path>
+									<path d="M3 10H21"></path>
+								</svg>
+							</span>
+							<select id="property-filter-year" class="property-archive__filter-select" name="build_year_range" aria-label="<?php esc_attr_e( 'Build year', 'real-estate-custom-theme' ); ?>">
+								<option value=""><?php esc_html_e( 'Build Year', 'real-estate-custom-theme' ); ?></option>
+								<?php foreach ( $year_ranges as $range_key => $range_data ) : ?>
+									<option value="<?php echo esc_attr( $range_key ); ?>"<?php selected( $filter_state['build_year_range'], (string) $range_key ); ?>>
+										<?php echo esc_html( $range_data['label'] ); ?>
+									</option>
+								<?php endforeach; ?>
+							</select>
+						</label>
+					</div>
+
+					<?php if ( ! empty( $active_filter_args ) ) : ?>
+						<div class="property-archive__filter-actions">
+							<a class="property-archive__filter-reset" href="<?php echo esc_url( $property_archive_url ); ?>"><?php esc_html_e( 'Clear Filters', 'real-estate-custom-theme' ); ?></a>
+						</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		</form>
 
 		<?php if ( have_posts() ) : ?>
 			<div class="property-archive__grid">
@@ -25,7 +225,9 @@ get_header();
 					$property_price    = trim( (string) get_post_meta( $property_id, 'property_price', true ) );
 					$property_bedrooms = trim( (string) get_post_meta( $property_id, 'property_bedrooms', true ) );
 					$property_bathroom = trim( (string) get_post_meta( $property_id, 'property_bathrooms', true ) );
-					$property_type     = trim( (string) get_post_meta( $property_id, 'property_type', true ) );
+					$property_type     = function_exists( 'real_estate_custom_theme_get_property_type_label' )
+						? real_estate_custom_theme_get_property_type_label( $property_id )
+						: trim( (string) get_post_meta( $property_id, 'property_type', true ) );
 
 					if ( '' === $property_price ) {
 						$property_price = trim( (string) get_post_meta( $property_id, 'price', true ) );
@@ -135,12 +337,15 @@ get_header();
 
 			<div class="property-archive__pagination">
 				<?php
-				the_posts_pagination(
-					array(
-						'prev_text' => esc_html__( 'Previous', 'real-estate-custom-theme' ),
-						'next_text' => esc_html__( 'Next', 'real-estate-custom-theme' ),
-					)
+				$pagination_args = array(
+					'prev_text' => esc_html__( 'Previous', 'real-estate-custom-theme' ),
+					'next_text' => esc_html__( 'Next', 'real-estate-custom-theme' ),
 				);
+				if ( ! empty( $active_filter_args ) ) {
+					$pagination_args['add_args'] = $active_filter_args;
+				}
+
+				the_posts_pagination( $pagination_args );
 				?>
 			</div>
 		<?php else : ?>

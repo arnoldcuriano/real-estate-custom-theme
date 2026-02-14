@@ -12,6 +12,10 @@ This theme is a custom real estate site built on top of a WordPress theme struct
 This documentation reflects only what currently exists in the codebase.
 
 ## Latest Changes
+- Refactored Services and Properties to reuse one shared page hero component:
+  - template part: `template-parts/page-hero.php`
+  - consumed by: `page-services.php`, `archive-property.php`
+  - shared style system: `.page-hero*` in `style.css`
 - Removed hover-lift card motion from Home page slider cards:
   - featured properties
   - testimonials
@@ -88,6 +92,8 @@ This documentation reflects only what currently exists in the codebase.
   - `index.php`
   - `page.php`
   - `single.php`
+- Template parts:
+  - `template-parts/page-hero.php`
 - Theme modules:
   - `inc/cpt-property.php`
   - `inc/cpt-testimonial.php`

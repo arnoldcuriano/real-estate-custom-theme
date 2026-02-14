@@ -75,12 +75,18 @@ $quick_links = array(
 ?>
 
 <main id="primary" class="site-main services-page">
-	<section class="services-hero" aria-labelledby="services-hero-title">
-		<div class="services-hero__inner">
-			<h1 id="services-hero-title" class="services-hero__title"><?php echo esc_html( $services_hero_title ); ?></h1>
-			<p class="services-hero__description"><?php echo wp_kses_post( $services_hero_description ); ?></p>
-		</div>
-	</section>
+	<?php
+	get_template_part(
+		'template-parts/page-hero',
+		null,
+		array(
+			'id'          => 'services-hero-title',
+			'title'       => $services_hero_title,
+			'description' => $services_hero_description,
+			'section_class' => 'services-page__hero',
+		)
+	);
+	?>
 
 	<section class="quick-links" data-quick-links-loop aria-label="<?php esc_attr_e( 'Key services', 'real-estate-custom-theme' ); ?>">
 		<div class="quick-links__container">

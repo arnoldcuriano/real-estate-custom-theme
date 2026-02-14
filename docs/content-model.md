@@ -5,7 +5,7 @@ Document current data structures used by the theme for dynamic home/archive cont
 
 ## Scope
 - `property`, `testimonial`, `client`, `team_member`, and `faq` CPT contracts
-- `faq_category` taxonomy contract
+- `property_location`, `property_type`, and `faq_category` taxonomy contracts
 - ACF field contracts and fallback behavior
 - Home/About section query rules
 - Slug conflict rules for CPT archives
@@ -34,6 +34,7 @@ Document current data structures used by the theme for dynamic home/archive cont
 - `archive-property.php`
 - `archive-testimonial.php`
 - `archive-faq.php`
+- `template-parts/page-hero.php`
 
 ## Behavior and flow
 
@@ -45,6 +46,27 @@ Contract:
 - archive path: `/properties/`
 - single path: `/property/{slug}`
 - supports: title, editor, excerpt, thumbnail
+
+### Taxonomy: `property_location`
+Registered in `inc/cpt-property.php`.
+
+Contract:
+- taxonomy key: `property_location`
+- assigned to CPT: `property`
+- query var: `property_location`
+- archive path: `/property-location/{slug}`
+- used by properties archive filter (`location` query arg)
+
+### Taxonomy: `property_type`
+Registered in `inc/cpt-property.php`.
+
+Contract:
+- taxonomy key: `property_type`
+- assigned to CPT: `property`
+- query var: `property_type`
+- archive path: `/property-type/{slug}`
+- used by properties archive filter (`type` query arg)
+- one-time backfill migrates legacy `property_type` meta values to taxonomy terms
 
 ### Custom post type: `testimonial`
 Registered in `inc/cpt-testimonial.php`.
@@ -98,6 +120,9 @@ Contract:
 
 #### Property fields
 - `property_price`
+- `price`
+- `size_sqm`
+- `build_year`
 - `property_bedrooms`
 - `property_bathrooms`
 - `property_type`
@@ -165,7 +190,17 @@ Contract:
 - Properties:
   - `front-page.php`, `archive-property.php`, `single-property.php`
   - helper: `real_estate_custom_theme_get_property_card_excerpt_data()`
+  - helper: `real_estate_custom_theme_get_property_type_label()`
   - legacy fallbacks for `price`, `bedrooms`, `bathrooms`
+  - property type display fallback:
+    - taxonomy term (`property_type`)
+    - fallback to legacy `property_type` meta text
+  - archive heading/description rendered through shared hero component `template-parts/page-hero.php`
+  - archive filter contract (submit/reload):
+    - `s`, `location`, `type`, `price_range`, `size_range`, `build_year_range`
+    - tax filters: `property_location`, `property_type`
+    - numeric meta filters: `price`, `size_sqm`, `build_year`
+    - pagination preserves active query args
 - Testimonials:
   - `front-page.php`, `archive-testimonial.php`
   - helper fallbacks for quote/name/location/photo in `inc/testimonial-helpers.php`
@@ -196,6 +231,7 @@ Contract:
     - otherwise falls back to the third card index
 - Services page:
   - `page-services.php`
+  - shared hero component: `template-parts/page-hero.php`
   - hero title/description source:
     - `services_hero_title`
     - `services_hero_description`
@@ -234,7 +270,7 @@ Contract:
 - ACF fields missing in admin:
   - ensure ACF plugin is active
 - Archive route conflict:
-  - rename static page slugs `properties`, `testimonials`, `faqs`
+  - rename static page slugs `properties`, `property-location`, `property-type`, `testimonials`, `faqs`
   - re-save permalinks
 - FAQ archive filter not changing results:
   - verify term slug exists in `faq_category`
@@ -243,10 +279,10 @@ Contract:
 ## Verification steps
 - Confirm CPT registrations:
   - `rg -n "register_post_type\\( 'property'|register_post_type\\( 'testimonial'|register_post_type\\( 'client'|register_post_type\\( 'team_member'|register_post_type\\( 'faq'" wp-content/themes/real-estate-custom-theme/inc`
-- Confirm FAQ taxonomy registration:
-  - `rg -n "register_taxonomy\\( 'faq_category'" wp-content/themes/real-estate-custom-theme/inc/cpt-faq.php`
+- Confirm taxonomy registrations:
+  - `rg -n "register_taxonomy\\( 'property_location'|register_taxonomy\\( 'property_type'|register_taxonomy\\( 'faq_category'" wp-content/themes/real-estate-custom-theme/inc/cpt-property.php wp-content/themes/real-estate-custom-theme/inc/cpt-faq.php`
 - Confirm ACF keys:
-  - `rg -n "featured_on_home|testimonial_rating|client_since|position_title|profile_icon_source|profile_icon_platform|profile_icon_custom|social_links|field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc`
+  - `rg -n "featured_on_home|price|size_sqm|build_year|testimonial_rating|client_since|position_title|profile_icon_source|profile_icon_platform|profile_icon_custom|social_links|field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc`
 - Confirm home hook usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel" wp-content/themes/real-estate-custom-theme/front-page.php`
 

@@ -17,7 +17,9 @@ get_header();
 		$property_price    = trim( (string) get_post_meta( $property_id, 'property_price', true ) );
 		$property_bedrooms = trim( (string) get_post_meta( $property_id, 'property_bedrooms', true ) );
 		$property_bathroom = trim( (string) get_post_meta( $property_id, 'property_bathrooms', true ) );
-		$property_type     = trim( (string) get_post_meta( $property_id, 'property_type', true ) );
+		$property_type     = function_exists( 'real_estate_custom_theme_get_property_type_label' )
+			? real_estate_custom_theme_get_property_type_label( $property_id )
+			: trim( (string) get_post_meta( $property_id, 'property_type', true ) );
 
 		if ( '' === $property_price ) {
 			$property_price = trim( (string) get_post_meta( $property_id, 'price', true ) );
@@ -117,4 +119,3 @@ get_header();
 
 <?php
 get_footer();
-

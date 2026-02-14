@@ -101,6 +101,22 @@ function real_estate_custom_theme_get_property_meta_icon_markup( $property_id, $
 }
 
 /**
+ * Resolve property type display label from taxonomy with meta fallback.
+ *
+ * @param int $property_id Property post ID.
+ *
+ * @return string
+ */
+function real_estate_custom_theme_get_property_type_label( $property_id ) {
+	$terms = get_the_terms( $property_id, 'property_type' );
+	if ( ! is_wp_error( $terms ) && ! empty( $terms ) && isset( $terms[0]->name ) ) {
+		return trim( (string) $terms[0]->name );
+	}
+
+	return trim( (string) get_post_meta( $property_id, 'property_type', true ) );
+}
+
+/**
  * Character length helper with multibyte fallback.
  *
  * @param string $text Text content.
@@ -151,4 +167,3 @@ function real_estate_custom_theme_get_property_card_excerpt_data( $property_id, 
 		'full_text' => $clean_excerpt,
 	);
 }
-
