@@ -335,3 +335,51 @@ function real_estate_custom_theme_get_property_card_excerpt_data( $property_id, 
 		'full_text' => $clean_excerpt,
 	);
 }
+
+/**
+ * Resolve single-property map payload from custom override URL + location fallback.
+ *
+ * Resolution order:
+ * 1. `_rect_property_map_embed_url` meta, when valid.
+ * 2. First `property_location` term -> Google Maps query embed.
+ *
+ * @param int $property_id Property post ID.
+ * @return array<string, string>
+ */
+function real_estate_custom_theme_get_property_map_payload( $property_id ) {
+	$property_id = absint( $property_id );
+
+	$payload = array(
+		'embed_url'      => '',
+		'view_url'       => '',
+		'location_label' => '',
+	);
+
+	if ( $property_id <= 0 ) {
+		return $payload;
+	}
+
+	$location_terms = get_the_terms( $property_id, 'property_location' );
+	if ( ! is_wp_error( $location_terms ) && ! empty( $location_terms ) && isset( $location_terms[0]->name ) ) {
+		$payload['location_label'] = trim( (string) $location_terms[0]->name );
+	}
+
+	$custom_embed_url = trim( (string) get_post_meta( $property_id, '_rect_property_map_embed_url', true ) );
+	if ( '' !== $custom_embed_url ) {
+		$custom_embed_url = esc_url_raw( $custom_embed_url );
+		if ( '' !== $custom_embed_url ) {
+			$payload['embed_url'] = $custom_embed_url;
+		}
+	}
+
+	if ( '' !== $payload['location_label'] ) {
+		$encoded_location   = rawurlencode( $payload['location_label'] );
+		$payload['view_url'] = 'https://www.google.com/maps/search/?api=1&query=' . $encoded_location;
+
+		if ( '' === $payload['embed_url'] ) {
+			$payload['embed_url'] = 'https://www.google.com/maps?q=' . $encoded_location . '&output=embed';
+		}
+	}
+
+	return $payload;
+}

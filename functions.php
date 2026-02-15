@@ -111,6 +111,23 @@ function real_estate_custom_theme_get_property_json_ld_payload( $post_id, $canon
 		}
 	}
 
+	if ( function_exists( 'real_estate_custom_theme_get_property_map_payload' ) ) {
+		$map_payload = real_estate_custom_theme_get_property_map_payload( $post_id );
+		if ( is_array( $map_payload ) ) {
+			$map_url = '';
+
+			if ( isset( $map_payload['view_url'] ) && '' !== (string) $map_payload['view_url'] ) {
+				$map_url = esc_url_raw( (string) $map_payload['view_url'] );
+			} elseif ( isset( $map_payload['embed_url'] ) && '' !== (string) $map_payload['embed_url'] ) {
+				$map_url = esc_url_raw( (string) $map_payload['embed_url'] );
+			}
+
+			if ( '' !== $map_url ) {
+				$schema['hasMap'] = $map_url;
+			}
+		}
+	}
+
 	$bedrooms_value = trim( (string) get_post_meta( $post_id, 'property_bedrooms', true ) );
 	if ( '' === $bedrooms_value ) {
 		$bedrooms_value = trim( (string) get_post_meta( $post_id, 'bedrooms', true ) );
@@ -365,6 +382,60 @@ function real_estate_custom_theme_get_property_inquiry_form_shortcode() {
 }
 
 /**
+ * Resolve Contact Form 7 shortcode for single-property inquiry form.
+ *
+ * Form title is intentionally fixed to keep template integration stable:
+ * - Single Property Inquiry Form
+ *
+ * @return string
+ */
+function real_estate_custom_theme_get_single_property_inquiry_form_shortcode() {
+	if ( ! shortcode_exists( 'contact-form-7' ) ) {
+		return '';
+	}
+
+	$form_title = 'Single Property Inquiry Form';
+
+	$forms = get_posts(
+		array(
+			'post_type'      => 'wpcf7_contact_form',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'title'          => $form_title,
+			'orderby'        => 'ID',
+			'order'          => 'DESC',
+		)
+	);
+
+	// Fallback for environments where exact-title query var is unavailable.
+	if ( empty( $forms ) ) {
+		$candidate_forms = get_posts(
+			array(
+				'post_type'      => 'wpcf7_contact_form',
+				'post_status'    => 'publish',
+				'posts_per_page' => 20,
+				's'              => $form_title,
+				'orderby'        => 'ID',
+				'order'          => 'DESC',
+			)
+		);
+
+		foreach ( $candidate_forms as $candidate_form ) {
+			if ( 0 === strcasecmp( trim( (string) $candidate_form->post_title ), $form_title ) ) {
+				$forms = array( $candidate_form );
+				break;
+			}
+		}
+	}
+
+	if ( empty( $forms ) || empty( $forms[0]->ID ) ) {
+		return '';
+	}
+
+	return sprintf( '[contact-form-7 id="%d"]', absint( $forms[0]->ID ) );
+}
+
+/**
  * Normalize invalid acceptance tag syntax for the Property Inquiry CF7 form.
  *
  * CF7 acceptance tags do not support the required asterisk variant.
@@ -384,8 +455,18 @@ function real_estate_custom_theme_normalize_property_inquiry_acceptance_tag( $pr
 		return $properties;
 	}
 
-	$form_title = trim( (string) $contact_form->title() );
-	if ( 0 !== strcasecmp( $form_title, 'Property Inquiry Form' ) ) {
+	$form_title        = trim( (string) $contact_form->title() );
+	$allowed_titles    = array( 'Property Inquiry Form', 'Single Property Inquiry Form' );
+	$matches_form_name = false;
+
+	foreach ( $allowed_titles as $allowed_title ) {
+		if ( 0 === strcasecmp( $form_title, $allowed_title ) ) {
+			$matches_form_name = true;
+			break;
+		}
+	}
+
+	if ( ! $matches_form_name ) {
 		return $properties;
 	}
 
@@ -656,6 +737,7 @@ function real_estate_custom_theme_scripts()
 	$property_filters_js_version = file_exists( $theme_dir . '/js/property-filters.js' ) ? (string) filemtime( $theme_dir . '/js/property-filters.js' ) : _S_VERSION;
 	$property_inquiry_form_js_version = file_exists( $theme_dir . '/js/property-inquiry-form.js' ) ? (string) filemtime( $theme_dir . '/js/property-inquiry-form.js' ) : _S_VERSION;
 	$property_single_gallery_js_version = file_exists( $theme_dir . '/js/property-single-gallery.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-gallery.js' ) : _S_VERSION;
+	$property_single_inquiry_js_version = file_exists( $theme_dir . '/js/property-single-inquiry.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-inquiry.js' ) : _S_VERSION;
 	$nav_js_version     = file_exists( $theme_dir . '/js/navigation.js' ) ? (string) filemtime( $theme_dir . '/js/navigation.js' ) : _S_VERSION;
 	$stats_js_version   = file_exists( $theme_dir . '/js/stats-counter.js' ) ? (string) filemtime( $theme_dir . '/js/stats-counter.js' ) : _S_VERSION;
 
@@ -747,6 +829,14 @@ function real_estate_custom_theme_scripts()
 			$theme_uri . '/js/property-single-gallery.js',
 			array(),
 			$property_single_gallery_js_version,
+			true
+		);
+
+		wp_enqueue_script(
+			'real-estate-custom-theme-property-single-inquiry',
+			$theme_uri . '/js/property-single-inquiry.js',
+			array(),
+			$property_single_inquiry_js_version,
 			true
 		);
 	}

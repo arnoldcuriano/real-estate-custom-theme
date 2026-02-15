@@ -1774,6 +1774,86 @@ body.page-contact-us #page {
 	padding: clamp(1.05rem, 1.65vw, 1.4rem);
 }
 
+.property-inquiry--single {
+	margin-top: clamp(1.4rem, 2.6vw, 2rem);
+}
+
+.property-inquiry--single .property-inquiry__layout {
+	display: grid;
+	grid-template-columns: minmax(220px, 0.42fr) minmax(0, 0.58fr);
+	gap: clamp(1rem, 2.1vw, 1.6rem);
+	align-items: start;
+}
+
+.property-inquiry--single .property-inquiry__intro {
+	display: grid;
+	gap: 0.75rem;
+	align-content: start;
+}
+
+.property-inquiry--single .property-inquiry__intro h2 {
+	margin: 0;
+	font-size: clamp(1.7rem, 3.3vw, 2.35rem);
+	line-height: 1.14;
+	letter-spacing: -0.01em;
+	color: #f7f8fc;
+}
+
+.property-inquiry--single .property-inquiry__intro p {
+	margin: 0;
+	max-width: none;
+	width: 100%;
+	font-size: 0.94rem;
+	line-height: 1.62;
+	color: #b6bac8;
+}
+
+.property-inquiry--single .property-inquiry__panel {
+	margin: 0;
+}
+
+.property-inquiry--single .wpcf7 form {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.property-inquiry--single .property-inquiry__field--full,
+.property-inquiry--single .property-inquiry__field--terms,
+.property-inquiry--single .property-inquiry__field--submit {
+	grid-column: 1 / -1;
+}
+
+.property-inquiry--single .property-inquiry__field--submit {
+	justify-self: end;
+}
+
+.property-inquiry--single .property-inquiry__selected-wrap {
+	position: relative;
+}
+
+.property-inquiry--single .property-inquiry__selected-wrap::before {
+	content: none;
+}
+
+.property-inquiry.property-inquiry--single input[name="selected_property"] {
+	padding: 0 0.95rem 0 2.75rem;
+	line-height: calc(var(--property-inquiry-control-height) - 2px);
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238f95a8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.4'/%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-size: 15px 15px;
+	background-position: 1rem calc(50% - 1px);
+}
+
+.property-inquiry.property-inquiry--single input[name="selected_property"][readonly] {
+	cursor: default;
+	color: #dce1f2;
+	background-image:
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238f95a8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11z'/%3E%3Ccircle cx='12' cy='10' r='2.4'/%3E%3C/svg%3E"),
+		linear-gradient(180deg, #141924 0%, #131722 100%);
+	background-repeat: no-repeat, no-repeat;
+	background-size: 15px 15px, 100% 100%;
+	background-position: 1rem calc(50% - 1px), 0 0;
+}
+
 .property-inquiry__form-wrap .wpcf7 {
 	margin: 0;
 }
@@ -1899,6 +1979,8 @@ span.property-inquiry__label {
 	font-size: 0.9rem;
 	line-height: 1.35;
 	transition: border-color 0.2s ease, box-shadow 0.2s ease;
+	caret-color: #eff1f7;
+	-webkit-text-fill-color: #eff1f7;
 }
 
 .property-inquiry input[type="text"]:focus,
@@ -1907,9 +1989,41 @@ span.property-inquiry__label {
 .property-inquiry select:focus,
 .property-inquiry textarea:focus {
 	color: #f8f9ff;
+	background: #12151d;
+	-webkit-text-fill-color: #f8f9ff;
 	border-color: rgba(111, 70, 255, 0.72);
 	box-shadow: 0 0 0 2px rgba(111, 70, 255, 0.2);
 	outline: none;
+}
+
+.property-inquiry input[type="text"]:-webkit-autofill,
+.property-inquiry input[type="text"]:-webkit-autofill:hover,
+.property-inquiry input[type="text"]:-webkit-autofill:focus,
+.property-inquiry input[type="email"]:-webkit-autofill,
+.property-inquiry input[type="email"]:-webkit-autofill:hover,
+.property-inquiry input[type="email"]:-webkit-autofill:focus,
+.property-inquiry input[type="tel"]:-webkit-autofill,
+.property-inquiry input[type="tel"]:-webkit-autofill:hover,
+.property-inquiry input[type="tel"]:-webkit-autofill:focus,
+.property-inquiry textarea:-webkit-autofill,
+.property-inquiry textarea:-webkit-autofill:hover,
+.property-inquiry textarea:-webkit-autofill:focus {
+	-webkit-box-shadow: 0 0 0 1000px #12151d inset;
+	-webkit-text-fill-color: #eff1f7;
+	caret-color: #eff1f7;
+	border-color: #242838;
+}
+
+/* Keep single-property inquiry field order deterministic */
+.property-inquiry.property-inquiry--single .wpcf7 form {
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-auto-flow: row;
+}
+
+.property-inquiry.property-inquiry--single .property-inquiry__field--full,
+.property-inquiry.property-inquiry--single .property-inquiry__field--terms,
+.property-inquiry.property-inquiry--single .property-inquiry__field--submit {
+	grid-column: 1 / -1;
 }
 
 .property-inquiry input::placeholder,
@@ -2516,6 +2630,115 @@ span.property-inquiry__label {
 	margin-top: 0.95rem;
 }
 
+.property-single__map-shell {
+	margin-top: 0.95rem;
+}
+
+.property-single__map-card {
+	border: 1px solid #262b3a;
+	border-radius: 12px;
+	background: linear-gradient(180deg, #131722 0%, #11141d 100%);
+	padding: 0.88rem;
+	display: grid;
+	gap: 0.72rem;
+}
+
+.property-single__map-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-wrap: wrap;
+	gap: 0.42rem 0.7rem;
+}
+
+.property-single__map-copy {
+	display: grid;
+	gap: 0.26rem;
+}
+
+.property-single__map-copy h3 {
+	margin: 0;
+	font-size: 1rem;
+	line-height: 1.2;
+	color: #f4f5fb;
+	letter-spacing: -0.01em;
+}
+
+.property-single__map-copy p {
+	margin: 0;
+	font-size: 0.84rem;
+	line-height: 1.5;
+	color: #aeb4c6;
+}
+
+.property-single__map-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.32rem;
+	color: #d6dbee;
+	font-size: 0.82rem;
+	font-weight: 500;
+	line-height: 1;
+	padding: 0.32rem 0.62rem;
+	border-radius: 999px;
+	border: 1px solid #2c3244;
+	background: #171d2a;
+}
+
+.property-single__map-chip svg {
+	width: 14px;
+	height: 14px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.8;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	flex: 0 0 auto;
+}
+
+.property-single__map-frame {
+	position: relative;
+	overflow: hidden;
+	border-radius: 10px;
+	border: 1px solid #252937;
+	background: #0e1118;
+	aspect-ratio: auto;
+	height: clamp(380px, 36vw, 420px);
+	min-height: 0;
+}
+
+.property-single__map-frame iframe {
+	position: absolute;
+	inset: 0;
+	display: block;
+	width: 100%;
+	height: 100%;
+	border: 0;
+}
+
+.property-single__map-action {
+	margin: 0;
+}
+
+.property-single__map-action a {
+	color: #eceef7;
+	font-size: 0.86rem;
+	font-weight: 500;
+	text-decoration: none;
+}
+
+.property-single__map-action a:visited {
+	color: #eceef7;
+}
+
+.property-single__map-action a:hover,
+.property-single__map-action a:focus-visible {
+	color: #ffffff;
+	text-decoration: underline;
+	text-decoration-thickness: 1px;
+	text-underline-offset: 2px;
+}
+
 .property-single__post-gallery {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2714,6 +2937,10 @@ span.property-inquiry__label {
 	.property-single__post-gallery {
 		grid-template-columns: 1fr;
 	}
+
+	.property-single__map-frame {
+		height: clamp(320px, 48vw, 380px);
+	}
 }
 
 @media (max-width: 900px) {
@@ -2792,6 +3019,27 @@ span.property-inquiry__label {
 
 	.property-single__details-shell {
 		margin-top: 0.8rem;
+	}
+
+	.property-single__map-shell {
+		margin-top: 0.8rem;
+	}
+
+	.property-single__map-card {
+		padding: 0.78rem;
+	}
+
+	.property-single__map-copy p {
+		font-size: 0.8rem;
+	}
+
+	.property-single__map-chip {
+		font-size: 0.78rem;
+		padding: 0.26rem 0.56rem;
+	}
+
+	.property-single__map-frame {
+		height: clamp(240px, 62vw, 320px);
 	}
 
 	.property-single__overview-card,
@@ -3168,6 +3416,15 @@ span.property-inquiry__label {
 	.property-inquiry__panel {
 		padding: 1rem;
 	}
+
+	.property-inquiry--single .property-inquiry__layout {
+		grid-template-columns: 1fr;
+		gap: 0.95rem;
+	}
+
+	.property-inquiry--single .property-inquiry__intro p {
+		max-width: none;
+	}
 }
 
 @media (max-width: 860px) {
@@ -3367,6 +3624,14 @@ span.property-inquiry__label {
 
 	.property-inquiry__head h2 {
 		font-size: clamp(1.5rem, 7vw, 1.95rem);
+	}
+
+	.property-inquiry--single .property-inquiry__intro h2 {
+		font-size: clamp(1.5rem, 7vw, 2rem);
+	}
+
+	.property-inquiry--single .property-inquiry__intro p {
+		max-width: none;
 	}
 
 	.property-inquiry__panel {

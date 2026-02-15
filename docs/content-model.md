@@ -30,6 +30,7 @@ Document current data structures used by the theme for dynamic home/archive cont
 - `inc/client-helpers.php`
 - `inc/team-member-helpers.php`
 - `inc/faq-helpers.php`
+- `js/property-single-inquiry.js`
 - `front-page.php`
 - `page-about-us.php`
 - `page-services.php`
@@ -147,6 +148,7 @@ Contract:
 - storage keys:
   - `_rect_property_key_features`
   - `_rect_property_amenities`
+  - `_rect_property_map_embed_url` (optional URL override)
 - value format:
   - ordered rows saved as post meta arrays (WordPress serialized)
   - each row:
@@ -164,6 +166,10 @@ Contract:
   1. `_rect_property_key_features`
   2. `_rect_property_amenities`
   - sections are hidden when corresponding row arrays are empty
+- single-property map source:
+  1. `_rect_property_map_embed_url` when provided
+  2. fallback to first `property_location` term -> Google Maps iframe query URL
+  3. hidden when no map URL and no location term
 
 #### Testimonial fields
 - `testimonial_rating`
@@ -236,6 +242,21 @@ Contract:
     - rows render icon + label (+ optional value)
   - single-property title row:
     - location renders inline after property name using first `property_location` term
+  - single-property location map:
+    - rendered below details cards
+    - iframe-based Google Maps embed (no JS SDK/API key requirement)
+    - custom URL override from `_rect_property_map_embed_url` if present
+    - fallback to first `property_location` term when override is empty
+  - single-property inquiry section:
+    - rendered below the map section in `single-property.php`
+    - CF7 form source resolved by helper:
+      - `real_estate_custom_theme_get_single_property_inquiry_form_shortcode()`
+      - fixed form title: `Single Property Inquiry Form`
+    - selected property prefill contract:
+      - template data attrs: `data-selected-property-title`, `data-selected-property-location`
+      - JS enhancer `js/property-single-inquiry.js` sets readonly `selected_property` field value to:
+        - `{title}, {location}` when location exists
+        - `{title}` otherwise
   - property type display fallback:
     - taxonomy term (`property_type`)
     - fallback to legacy `property_type` meta text

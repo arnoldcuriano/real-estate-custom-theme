@@ -37,6 +37,13 @@ get_header();
 		$frame_sizes_attr      = '(max-width: 680px) calc(100vw - 2.5rem), (max-width: 1024px) calc((100vw - 3rem) / 2), 50vw';
 		$thumb_sizes_attr      = '(max-width: 680px) 22vw, (max-width: 1024px) 14vw, 10vw';
 		$property_description  = '';
+		$property_map_payload  = function_exists( 'real_estate_custom_theme_get_property_map_payload' )
+			? real_estate_custom_theme_get_property_map_payload( $property_id )
+			: array(
+				'embed_url'      => '',
+				'view_url'       => '',
+				'location_label' => '',
+			);
 
 		$build_gallery_item_from_attachment = static function( $attachment_id, $alt_fallback, $frame_sizes, $thumb_sizes ) {
 			$attachment_id = absint( $attachment_id );
@@ -218,9 +225,19 @@ get_header();
 		$property_area_display      = '';
 		$all_property_details       = array_merge( $property_key_features, $property_amenities );
 		$has_property_details       = ! empty( $all_property_details );
+		$property_map_embed_url     = isset( $property_map_payload['embed_url'] ) ? trim( (string) $property_map_payload['embed_url'] ) : '';
+		$property_map_view_url      = isset( $property_map_payload['view_url'] ) ? trim( (string) $property_map_payload['view_url'] ) : '';
+		$property_map_location      = isset( $property_map_payload['location_label'] ) ? trim( (string) $property_map_payload['location_label'] ) : '';
+		$single_property_inquiry_form_shortcode = function_exists( 'real_estate_custom_theme_get_single_property_inquiry_form_shortcode' )
+			? real_estate_custom_theme_get_single_property_inquiry_form_shortcode()
+			: '';
 		$properties_archive_url     = function_exists( 'real_estate_custom_theme_get_properties_archive_url' )
 			? real_estate_custom_theme_get_properties_archive_url()
 			: get_post_type_archive_link( 'property' );
+
+		if ( '' === $property_map_location ) {
+			$property_map_location = $property_location;
+		}
 
 		if ( '' !== $property_area_raw ) {
 			if ( is_numeric( $property_area_raw ) ) {
@@ -467,6 +484,81 @@ get_header();
 				</section>
 			</section>
 		<?php endif; ?>
+
+		<?php if ( '' !== $property_map_embed_url ) : ?>
+			<section class="property-single__map-shell" aria-label="<?php esc_attr_e( 'Property location map', 'real-estate-custom-theme' ); ?>">
+				<div class="property-single__map-card">
+					<header class="property-single__map-head">
+						<div class="property-single__map-copy">
+							<h3><?php esc_html_e( 'Property Location & Nearby Area', 'real-estate-custom-theme' ); ?></h3>
+							<p><?php esc_html_e( 'View the exact location and explore what\'s around this property.', 'real-estate-custom-theme' ); ?></p>
+						</div>
+						<?php if ( '' !== $property_map_location ) : ?>
+							<span class="property-single__map-chip">
+								<svg viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+									<path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+								</svg>
+								<span><?php echo esc_html( $property_map_location ); ?></span>
+							</span>
+						<?php endif; ?>
+					</header>
+
+					<div class="property-single__map-frame">
+						<iframe
+							src="<?php echo esc_url( $property_map_embed_url ); ?>"
+							title="<?php echo esc_attr( '' !== $property_map_location ? sprintf( __( 'Map for %1$s in %2$s', 'real-estate-custom-theme' ), $property_title_text, $property_map_location ) : sprintf( __( 'Map for %s', 'real-estate-custom-theme' ), $property_title_text ) ); ?>"
+							loading="lazy"
+							referrerpolicy="no-referrer-when-downgrade"
+							allowfullscreen
+						></iframe>
+					</div>
+
+					<?php if ( '' !== $property_map_view_url ) : ?>
+						<p class="property-single__map-action">
+							<a href="<?php echo esc_url( $property_map_view_url ); ?>" target="_blank" rel="noopener noreferrer">
+								<?php esc_html_e( 'View on Google Maps', 'real-estate-custom-theme' ); ?>
+							</a>
+						</p>
+					<?php endif; ?>
+				</div>
+			</section>
+		<?php endif; ?>
+
+		<section
+			class="property-single__inquiry property-inquiry section-shell property-inquiry--single"
+			aria-labelledby="property-single-inquiry-title"
+			data-selected-property-title="<?php echo esc_attr( $property_title_text ); ?>"
+			data-selected-property-location="<?php echo esc_attr( $property_location ); ?>"
+		>
+			<div class="property-inquiry__layout">
+				<div class="property-inquiry__intro">
+					<h2 id="property-single-inquiry-title">
+						<?php
+						echo esc_html(
+							sprintf(
+								/* translators: %s: property title. */
+								__( 'Inquire About %s', 'real-estate-custom-theme' ),
+								$property_title_text
+							)
+						);
+						?>
+					</h2>
+					<p><?php esc_html_e( 'Interested in this property? Fill out the form below, and our real estate experts will get back to you with more details, including scheduling a viewing and answering any questions you may have.', 'real-estate-custom-theme' ); ?></p>
+				</div>
+
+				<div class="property-inquiry__panel">
+					<?php if ( '' !== $single_property_inquiry_form_shortcode ) : ?>
+						<div class="property-inquiry__form-wrap">
+							<?php echo do_shortcode( $single_property_inquiry_form_shortcode ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+						</div>
+					<?php else : ?>
+						<p class="property-inquiry__fallback">
+							<?php esc_html_e( 'Single Property Inquiry Form is not available yet. Install and activate Contact Form 7, then create a form titled "Single Property Inquiry Form".', 'real-estate-custom-theme' ); ?>
+						</p>
+					<?php endif; ?>
+				</div>
+			</div>
+		</section>
 	<?php endwhile; ?>
 </main>
 

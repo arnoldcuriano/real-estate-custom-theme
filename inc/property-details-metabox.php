@@ -136,6 +136,7 @@ add_action( 'add_meta_boxes', 'real_estate_custom_theme_register_property_detail
 function real_estate_custom_theme_render_property_details_metabox( $post ) {
 	$groups       = real_estate_custom_theme_get_property_details_metabox_groups();
 	$icon_presets = real_estate_custom_theme_get_property_details_metabox_icon_presets();
+	$map_embed_url = trim( (string) get_post_meta( $post->ID, '_rect_property_map_embed_url', true ) );
 
 	wp_nonce_field( 'rect_property_details_save', 'rect_property_details_nonce' );
 	?>
@@ -176,6 +177,26 @@ function real_estate_custom_theme_render_property_details_metabox( $post ) {
 				</template>
 			</section>
 		<?php endforeach; ?>
+
+		<section class="rect-property-details-metabox__group rect-property-details-metabox__group--map">
+			<header class="rect-property-details-metabox__group-head">
+				<h3><?php esc_html_e( 'Property Map', 'real-estate-custom-theme' ); ?></h3>
+			</header>
+
+			<label class="rect-property-details-metabox__map-field" for="rect-property-map-embed-url">
+				<span><?php esc_html_e( 'Map Embed URL (Optional)', 'real-estate-custom-theme' ); ?></span>
+				<input
+					id="rect-property-map-embed-url"
+					type="url"
+					name="rect_property_map_embed_url"
+					value="<?php echo esc_attr( $map_embed_url ); ?>"
+					placeholder="https://www.google.com/maps?..."
+				>
+			</label>
+			<p class="description">
+				<?php esc_html_e( 'Paste a Google Maps embed URL (Share > Embed a map > src). If empty, the single-property page auto-builds the map from the first property location term.', 'real-estate-custom-theme' ); ?>
+			</p>
+		</section>
 
 		<p class="description">
 			<?php esc_html_e( 'Use drag handles to reorder entries. Each item uses a selectable preset icon.', 'real-estate-custom-theme' ); ?>
@@ -228,6 +249,19 @@ function real_estate_custom_theme_save_property_details_metabox( $post_id ) {
 
 		delete_post_meta( $post_id, $group_config['meta_key'] );
 	}
+
+	$map_embed_url = '';
+	if ( isset( $_POST['rect_property_map_embed_url'] ) ) {
+		$map_embed_url = trim( (string) wp_unslash( $_POST['rect_property_map_embed_url'] ) );
+		$map_embed_url = '' !== $map_embed_url ? esc_url_raw( $map_embed_url ) : '';
+	}
+
+	if ( '' !== $map_embed_url ) {
+		update_post_meta( $post_id, '_rect_property_map_embed_url', $map_embed_url );
+		return;
+	}
+
+	delete_post_meta( $post_id, '_rect_property_map_embed_url' );
 }
 add_action( 'save_post_property', 'real_estate_custom_theme_save_property_details_metabox' );
 

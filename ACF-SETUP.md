@@ -87,6 +87,7 @@ The theme supports both:
 
 - Meta key: `_rect_property_key_features`
 - Meta key: `_rect_property_amenities`
+- Meta key: `_rect_property_map_embed_url` (optional URL override)
 - Value format (both): ordered array rows saved as post meta (serialized by WordPress)
   - row fields:
     - `label` (required text)
@@ -96,10 +97,15 @@ The theme supports both:
     - `icon_custom` (attachment ID, optional)
 - Managed from Property edit screen metabox:
   - title: `Property Details`
-  - supports add/remove rows, drag reorder, default/custom icon per row
+  - supports add/remove rows, drag reorder, icon preset per row
+  - supports optional `Map Embed URL` field
 - Single-property details source:
   - `single-property.php` reads `_rect_property_key_features` and `_rect_property_amenities`
   - sections render only when rows exist (`Key Features`, `Amenities`)
+- Single-property map source:
+  1. `_rect_property_map_embed_url` when provided
+  2. fallback to first `property_location` term -> Google Maps iframe query embed
+  3. map section hidden when no source is available
 
 ### Property taxonomy contract
 
@@ -280,7 +286,7 @@ After setup:
   - `rg -n "group_rect_about_sections|field_rect_achievements_title|field_rect_process_steps|field_rect_about_cta_heading" wp-content/themes/real-estate-custom-theme/inc/acf-fields-about.php`
   - `rg -n "group_rect_services_page_hero|services_hero_title|services_hero_description" wp-content/themes/real-estate-custom-theme/inc/acf-fields-services.php`
   - `rg -n "_rect_property_gallery_ids|save_post_property|add_meta_box\\(|wp_enqueue_media" wp-content/themes/real-estate-custom-theme/inc/property-gallery-metabox.php`
-  - `rg -n "_rect_property_key_features|_rect_property_amenities|Property Details|save_post_property|wp_enqueue_media" wp-content/themes/real-estate-custom-theme/inc/property-details-metabox.php`
+  - `rg -n "_rect_property_key_features|_rect_property_amenities|_rect_property_map_embed_url|Property Details|save_post_property|wp_enqueue_media" wp-content/themes/real-estate-custom-theme/inc/property-details-metabox.php`
 - Confirm template usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
   - `rg -n "post_type\\\" value=\\\"property\\\"|property_location|property_type|location|type|price_range|size_range|build_year_range" wp-content/themes/real-estate-custom-theme/archive-property.php wp-content/themes/real-estate-custom-theme/inc/cpt-property.php`

@@ -19,6 +19,8 @@ This documentation reflects only what currently exists in the codebase.
   - removed legacy meta chips + long content block below gallery
   - added native `Key Features` and `Amenities` details container
   - property title now shows location inline with pin icon (`Name + Location`)
+  - added Google map embed section below details with native fallback logic (no extra plugin/API SDK install)
+  - added dedicated single-property inquiry section below map using CF7 form title `Single Property Inquiry Form`
 - Added native Property Details metabox (ACF-free) on `property` edit screen:
   - meta keys: `_rect_property_key_features`, `_rect_property_amenities`
   - supports add/remove/sort rows, predefined icons, and custom icon uploads
@@ -144,6 +146,7 @@ This documentation reflects only what currently exists in the codebase.
   - `js/property-filters.js`
   - `js/property-inquiry-form.js`
   - `js/property-single-gallery.js`
+  - `js/property-single-inquiry.js`
   - `js/admin-property-gallery-metabox.js`
   - `js/admin-property-details-metabox.js`
   - `js/stats-counter.js`
@@ -190,6 +193,9 @@ This documentation reflects only what currently exists in the codebase.
 - Native property details metabox:
   - `_rect_property_key_features` (ordered rows)
   - `_rect_property_amenities` (ordered rows)
+- Native property map embed override (optional):
+  - `_rect_property_map_embed_url` (URL)
+  - when empty, single property map iframe falls back to first `property_location` term
   - row contract:
     - `label`
     - `value` (optional)
@@ -360,17 +366,86 @@ Important: if a select is not rendering as branded dropdown, keep `class:js-prop
 Also, if you see raw text like `[acceptance ...]` on the frontend, use `[acceptance consent_terms]...[/acceptance]` exactly (do not use `acceptance*`).
 Theme fallback: for this specific form title (`Property Inquiry Form`), invalid `[acceptance* ...]` is auto-normalized by theme hook to reduce local-authoring breakage.
 
+## Single Property Inquiry Form (Contact Form 7)
+
+The single property page (`single-property.php`) renders a dedicated inquiry section below the map.
+
+### Required admin setup
+
+1. Ensure **Contact Form 7** is active.
+2. Create a form with title: `Single Property Inquiry Form`.
+3. In the CF7 form **Additional Settings**, add:
+   - `autop: off`
+   - `demo_mode: on` (optional for local)
+
+### CF7 form template (recommended)
+
+Use this in the CF7 editor to match the single-property inquiry layout and prefill behavior:
+
+```text
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">First Name
+    [text* first_name placeholder "Enter First Name"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Last Name
+    [text* last_name placeholder "Enter Last Name"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Email
+    [email* email placeholder "Enter your Email"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Phone
+    [tel* phone placeholder "Enter Phone Number"]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--full">
+  <label class="property-inquiry__label">Selected Property
+    [text* selected_property placeholder "Selected Property"]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--full">
+  <label class="property-inquiry__label">Message
+    [textarea message placeholder "Enter your Message here."]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--terms property-inquiry__terms">
+  [acceptance consent_terms]I agree with Terms of Use and Privacy Policy[/acceptance]
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--submit">
+  [submit class:property-inquiry__submit "Send Your Message"]
+</div>
+```
+
+Notes:
+- Theme JS auto-fills `selected_property` and enforces readonly on single-property pages.
+- Keep field name exactly `selected_property` for prefill compatibility.
+- Acceptance tag normalization also supports this form title if `acceptance*` is mistakenly used.
+
 ## Validation checklist
 
 - PHP syntax:
   - `C:\xampp\php\php.exe -l wp-content/themes/real-estate-custom-theme/functions.php`
   - `C:\xampp\php\php.exe -l wp-content/themes/real-estate-custom-theme/front-page.php`
   - `C:\xampp\php\php.exe -l wp-content/themes/real-estate-custom-theme/archive-property.php`
+  - `C:\xampp\php\php.exe -l wp-content/themes/real-estate-custom-theme/single-property.php`
 - JS syntax:
   - `node --check wp-content/themes/real-estate-custom-theme/js/home.js`
   - `node --check wp-content/themes/real-estate-custom-theme/js/navigation.js`
   - `node --check wp-content/themes/real-estate-custom-theme/js/property-filters.js`
   - `node --check wp-content/themes/real-estate-custom-theme/js/property-inquiry-form.js`
+  - `node --check wp-content/themes/real-estate-custom-theme/js/property-single-inquiry.js`
 - Route checks:
   - front page: `http://localhost/realestate/`
   - property archive (depends on permalink mode): `/properties/` or `/index.php/properties/`
