@@ -76,8 +76,11 @@ if ( is_array( $current_post_type ) ) {
 	$current_post_type = reset( $current_post_type );
 }
 
-if ( 'property' === (string) $current_post_type ) {
-	$active_filter_args['post_type'] = 'property';
+$should_show_clear_filters = ! empty( $active_filter_args );
+$pagination_filter_args    = $active_filter_args;
+
+if ( is_search() && 'property' === (string) $current_post_type ) {
+	$pagination_filter_args['post_type'] = 'property';
 }
 
 if ( '' !== $filter_state['s'] ) {
@@ -265,7 +268,7 @@ $property_inquiry_form_shortcode = function_exists( 'real_estate_custom_theme_ge
 						</label>
 					</div>
 
-					<?php if ( ! empty( $active_filter_args ) ) : ?>
+					<?php if ( $should_show_clear_filters ) : ?>
 						<div class="property-archive__filter-actions">
 							<a class="property-archive__filter-reset" href="<?php echo esc_url( $property_archive_url ); ?>"><?php esc_html_e( 'Clear Filters', 'real-estate-custom-theme' ); ?></a>
 						</div>
@@ -561,8 +564,8 @@ $property_inquiry_form_shortcode = function_exists( 'real_estate_custom_theme_ge
 					'prev_text' => esc_html__( 'Previous', 'real-estate-custom-theme' ),
 					'next_text' => esc_html__( 'Next', 'real-estate-custom-theme' ),
 				);
-				if ( ! empty( $active_filter_args ) ) {
-					$pagination_args['add_args'] = $active_filter_args;
+				if ( ! empty( $pagination_filter_args ) ) {
+					$pagination_args['add_args'] = $pagination_filter_args;
 				}
 
 				the_posts_pagination( $pagination_args );

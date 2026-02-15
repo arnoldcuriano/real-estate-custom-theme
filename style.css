@@ -1273,6 +1273,11 @@ body.page-contact-us #page {
 	border: 0 !important;
 	background: transparent !important;
 	color: #eef0f5 !important;
+	-webkit-text-fill-color: #eef0f5 !important;
+	caret-color: #eef0f5;
+	appearance: none;
+	-webkit-appearance: none;
+	border-radius: 0;
 	font-size: 0.95rem;
 	padding: 0 !important;
 	outline: none;
@@ -1281,6 +1286,25 @@ body.page-contact-us #page {
 
 .property-archive__search-input::placeholder {
 	color: #818494;
+}
+
+.property-archive__search-input:focus,
+.property-archive__search-input:active {
+	background: transparent !important;
+	color: #eef0f5 !important;
+	-webkit-text-fill-color: #eef0f5 !important;
+	box-shadow: none !important;
+}
+
+.property-archive__search-input:-webkit-autofill,
+.property-archive__search-input:-webkit-autofill:hover,
+.property-archive__search-input:-webkit-autofill:focus,
+.property-archive__search-input:-webkit-autofill:active {
+	-webkit-text-fill-color: #eef0f5 !important;
+	-webkit-box-shadow: 0 0 0 1000px #0f1118 inset !important;
+	box-shadow: 0 0 0 1000px #0f1118 inset !important;
+	caret-color: #eef0f5 !important;
+	transition: background-color 9999s ease-out 0s;
 }
 
 .property-archive__search-submit {
@@ -1532,6 +1556,7 @@ body.page-contact-us #page {
 .property-archive__filter-actions {
 	display: flex;
 	justify-content: flex-end;
+	margin-top: clamp(0.5rem, 1vw, 0.75rem);
 }
 
 .property-archive__filter-reset {
