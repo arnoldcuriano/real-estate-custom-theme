@@ -3,7 +3,9 @@
 Developer documentation for the current implementation of this WordPress custom theme.
 
 ## Project overview
+
 This theme is a custom real estate site built on top of a WordPress theme structure. It contains:
+
 - a custom front page experience (`front-page.php`)
 - a custom footer and front-page-specific header/navigation
 - a `property` custom post type and property archive template
@@ -12,6 +14,14 @@ This theme is a custom real estate site built on top of a WordPress theme struct
 This documentation reflects only what currently exists in the codebase.
 
 ## Latest Changes
+
+- Single property page content module was refactored:
+  - removed legacy meta chips + long content block below gallery
+  - added native `Key Features` and `Amenities` details container
+  - property title now shows location inline with pin icon (`Name + Location`)
+- Added native Property Details metabox (ACF-free) on `property` edit screen:
+  - meta keys: `_rect_property_key_features`, `_rect_property_amenities`
+  - supports add/remove/sort rows, predefined icons, and custom icon uploads
 - Property archive search now stays in branded property UI:
   - archive filter form submits hidden `post_type=property`
   - property searches render through archive-style layout (hero + filters + cards), not default WP sidebar search template
@@ -71,6 +81,7 @@ This documentation reflects only what currently exists in the codebase.
   - new FAQ archive template with category query-pill filtering and pagination
 
 ## Tech stack
+
 - WordPress PHP templates and hooks
 - CSS split by ownership:
   - global: `style.css`
@@ -85,6 +96,7 @@ This documentation reflects only what currently exists in the codebase.
   - Advanced Custom Fields (ACF) for editable field groups
 
 ## Theme file map
+
 - Bootstrap and enqueue:
   - `functions.php`
 - Templates:
@@ -108,6 +120,8 @@ This documentation reflects only what currently exists in the codebase.
   - `inc/cpt-testimonial.php`
   - `inc/cpt-faq.php`
   - `inc/acf-fields-properties.php`
+  - `inc/property-gallery-metabox.php`
+  - `inc/property-details-metabox.php`
   - `inc/acf-fields-testimonials.php`
   - `inc/acf-fields-faq.php`
   - `inc/acf-fields-about.php`
@@ -122,14 +136,20 @@ This documentation reflects only what currently exists in the codebase.
   - `css/header.css`
   - `css/home.css`
   - `css/about.css`
+  - `css/admin-property-gallery-metabox.css`
+  - `css/admin-property-details-metabox.css`
 - Scripts:
   - `js/navigation.js`
   - `js/home.js`
   - `js/property-filters.js`
   - `js/property-inquiry-form.js`
+  - `js/property-single-gallery.js`
+  - `js/admin-property-gallery-metabox.js`
+  - `js/admin-property-details-metabox.js`
   - `js/stats-counter.js`
 
 ## Asset and style ownership model
+
 - `style.css`
   - base WordPress styles
   - sitewide layout tokens
@@ -144,6 +164,7 @@ This documentation reflects only what currently exists in the codebase.
   - about page hero/journey/values/achievements/process section styles
 
 ## Data model summary
+
 - Custom post types:
   - slug: `property`
   - archive: `/properties/`
@@ -164,6 +185,17 @@ This documentation reflects only what currently exists in the codebase.
   - `property_card_excerpt`
   - `featured_on_home`
   - `featured_order`
+- Native property gallery metabox:
+  - `_rect_property_gallery_ids` (ordered CSV attachment IDs)
+- Native property details metabox:
+  - `_rect_property_key_features` (ordered rows)
+  - `_rect_property_amenities` (ordered rows)
+  - row contract:
+    - `label`
+    - `value` (optional)
+    - `icon_source` (`predefined`/`custom`)
+    - `icon_preset`
+    - `icon_custom` (attachment ID, optional)
 - Testimonial fields:
   - `testimonial_rating`
   - `testimonial_quote`
@@ -188,7 +220,9 @@ This documentation reflects only what currently exists in the codebase.
 - Fallback behavior exists in templates if fields are empty.
 
 ## Front-page flow
+
 `front-page.php` sections:
+
 1. Hero
 2. Quick links loop (`data-quick-links-loop`, Alpine/fallback logic)
 3. Featured properties carousel (`data-featured-carousel`, auto + manual)
@@ -197,6 +231,7 @@ This documentation reflects only what currently exists in the codebase.
 6. Sitewide footer CTA + footer group (from shared `footer.php`)
 
 ## Setup quickstart
+
 1. Activate the theme.
 2. Set a static front page in WordPress so `front-page.php` is used.
 3. Install and activate ACF if you need editable featured/property field values.
@@ -204,9 +239,11 @@ This documentation reflects only what currently exists in the codebase.
 5. If static pages use slugs `properties`, `testimonials`, or `faqs`, rename those page slugs to avoid route conflicts.
 
 ## Property Inquiry Form (Contact Form 7)
+
 The `/properties/` page now renders a Contact Form 7 form section titled `Let's Make it Happen` after the listings/pagination.
 
 ### Required admin setup
+
 1. Install and activate **Contact Form 7**.
 2. Create a form with title: `Property Inquiry Form`.
 3. In `Contact > Integration`, connect **reCAPTCHA v3** using Google site key + secret.
@@ -215,6 +252,7 @@ The `/properties/` page now renders a Contact Form 7 form section titled `Let's 
    - `autop: off`
 
 ### Local reCAPTCHA testing (hosts alias)
+
 Google reCAPTCHA may reject `localhost` in some setups. Use a local alias domain instead:
 
 1. Add hosts entry (Windows file: `C:\Windows\System32\drivers\etc\hosts`):
@@ -226,6 +264,7 @@ Google reCAPTCHA may reject `localhost` in some setups. Use a local alias domain
 5. Submit the form once and confirm no domain mismatch/integration error appears.
 
 ### CF7 form template (recommended)
+
 Use this in the CF7 form editor to match theme styling and field mapping:
 
 ```text
@@ -322,6 +361,7 @@ Also, if you see raw text like `[acceptance ...]` on the frontend, use `[accepta
 Theme fallback: for this specific form title (`Property Inquiry Form`), invalid `[acceptance* ...]` is auto-normalized by theme hook to reduce local-authoring breakage.
 
 ## Validation checklist
+
 - PHP syntax:
   - `C:\xampp\php\php.exe -l wp-content/themes/real-estate-custom-theme/functions.php`
   - `C:\xampp\php\php.exe -l wp-content/themes/real-estate-custom-theme/front-page.php`
@@ -337,6 +377,7 @@ Theme fallback: for this specific form title (`Property Inquiry Form`), invalid 
   - branded property search: `/properties/?post_type=property&s=rustic`
 
 ## Detailed documentation
+
 - Architecture: `docs/architecture.md`
 - Content model: `docs/content-model.md`
 - Frontend behavior: `docs/frontend-behavior.md`

@@ -17,6 +17,8 @@ Document current data structures used by the theme for dynamic home/archive cont
 - `inc/cpt-team-member.php`
 - `inc/cpt-faq.php`
 - `inc/acf-fields-properties.php`
+- `inc/property-gallery-metabox.php`
+- `inc/property-details-metabox.php`
 - `inc/acf-fields-testimonials.php`
 - `inc/acf-fields-clients.php`
 - `inc/acf-fields-team-members.php`
@@ -131,6 +133,38 @@ Contract:
 - `featured_on_home`
 - `featured_order`
 
+#### Property photo gallery (native metabox contract)
+- storage key: `_rect_property_gallery_ids`
+- value: ordered CSV attachment IDs (example: `23,54,99`)
+- editor UI: Property edit metabox (`Property Photos`) with multi-select, drag-sort, remove
+- single-property gallery source chain:
+  1. `_rect_property_gallery_ids` (primary)
+  2. legacy ACF `property_gallery` (fallback, if present)
+  3. featured image
+  4. theme fallback image
+
+#### Property details modules (native metabox contract)
+- storage keys:
+  - `_rect_property_key_features`
+  - `_rect_property_amenities`
+- value format:
+  - ordered rows saved as post meta arrays (WordPress serialized)
+  - each row:
+    - `label` (required text)
+    - `value` (optional text)
+    - `icon_source` (`predefined`/`custom`)
+    - `icon_preset` (default icon key)
+    - `icon_custom` (attachment ID, optional)
+- editor UI:
+  - metabox title: `Property Details`
+  - add/remove rows
+  - drag-sort ordering
+  - per-row default/custom icon selection
+- single-property details source:
+  1. `_rect_property_key_features`
+  2. `_rect_property_amenities`
+  - sections are hidden when corresponding row arrays are empty
+
 #### Testimonial fields
 - `testimonial_rating`
 - `testimonial_quote`
@@ -192,6 +226,16 @@ Contract:
   - helper: `real_estate_custom_theme_get_property_card_excerpt_data()`
   - helper: `real_estate_custom_theme_get_property_type_label()`
   - legacy fallbacks for `price`, `bedrooms`, `bathrooms`
+  - single-property gallery data source:
+    - primary: native metabox `_rect_property_gallery_ids`
+    - fallback: legacy ACF `property_gallery` when metabox is empty
+    - then featured image -> theme fallback image
+  - single-property details container:
+    - `Key Features` from `_rect_property_key_features`
+    - `Amenities` from `_rect_property_amenities`
+    - rows render icon + label (+ optional value)
+  - single-property title row:
+    - location renders inline after property name using first `property_location` term
   - property type display fallback:
     - taxonomy term (`property_type`)
     - fallback to legacy `property_type` meta text

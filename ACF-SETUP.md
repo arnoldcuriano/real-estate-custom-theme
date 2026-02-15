@@ -20,6 +20,8 @@ Configure ACF-backed editable fields used by the current theme implementation.
 ## Source of truth files
 
 - `inc/acf-fields-properties.php`
+- `inc/property-gallery-metabox.php`
+- `inc/property-details-metabox.php`
 - `inc/acf-fields-testimonials.php`
 - `inc/acf-fields-clients.php`
 - `inc/acf-fields-team-members.php`
@@ -67,6 +69,37 @@ The theme supports both:
 - `property_card_excerpt` (textarea, optional)
 - `featured_on_home` (true/false)
 - `featured_order` (number, optional)
+
+### Property photo gallery (native metabox, not ACF)
+
+- Meta key: `_rect_property_gallery_ids`
+- Value format: CSV attachment IDs in saved order (example: `23,54,99`)
+- Managed from Property edit screen metabox:
+  - title: `Property Photos`
+  - supports multi-select, drag reorder, remove
+- Single-property gallery source chain:
+  1. native metabox `_rect_property_gallery_ids`
+  2. legacy ACF `property_gallery` (fallback only, if present)
+  3. featured image fallback
+  4. theme fallback asset
+
+### Property details modules (native metabox, not ACF)
+
+- Meta key: `_rect_property_key_features`
+- Meta key: `_rect_property_amenities`
+- Value format (both): ordered array rows saved as post meta (serialized by WordPress)
+  - row fields:
+    - `label` (required text)
+    - `value` (optional text)
+    - `icon_source` (`predefined`/`custom`)
+    - `icon_preset` (default icon key)
+    - `icon_custom` (attachment ID, optional)
+- Managed from Property edit screen metabox:
+  - title: `Property Details`
+  - supports add/remove rows, drag reorder, default/custom icon per row
+- Single-property details source:
+  - `single-property.php` reads `_rect_property_key_features` and `_rect_property_amenities`
+  - sections render only when rows exist (`Key Features`, `Amenities`)
 
 ### Property taxonomy contract
 
@@ -246,6 +279,8 @@ After setup:
   - `rg -n "field_rect_faq_is_featured|field_rect_faq_cta_label" wp-content/themes/real-estate-custom-theme/inc/acf-fields-faq.php`
   - `rg -n "group_rect_about_sections|field_rect_achievements_title|field_rect_process_steps|field_rect_about_cta_heading" wp-content/themes/real-estate-custom-theme/inc/acf-fields-about.php`
   - `rg -n "group_rect_services_page_hero|services_hero_title|services_hero_description" wp-content/themes/real-estate-custom-theme/inc/acf-fields-services.php`
+  - `rg -n "_rect_property_gallery_ids|save_post_property|add_meta_box\\(|wp_enqueue_media" wp-content/themes/real-estate-custom-theme/inc/property-gallery-metabox.php`
+  - `rg -n "_rect_property_key_features|_rect_property_amenities|Property Details|save_post_property|wp_enqueue_media" wp-content/themes/real-estate-custom-theme/inc/property-details-metabox.php`
 - Confirm template usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
   - `rg -n "post_type\\\" value=\\\"property\\\"|property_location|property_type|location|type|price_range|size_range|build_year_range" wp-content/themes/real-estate-custom-theme/archive-property.php wp-content/themes/real-estate-custom-theme/inc/cpt-property.php`

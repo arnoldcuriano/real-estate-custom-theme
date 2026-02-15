@@ -21,6 +21,7 @@ if (! defined('_S_VERSION')) {
  * as indicating support for post thumbnails.
  */
 function real_estate_custom_theme_setup() {
+	add_theme_support( 'title-tag' );
 	add_theme_support( 'post-thumbnails' );
 	add_theme_support(
 		'admin-bar',
@@ -30,6 +31,186 @@ function real_estate_custom_theme_setup() {
 	);
 }
 add_action( 'after_setup_theme', 'real_estate_custom_theme_setup' );
+
+/**
+ * Detect whether a dedicated SEO plugin is expected to manage head meta.
+ *
+ * @return bool
+ */
+function real_estate_custom_theme_has_external_seo_meta_manager() {
+	return defined( 'WPSEO_VERSION' )
+		|| defined( 'RANK_MATH_VERSION' )
+		|| defined( 'AIOSEO_VERSION' )
+		|| defined( 'SEOPRESS_VERSION' )
+		|| defined( 'THE_SEO_FRAMEWORK_VERSION' );
+}
+
+/**
+ * Build a clean fallback SEO description for property singles.
+ *
+ * @param int $post_id Property post ID.
+ * @return string
+ */
+function real_estate_custom_theme_get_property_seo_description( $post_id ) {
+	$post = get_post( absint( $post_id ) );
+	if ( ! $post instanceof WP_Post ) {
+		return '';
+	}
+
+	$excerpt = trim( (string) $post->post_excerpt );
+	if ( '' !== $excerpt ) {
+		return wp_strip_all_tags( $excerpt );
+	}
+
+	$content = trim( (string) $post->post_content );
+	if ( '' === $content ) {
+		return '';
+	}
+
+	$content = wp_strip_all_tags( strip_shortcodes( $content ) );
+	$content = trim( preg_replace( '/\s+/', ' ', $content ) );
+
+	if ( '' === $content ) {
+		return '';
+	}
+
+	return wp_trim_words( $content, 32, '...' );
+}
+
+/**
+ * Build Property single JSON-LD payload.
+ *
+ * @param int    $post_id     Property post ID.
+ * @param string $canonical   Canonical URL.
+ * @param string $title       Property title.
+ * @param string $description Property description.
+ * @param array  $images      Image URLs.
+ * @return array
+ */
+function real_estate_custom_theme_get_property_json_ld_payload( $post_id, $canonical, $title, $description, $images ) {
+	$schema = array(
+		'@context'    => 'https://schema.org',
+		'@type'       => 'Residence',
+		'name'        => $title,
+		'url'         => $canonical,
+		'description' => $description,
+	);
+
+	if ( ! empty( $images ) ) {
+		$schema['image'] = array_values( array_unique( array_filter( array_map( 'esc_url_raw', $images ) ) ) );
+	}
+
+	$location_terms = get_the_terms( $post_id, 'property_location' );
+	if ( ! is_wp_error( $location_terms ) && ! empty( $location_terms ) ) {
+		$location_name = trim( (string) $location_terms[0]->name );
+		if ( '' !== $location_name ) {
+			$schema['address'] = array(
+				'@type'           => 'PostalAddress',
+				'addressLocality' => $location_name,
+			);
+		}
+	}
+
+	$bedrooms_value = trim( (string) get_post_meta( $post_id, 'property_bedrooms', true ) );
+	if ( '' === $bedrooms_value ) {
+		$bedrooms_value = trim( (string) get_post_meta( $post_id, 'bedrooms', true ) );
+	}
+	if ( preg_match( '/\d+/', $bedrooms_value, $bedroom_match ) ) {
+		$schema['numberOfRooms'] = (int) $bedroom_match[0];
+	}
+
+	$bathrooms_value = trim( (string) get_post_meta( $post_id, 'property_bathrooms', true ) );
+	if ( '' === $bathrooms_value ) {
+		$bathrooms_value = trim( (string) get_post_meta( $post_id, 'bathrooms', true ) );
+	}
+	if ( preg_match( '/\d+/', $bathrooms_value, $bathroom_match ) ) {
+		$schema['numberOfBathroomsTotal'] = (int) $bathroom_match[0];
+	}
+
+	return $schema;
+}
+
+/**
+ * Output fallback SEO meta + schema for single property pages when no SEO plugin is active.
+ *
+ * @return void
+ */
+function real_estate_custom_theme_output_property_single_seo_meta() {
+	if ( ! is_singular( 'property' ) || real_estate_custom_theme_has_external_seo_meta_manager() ) {
+		return;
+	}
+
+	$post_id = get_queried_object_id();
+	if ( $post_id <= 0 ) {
+		return;
+	}
+
+	$title       = wp_strip_all_tags( get_the_title( $post_id ) );
+	$canonical   = get_permalink( $post_id );
+	$description = real_estate_custom_theme_get_property_seo_description( $post_id );
+
+	if ( '' === $canonical ) {
+		return;
+	}
+
+	$image_urls = array();
+
+	if ( function_exists( 'real_estate_custom_theme_get_property_gallery_ids' ) ) {
+		$gallery_ids = real_estate_custom_theme_get_property_gallery_ids( $post_id );
+		foreach ( array_slice( $gallery_ids, 0, 6 ) as $gallery_id ) {
+			$image_url = (string) wp_get_attachment_image_url( absint( $gallery_id ), 'full' );
+			if ( '' !== $image_url ) {
+				$image_urls[] = $image_url;
+			}
+		}
+	}
+
+	if ( empty( $image_urls ) && has_post_thumbnail( $post_id ) ) {
+		$featured_url = (string) wp_get_attachment_image_url( get_post_thumbnail_id( $post_id ), 'full' );
+		if ( '' !== $featured_url ) {
+			$image_urls[] = $featured_url;
+		}
+	}
+
+	if ( empty( $image_urls ) && function_exists( 'real_estate_custom_theme_get_property_fallback_image_url' ) ) {
+		$fallback_url = (string) real_estate_custom_theme_get_property_fallback_image_url();
+		if ( '' !== $fallback_url ) {
+			$image_urls[] = $fallback_url;
+		}
+	}
+
+	?>
+	<link rel="canonical" href="<?php echo esc_url( $canonical ); ?>">
+	<?php if ( '' !== $description ) : ?>
+		<meta name="description" content="<?php echo esc_attr( $description ); ?>">
+	<?php endif; ?>
+
+	<meta property="og:type" content="article">
+	<meta property="og:title" content="<?php echo esc_attr( $title ); ?>">
+	<meta property="og:url" content="<?php echo esc_url( $canonical ); ?>">
+	<?php if ( '' !== $description ) : ?>
+		<meta property="og:description" content="<?php echo esc_attr( $description ); ?>">
+	<?php endif; ?>
+	<?php if ( ! empty( $image_urls[0] ) ) : ?>
+		<meta property="og:image" content="<?php echo esc_url( $image_urls[0] ); ?>">
+	<?php endif; ?>
+
+	<meta name="twitter:card" content="<?php echo ! empty( $image_urls[0] ) ? 'summary_large_image' : 'summary'; ?>">
+	<meta name="twitter:title" content="<?php echo esc_attr( $title ); ?>">
+	<?php if ( '' !== $description ) : ?>
+		<meta name="twitter:description" content="<?php echo esc_attr( $description ); ?>">
+	<?php endif; ?>
+	<?php if ( ! empty( $image_urls[0] ) ) : ?>
+		<meta name="twitter:image" content="<?php echo esc_url( $image_urls[0] ); ?>">
+	<?php endif; ?>
+	<?php
+
+	$json_ld = real_estate_custom_theme_get_property_json_ld_payload( $post_id, $canonical, $title, $description, $image_urls );
+	if ( ! empty( $json_ld ) ) {
+		echo '<script type="application/ld+json">' . wp_json_encode( $json_ld, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ) . '</script>';
+	}
+}
+add_action( 'wp_head', 'real_estate_custom_theme_output_property_single_seo_meta', 20 );
 
 /**
  * Disable core admin-bar bump styles in favor of theme-controlled offsets.
@@ -474,6 +655,7 @@ function real_estate_custom_theme_scripts()
 	$about_js_version   = file_exists( $theme_dir . '/js/about.js' ) ? (string) filemtime( $theme_dir . '/js/about.js' ) : _S_VERSION;
 	$property_filters_js_version = file_exists( $theme_dir . '/js/property-filters.js' ) ? (string) filemtime( $theme_dir . '/js/property-filters.js' ) : _S_VERSION;
 	$property_inquiry_form_js_version = file_exists( $theme_dir . '/js/property-inquiry-form.js' ) ? (string) filemtime( $theme_dir . '/js/property-inquiry-form.js' ) : _S_VERSION;
+	$property_single_gallery_js_version = file_exists( $theme_dir . '/js/property-single-gallery.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-gallery.js' ) : _S_VERSION;
 	$nav_js_version     = file_exists( $theme_dir . '/js/navigation.js' ) ? (string) filemtime( $theme_dir . '/js/navigation.js' ) : _S_VERSION;
 	$stats_js_version   = file_exists( $theme_dir . '/js/stats-counter.js' ) ? (string) filemtime( $theme_dir . '/js/stats-counter.js' ) : _S_VERSION;
 
@@ -555,6 +737,16 @@ function real_estate_custom_theme_scripts()
 			$theme_uri . '/js/property-inquiry-form.js',
 			array(),
 			$property_inquiry_form_js_version,
+			true
+		);
+	}
+
+	if ( is_singular( 'property' ) ) {
+		wp_enqueue_script(
+			'real-estate-custom-theme-property-single-gallery',
+			$theme_uri . '/js/property-single-gallery.js',
+			array(),
+			$property_single_gallery_js_version,
 			true
 		);
 	}
@@ -655,6 +847,16 @@ add_action( 'login_head', 'real_estate_custom_theme_output_favicon' );
  * Property helpers (meta icons and card excerpt truncation).
  */
 require get_template_directory() . '/inc/property-helpers.php';
+
+/**
+ * Property gallery metabox (native WP media uploader, ACF-free).
+ */
+require get_template_directory() . '/inc/property-gallery-metabox.php';
+
+/**
+ * Property details metabox (key features + amenities, native WP media uploader).
+ */
+require get_template_directory() . '/inc/property-details-metabox.php';
 
 /**
  * Register Property custom post type.

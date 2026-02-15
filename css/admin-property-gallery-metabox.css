@@ -1,0 +1,82 @@
+.rect-property-gallery-metabox {
+	display: grid;
+	gap: 0.75rem;
+}
+
+.rect-property-gallery-metabox__list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.55rem;
+}
+
+.rect-property-gallery-metabox__item {
+	position: relative;
+	width: 90px;
+	border: 1px solid #d1d5df;
+	border-radius: 8px;
+	background: #f8f9fc;
+	overflow: hidden;
+	padding-top: 16px;
+	cursor: move;
+}
+
+.rect-property-gallery-metabox__item img {
+	display: block;
+	width: 100%;
+	height: 68px;
+	object-fit: cover;
+}
+
+.rect-property-gallery-metabox__drag {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 16px;
+	display: grid;
+	place-items: center;
+	font-size: 14px;
+	line-height: 1;
+	color: #6a7389;
+	background: #eceff6;
+	border-bottom: 1px solid #d1d5df;
+}
+
+.rect-property-gallery-metabox__remove {
+	display: block;
+	width: 100%;
+	padding: 4px 6px 5px;
+	text-align: center;
+	font-size: 11px;
+	line-height: 1.2;
+	background: #fff;
+	border-top: 1px solid #e1e4ec;
+	text-decoration: none;
+}
+
+.rect-property-gallery-metabox__actions {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+}
+
+.rect-property-gallery-metabox__clear {
+	text-decoration: none;
+}
+
+.rect-property-gallery-metabox.is-empty .rect-property-gallery-metabox__clear {
+	opacity: 0.45;
+	pointer-events: none;
+}
+
+.rect-property-gallery-metabox__placeholder {
+	width: 90px;
+	height: 90px;
+	border: 1px dashed #a5afc5;
+	border-radius: 8px;
+	background: #f3f5fb;
+}
+

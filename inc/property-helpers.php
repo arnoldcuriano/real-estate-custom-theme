@@ -117,6 +117,174 @@ function real_estate_custom_theme_get_property_type_label( $property_id ) {
 }
 
 /**
+ * Get icon presets used by property details rows (key features / amenities).
+ *
+ * @return array<string, array<string, string>>
+ */
+function real_estate_custom_theme_get_property_detail_icon_presets() {
+	return array(
+		'check'    => array(
+			'label' => __( 'Check', 'real-estate-custom-theme' ),
+			'path'  => 'M20 6L9 17l-5-5',
+		),
+		'spark'    => array(
+			'label' => __( 'Spark', 'real-estate-custom-theme' ),
+			'path'  => 'M13 2L4 14h6l-1 8 9-12h-6l1-8z',
+		),
+		'shield'   => array(
+			'label' => __( 'Shield', 'real-estate-custom-theme' ),
+			'path'  => 'M12 3l7 3v6c0 5-3.4 8.8-7 10-3.6-1.2-7-5-7-10V6l7-3z',
+		),
+		'pin'      => array(
+			'label' => __( 'Pin', 'real-estate-custom-theme' ),
+			'path'  => 'M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',
+		),
+		'building' => array(
+			'label' => __( 'Building', 'real-estate-custom-theme' ),
+			'path'  => 'M4 20h16M6 20V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v15M9 8h2M13 8h2M9 12h2M13 12h2M11 20v-4h2v4',
+		),
+		'tag'      => array(
+			'label' => __( 'Tag', 'real-estate-custom-theme' ),
+			'path'  => 'M20 10l-8 8-8-8V4h6l10 10zM8 8h.01',
+		),
+	);
+}
+
+/**
+ * Normalize details rows payload from post meta/admin payload.
+ *
+ * @param mixed $raw_value Raw value from post meta or request payload.
+ * @return array<int, array<string, string|int>>
+ */
+function real_estate_custom_theme_normalize_property_detail_items( $raw_value ) {
+	$rows = array();
+
+	if ( is_array( $raw_value ) ) {
+		$rows = $raw_value;
+	} elseif ( is_string( $raw_value ) && '' !== trim( $raw_value ) ) {
+		$decoded = json_decode( $raw_value, true );
+		if ( is_array( $decoded ) ) {
+			$rows = $decoded;
+		}
+	}
+
+	if ( empty( $rows ) ) {
+		return array();
+	}
+
+	$icon_presets = real_estate_custom_theme_get_property_detail_icon_presets();
+	$normalized   = array();
+
+	foreach ( $rows as $row ) {
+		if ( ! is_array( $row ) ) {
+			continue;
+		}
+
+		$label       = isset( $row['label'] ) ? sanitize_text_field( (string) $row['label'] ) : '';
+		$value       = isset( $row['value'] ) ? sanitize_text_field( (string) $row['value'] ) : '';
+		$icon_source = isset( $row['icon_source'] ) ? sanitize_key( (string) $row['icon_source'] ) : 'predefined';
+		$icon_preset = isset( $row['icon_preset'] ) ? sanitize_key( (string) $row['icon_preset'] ) : 'check';
+		$icon_custom = isset( $row['icon_custom'] ) ? absint( $row['icon_custom'] ) : 0;
+
+		if ( '' === $label ) {
+			continue;
+		}
+
+		if ( 'custom' !== $icon_source ) {
+			$icon_source = 'predefined';
+		}
+
+		if ( ! isset( $icon_presets[ $icon_preset ] ) ) {
+			$icon_preset = 'check';
+		}
+
+		$normalized[] = array(
+			'label'       => $label,
+			'value'       => $value,
+			'icon_source' => $icon_source,
+			'icon_preset' => $icon_preset,
+			'icon_custom' => $icon_custom,
+		);
+	}
+
+	return $normalized;
+}
+
+/**
+ * Read normalized property details rows by meta key.
+ *
+ * @param int    $property_id Property post ID.
+ * @param string $meta_key    Details meta key.
+ * @return array<int, array<string, string|int>>
+ */
+function real_estate_custom_theme_get_property_detail_items( $property_id, $meta_key ) {
+	return real_estate_custom_theme_normalize_property_detail_items(
+		get_post_meta( absint( $property_id ), $meta_key, true )
+	);
+}
+
+/**
+ * Resolve icon selection for a property details row.
+ *
+ * @param array<string, string|int> $item         Details row payload.
+ * @param string                    $fallback_key Fallback preset key.
+ * @return array<string, string>
+ */
+function real_estate_custom_theme_get_property_detail_item_icon_data( $item, $fallback_key = 'check' ) {
+	$icon_presets = real_estate_custom_theme_get_property_detail_icon_presets();
+	$icon_source  = isset( $item['icon_source'] ) ? sanitize_key( (string) $item['icon_source'] ) : 'predefined';
+	$icon_preset  = isset( $item['icon_preset'] ) ? sanitize_key( (string) $item['icon_preset'] ) : $fallback_key;
+	$icon_custom  = isset( $item['icon_custom'] ) ? absint( $item['icon_custom'] ) : 0;
+
+	if ( 'custom' === $icon_source && $icon_custom > 0 ) {
+		$custom_url = (string) wp_get_attachment_image_url( $icon_custom, 'thumbnail' );
+		if ( '' === $custom_url ) {
+			$custom_url = (string) wp_get_attachment_image_url( $icon_custom, 'medium' );
+		}
+
+		if ( '' !== $custom_url ) {
+			return array(
+				'type' => 'image',
+				'url'  => esc_url( $custom_url ),
+			);
+		}
+	}
+
+	$preset_key = isset( $icon_presets[ $icon_preset ] ) ? $icon_preset : $fallback_key;
+	if ( ! isset( $icon_presets[ $preset_key ] ) ) {
+		$preset_key = 'check';
+	}
+
+	return array(
+		'type'  => 'svg',
+		'path'  => $icon_presets[ $preset_key ]['path'],
+		'label' => $icon_presets[ $preset_key ]['label'],
+	);
+}
+
+/**
+ * Build icon markup for a property details row.
+ *
+ * @param array<string, string|int> $item         Details row payload.
+ * @param string                    $fallback_key Fallback preset key.
+ * @return string
+ */
+function real_estate_custom_theme_get_property_detail_item_icon_markup( $item, $fallback_key = 'check' ) {
+	$icon_data = real_estate_custom_theme_get_property_detail_item_icon_data( $item, $fallback_key );
+
+	if ( 'image' === $icon_data['type'] && ! empty( $icon_data['url'] ) ) {
+		return '<img class="meta-icon meta-icon--image" src="' . esc_url( $icon_data['url'] ) . '" alt="" loading="lazy" aria-hidden="true">';
+	}
+
+	$path = isset( $icon_data['path'] ) ? (string) $icon_data['path'] : '';
+	if ( '' === $path ) {
+		return '';
+	}
+
+	return '<svg class="meta-icon meta-icon--svg" viewBox="0 0 24 24" focusable="false" aria-hidden="true"><path d="' . esc_attr( $path ) . '"></path></svg>';
+}
+
+/**
  * Character length helper with multibyte fallback.
  *
  * @param string $text Text content.
