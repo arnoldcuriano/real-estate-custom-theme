@@ -130,6 +130,99 @@ function real_estate_custom_theme_get_properties_archive_url() {
 }
 
 /**
+ * Resolve Contact Form 7 shortcode for the Properties inquiry form.
+ *
+ * Form title is intentionally fixed to keep theme integration stable:
+ * - Property Inquiry Form
+ *
+ * @return string
+ */
+function real_estate_custom_theme_get_property_inquiry_form_shortcode() {
+	if ( ! shortcode_exists( 'contact-form-7' ) ) {
+		return '';
+	}
+
+	$form_title = 'Property Inquiry Form';
+
+	$forms = get_posts(
+		array(
+			'post_type'      => 'wpcf7_contact_form',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'title'          => $form_title,
+			'orderby'        => 'ID',
+			'order'          => 'DESC',
+		)
+	);
+
+	// Fallback for environments where exact-title query var is unavailable.
+	if ( empty( $forms ) ) {
+		$candidate_forms = get_posts(
+			array(
+				'post_type'      => 'wpcf7_contact_form',
+				'post_status'    => 'publish',
+				'posts_per_page' => 20,
+				's'              => $form_title,
+				'orderby'        => 'ID',
+				'order'          => 'DESC',
+			)
+		);
+
+		foreach ( $candidate_forms as $candidate_form ) {
+			if ( 0 === strcasecmp( trim( (string) $candidate_form->post_title ), $form_title ) ) {
+				$forms = array( $candidate_form );
+				break;
+			}
+		}
+	}
+
+	if ( empty( $forms ) || empty( $forms[0]->ID ) ) {
+		return '';
+	}
+
+	return sprintf( '[contact-form-7 id="%d"]', absint( $forms[0]->ID ) );
+}
+
+/**
+ * Normalize invalid acceptance tag syntax for the Property Inquiry CF7 form.
+ *
+ * CF7 acceptance tags do not support the required asterisk variant.
+ * If `[acceptance* ...]` is present in the form template, CF7 renders it as raw
+ * text. This normalizer rewrites it to `[acceptance ...]` before CF7 scans tags.
+ *
+ * @param array                $properties   Contact form properties.
+ * @param WPCF7_ContactForm    $contact_form Contact form object.
+ * @return array
+ */
+function real_estate_custom_theme_normalize_property_inquiry_acceptance_tag( $properties, $contact_form ) {
+	if ( empty( $properties['form'] ) || ! is_string( $properties['form'] ) ) {
+		return $properties;
+	}
+
+	if ( ! is_object( $contact_form ) || ! method_exists( $contact_form, 'title' ) ) {
+		return $properties;
+	}
+
+	$form_title = trim( (string) $contact_form->title() );
+	if ( 0 !== strcasecmp( $form_title, 'Property Inquiry Form' ) ) {
+		return $properties;
+	}
+
+	if ( false === strpos( $properties['form'], '[acceptance*' ) ) {
+		return $properties;
+	}
+
+	$normalized_form = preg_replace( '/\[acceptance\*\s+([^\]]+)\]/i', '[acceptance $1]', $properties['form'] );
+
+	if ( is_string( $normalized_form ) && '' !== $normalized_form ) {
+		$properties['form'] = $normalized_form;
+	}
+
+	return $properties;
+}
+add_filter( 'wpcf7_contact_form_properties', 'real_estate_custom_theme_normalize_property_inquiry_acceptance_tag', 10, 2 );
+
+/**
  * Determine whether current route should use the front-style header shell.
  *
  * @return bool
@@ -379,6 +472,8 @@ function real_estate_custom_theme_scripts()
 	$about_style_version = file_exists( $theme_dir . '/css/about.css' ) ? (string) filemtime( $theme_dir . '/css/about.css' ) : _S_VERSION;
 	$home_js_version    = file_exists( $theme_dir . '/js/home.js' ) ? (string) filemtime( $theme_dir . '/js/home.js' ) : _S_VERSION;
 	$about_js_version   = file_exists( $theme_dir . '/js/about.js' ) ? (string) filemtime( $theme_dir . '/js/about.js' ) : _S_VERSION;
+	$property_filters_js_version = file_exists( $theme_dir . '/js/property-filters.js' ) ? (string) filemtime( $theme_dir . '/js/property-filters.js' ) : _S_VERSION;
+	$property_inquiry_form_js_version = file_exists( $theme_dir . '/js/property-inquiry-form.js' ) ? (string) filemtime( $theme_dir . '/js/property-inquiry-form.js' ) : _S_VERSION;
 	$nav_js_version     = file_exists( $theme_dir . '/js/navigation.js' ) ? (string) filemtime( $theme_dir . '/js/navigation.js' ) : _S_VERSION;
 	$stats_js_version   = file_exists( $theme_dir . '/js/stats-counter.js' ) ? (string) filemtime( $theme_dir . '/js/stats-counter.js' ) : _S_VERSION;
 
@@ -399,7 +494,7 @@ function real_estate_custom_theme_scripts()
 		$header_style_version
 	);
 
-	$should_load_home_experience_assets = is_front_page() || is_page( 'services' );
+	$should_load_home_experience_assets = is_front_page() || is_page( 'services' ) || is_post_type_archive( 'property' );
 
 	if ( is_page( 'about-us' ) ) {
 		wp_enqueue_style(
@@ -444,6 +539,24 @@ function real_estate_custom_theme_scripts()
 			);
 			wp_script_add_data( 'real-estate-custom-theme-alpine', 'defer', true );
 		}
+	}
+
+	if ( is_post_type_archive( 'property' ) ) {
+		wp_enqueue_script(
+			'real-estate-custom-theme-property-filters',
+			$theme_uri . '/js/property-filters.js',
+			array(),
+			$property_filters_js_version,
+			true
+		);
+
+		wp_enqueue_script(
+			'real-estate-custom-theme-property-inquiry-form',
+			$theme_uri . '/js/property-inquiry-form.js',
+			array(),
+			$property_inquiry_form_js_version,
+			true
+		);
 	}
 
 	wp_enqueue_script('real-estate-custom-theme-navigation', $theme_uri . '/js/navigation.js', array(), $nav_js_version, true);

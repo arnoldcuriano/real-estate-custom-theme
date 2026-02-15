@@ -471,8 +471,19 @@ function real_estate_custom_theme_filter_property_archive_query( $query ) {
 		return;
 	}
 
-	if ( is_admin() || ! $query->is_main_query() || ! $query->is_post_type_archive( 'property' ) ) {
+	$post_type = $query->get( 'post_type' );
+	if ( is_array( $post_type ) ) {
+		$post_type = reset( $post_type );
+	}
+
+	$is_property_search = $query->is_search() && 'property' === (string) $post_type;
+
+	if ( is_admin() || ! $query->is_main_query() || ( ! $query->is_post_type_archive( 'property' ) && ! $is_property_search ) ) {
 		return;
+	}
+
+	if ( $is_property_search ) {
+		$query->set( 'post_type', 'property' );
 	}
 
 	$filter_state = real_estate_custom_theme_get_property_archive_filter_state();

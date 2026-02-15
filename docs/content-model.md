@@ -197,10 +197,16 @@ Contract:
     - fallback to legacy `property_type` meta text
   - archive heading/description rendered through shared hero component `template-parts/page-hero.php`
   - archive filter contract (submit/reload):
-    - `s`, `location`, `type`, `price_range`, `size_range`, `build_year_range`
+    - `post_type=property`, `s`, `location`, `type`, `price_range`, `size_range`, `build_year_range`
     - tax filters: `property_location`, `property_type`
     - numeric meta filters: `price`, `size_sqm`, `build_year`
     - pagination preserves active query args
+  - property search rendering contract:
+    - `is_search() && post_type=property` routes to `archive-property.php` presentation
+    - avoids fallback/default WordPress search layout with sidebar widgets
+  - property filter engine scope:
+    - query filters apply for `is_post_type_archive('property')`
+    - query filters also apply for `is_search()` when `post_type=property`
 - Testimonials:
   - `front-page.php`, `archive-testimonial.php`
   - helper fallbacks for quote/name/location/photo in `inc/testimonial-helpers.php`

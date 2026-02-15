@@ -7,6 +7,19 @@
  * @package real-estate-custom-theme
  */
 
+$search_post_type = get_query_var( 'post_type' );
+if ( is_array( $search_post_type ) ) {
+	$search_post_type = reset( $search_post_type );
+}
+
+if ( is_search() && 'property' === (string) $search_post_type ) {
+	$property_archive_template = locate_template( 'archive-property.php', false, false );
+	if ( '' !== $property_archive_template ) {
+		require $property_archive_template;
+		return;
+	}
+}
+
 get_header();
 ?>
 

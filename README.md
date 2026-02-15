@@ -12,6 +12,15 @@ This theme is a custom real estate site built on top of a WordPress theme struct
 This documentation reflects only what currently exists in the codebase.
 
 ## Latest Changes
+- Property archive search now stays in branded property UI:
+  - archive filter form submits hidden `post_type=property`
+  - property searches render through archive-style layout (hero + filters + cards), not default WP sidebar search template
+- Property inquiry form spacing/alignment normalized:
+  - removed inherited paragraph margin offsets in contact-method row
+  - standardized label/control spacing tokens for consistent field alignment
+- Added property archive enhancement scripts:
+  - `js/property-filters.js` (branded property filter dropdown behavior)
+  - `js/property-inquiry-form.js` (branded inquiry form dropdown behavior)
 - Refactored Services and Properties to reuse one shared page hero component:
   - template part: `template-parts/page-hero.php`
   - consumed by: `page-services.php`, `archive-property.php`
@@ -116,6 +125,8 @@ This documentation reflects only what currently exists in the codebase.
 - Scripts:
   - `js/navigation.js`
   - `js/home.js`
+  - `js/property-filters.js`
+  - `js/property-inquiry-form.js`
   - `js/stats-counter.js`
 
 ## Asset and style ownership model
@@ -192,6 +203,124 @@ This documentation reflects only what currently exists in the codebase.
 4. Save permalinks (`Settings > Permalinks > Save Changes`) after CPT changes.
 5. If static pages use slugs `properties`, `testimonials`, or `faqs`, rename those page slugs to avoid route conflicts.
 
+## Property Inquiry Form (Contact Form 7)
+The `/properties/` page now renders a Contact Form 7 form section titled `Let's Make it Happen` after the listings/pagination.
+
+### Required admin setup
+1. Install and activate **Contact Form 7**.
+2. Create a form with title: `Property Inquiry Form`.
+3. In `Contact > Integration`, connect **reCAPTCHA v3** using Google site key + secret.
+4. In the CF7 form **Additional Settings**, add:
+   - `demo_mode: on`
+   - `autop: off`
+
+### Local reCAPTCHA testing (hosts alias)
+Google reCAPTCHA may reject `localhost` in some setups. Use a local alias domain instead:
+
+1. Add hosts entry (Windows file: `C:\Windows\System32\drivers\etc\hosts`):
+   - `127.0.0.1 realestate.localdev`
+2. Open the site using the alias domain, for example:
+   - `http://realestate.localdev/realestate/`
+3. In Google reCAPTCHA admin, add `realestate.localdev` to allowed domains.
+4. Keep CF7 Integration keys connected in `Contact > Integration`.
+5. Submit the form once and confirm no domain mismatch/integration error appears.
+
+### CF7 form template (recommended)
+Use this in the CF7 form editor to match theme styling and field mapping:
+
+```text
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">First Name
+    [text* first_name placeholder "Enter First Name"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Last Name
+    [text* last_name placeholder "Enter Last Name"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Email
+    [email* email placeholder "Enter your Email"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Phone
+    [tel* phone placeholder "Enter Phone Number"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Preferred Location
+    [select* preferred_location class:js-property-inquiry-select include_blank "Select Location" "Downtown" "Suburban" "Waterfront" "Countryside"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Property Type
+    [select* property_type class:js-property-inquiry-select include_blank "Select Property Type" "Apartment" "Villa" "Townhouse" "Commercial"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">No. of Bathrooms
+    [select* bathrooms class:js-property-inquiry-select include_blank "Select no. of Bathrooms" "1" "2" "3" "4+"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">No. of Bedrooms
+    [select* bedrooms class:js-property-inquiry-select include_blank "Select no. of Bedrooms" "1" "2" "3" "4+"]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--span-2">
+  <label class="property-inquiry__label">Budget
+    [select* budget class:js-property-inquiry-select include_blank "Select Budget" "Under $250k" "$250k - $500k" "$500k - $750k" "$750k - $1m" "Over $1m"]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--span-2">
+  <span class="property-inquiry__label">Preferred Contact Method</span>
+  <div class="property-inquiry__contact-method">
+    [radio preferred_contact_method use_label_element default:1 "Phone" "Email"]
+  </div>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--span-2">
+  <label class="property-inquiry__label">Preferred Phone
+    [tel preferred_phone placeholder "Enter Your Number"]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--span-2">
+  <label class="property-inquiry__label">Preferred Email
+    [email preferred_email placeholder "Enter Your Email"]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--full">
+  <label class="property-inquiry__label">Message
+    [textarea message placeholder "Enter your Message here."]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--terms property-inquiry__terms">
+  [acceptance consent_terms]I agree with Terms of Use and Privacy Policy[/acceptance]
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--submit">
+  [submit class:property-inquiry__submit "Send Your Message"]
+</div>
+```
+
+Important: if a select is not rendering as branded dropdown, keep `class:js-property-inquiry-select` on that `[select]` tag.  
+Also, if you see raw text like `[acceptance ...]` on the frontend, use `[acceptance consent_terms]...[/acceptance]` exactly (do not use `acceptance*`).
+Theme fallback: for this specific form title (`Property Inquiry Form`), invalid `[acceptance* ...]` is auto-normalized by theme hook to reduce local-authoring breakage.
+
 ## Validation checklist
 - PHP syntax:
   - `C:\xampp\php\php.exe -l wp-content/themes/real-estate-custom-theme/functions.php`
@@ -200,9 +329,12 @@ This documentation reflects only what currently exists in the codebase.
 - JS syntax:
   - `node --check wp-content/themes/real-estate-custom-theme/js/home.js`
   - `node --check wp-content/themes/real-estate-custom-theme/js/navigation.js`
+  - `node --check wp-content/themes/real-estate-custom-theme/js/property-filters.js`
+  - `node --check wp-content/themes/real-estate-custom-theme/js/property-inquiry-form.js`
 - Route checks:
   - front page: `http://localhost/realestate/`
   - property archive (depends on permalink mode): `/properties/` or `/index.php/properties/`
+  - branded property search: `/properties/?post_type=property&s=rustic`
 
 ## Detailed documentation
 - Architecture: `docs/architecture.md`

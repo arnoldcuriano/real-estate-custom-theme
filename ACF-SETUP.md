@@ -183,6 +183,7 @@ Property archive filters in `archive-property.php` + `inc/cpt-property.php`:
 
 1. search/filter module submits via query string (`GET`)
 2. accepted params:
+   - `post_type=property` (keeps search in branded property archive experience)
    - `s`
    - `location` (`property_location` term slug)
    - `type` (`property_type` term slug)
@@ -193,6 +194,9 @@ Property archive filters in `archive-property.php` + `inc/cpt-property.php`:
    - `tax_query` for `location` + `type`
    - `meta_query` for numeric range keys on `price`, `size_sqm`, `build_year`
 4. pagination preserves active filter query args
+5. branded property search routing:
+   - when `is_search()` and `post_type=property`, results render through `archive-property.php`
+   - prevents fallback to default WordPress search/sidebar layout
 
 ## Global slider logic contract
 
@@ -228,6 +232,9 @@ After setup:
 - Archive not resolving:
   - re-save permalinks
   - resolve `properties` slug conflicts
+- Property search shows default WP search page/sidebar:
+  - confirm properties search form includes hidden `post_type=property`
+  - confirm `search.php` routes `post_type=property` searches to `archive-property.php`
 
 ## Verification steps
 
@@ -241,7 +248,8 @@ After setup:
   - `rg -n "group_rect_services_page_hero|services_hero_title|services_hero_description" wp-content/themes/real-estate-custom-theme/inc/acf-fields-services.php`
 - Confirm template usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
-  - `rg -n "property_location|property_type|location|type|price_range|size_range|build_year_range" wp-content/themes/real-estate-custom-theme/archive-property.php wp-content/themes/real-estate-custom-theme/inc/cpt-property.php`
+  - `rg -n "post_type\\\" value=\\\"property\\\"|property_location|property_type|location|type|price_range|size_range|build_year_range" wp-content/themes/real-estate-custom-theme/archive-property.php wp-content/themes/real-estate-custom-theme/inc/cpt-property.php`
+  - `rg -n "is_search\\(\\) && 'property'|locate_template\\( 'archive-property.php'" wp-content/themes/real-estate-custom-theme/search.php`
   - `rg -n "about-clients|client_domain|client_category|client_industry|client_service_type" wp-content/themes/real-estate-custom-theme/page-about-us.php`
   - `rg -n "about-team|team_member|position_title|social_links|cta_url" wp-content/themes/real-estate-custom-theme/page-about-us.php`
   - `rg -n "services_hero_title|services_hero_description|data-quick-links-loop" wp-content/themes/real-estate-custom-theme/page-services.php`
