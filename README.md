@@ -21,9 +21,13 @@ This documentation reflects only what currently exists in the codebase.
   - property title now shows location inline with pin icon (`Name + Location`)
   - added Google map embed section below details with native fallback logic (no extra plugin/API SDK install)
   - added dedicated single-property inquiry section below map using CF7 form title `Single Property Inquiry Form`
+  - added `Comprehensive Pricing Details` section below inquiry with fixed 4-card accordion and icon-only chevron toggles
 - Added native Property Details metabox (ACF-free) on `property` edit screen:
   - meta keys: `_rect_property_key_features`, `_rect_property_amenities`
   - supports add/remove/sort rows, predefined icons, and custom icon uploads
+- Added native Property Pricing Details metabox (ACF-free) on `property` edit screen:
+  - meta keys: `_rect_property_pricing_additional_fees`, `_rect_property_pricing_monthly_cost`, `_rect_property_pricing_total_initial_cost`, `_rect_property_pricing_monthly_expenses`
+  - supports add/remove/sort rows in fixed panel order
 - Property archive search now stays in branded property UI:
   - archive filter form submits hidden `post_type=property`
   - property searches render through archive-style layout (hero + filters + cards), not default WP sidebar search template
@@ -124,6 +128,7 @@ This documentation reflects only what currently exists in the codebase.
   - `inc/acf-fields-properties.php`
   - `inc/property-gallery-metabox.php`
   - `inc/property-details-metabox.php`
+  - `inc/property-pricing-metabox.php`
   - `inc/acf-fields-testimonials.php`
   - `inc/acf-fields-faq.php`
   - `inc/acf-fields-about.php`
@@ -140,6 +145,7 @@ This documentation reflects only what currently exists in the codebase.
   - `css/about.css`
   - `css/admin-property-gallery-metabox.css`
   - `css/admin-property-details-metabox.css`
+  - `css/admin-property-pricing-metabox.css`
 - Scripts:
   - `js/navigation.js`
   - `js/home.js`
@@ -147,8 +153,10 @@ This documentation reflects only what currently exists in the codebase.
   - `js/property-inquiry-form.js`
   - `js/property-single-gallery.js`
   - `js/property-single-inquiry.js`
+  - `js/property-single-pricing-accordion.js`
   - `js/admin-property-gallery-metabox.js`
   - `js/admin-property-details-metabox.js`
+  - `js/admin-property-pricing-metabox.js`
   - `js/stats-counter.js`
 
 ## Asset and style ownership model
@@ -193,15 +201,26 @@ This documentation reflects only what currently exists in the codebase.
 - Native property details metabox:
   - `_rect_property_key_features` (ordered rows)
   - `_rect_property_amenities` (ordered rows)
-- Native property map embed override (optional):
-  - `_rect_property_map_embed_url` (URL)
-  - when empty, single property map iframe falls back to first `property_location` term
   - row contract:
     - `label`
     - `value` (optional)
     - `icon_source` (`predefined`/`custom`)
     - `icon_preset`
     - `icon_custom` (attachment ID, optional)
+- Native property map embed override (optional):
+  - `_rect_property_map_embed_url` (URL)
+  - when empty, single property map iframe falls back to first `property_location` term
+- Native property pricing metabox:
+  - `_rect_property_pricing_additional_fees` (ordered rows)
+  - `_rect_property_pricing_monthly_cost` (ordered rows)
+  - `_rect_property_pricing_total_initial_cost` (ordered rows)
+  - `_rect_property_pricing_monthly_expenses` (ordered rows)
+  - row contract:
+    - `label` (required)
+    - `amount` (optional)
+    - `note` (optional)
+  - single-property pricing accordion always renders four cards in fixed order
+  - empty panel fallback row: `Details will be updated soon.`
 - Testimonial fields:
   - `testimonial_rating`
   - `testimonial_quote`
@@ -433,6 +452,41 @@ Notes:
 - Keep field name exactly `selected_property` for prefill compatibility.
 - Acceptance tag normalization also supports this form title if `acceptance*` is mistakenly used.
 
+## Single Property Pricing Details (Native Metabox)
+
+The single property page (`single-property.php`) now renders a dedicated pricing section below the inquiry form:
+
+- heading + description
+- note strip
+- listing price summary
+- four fixed accordion cards:
+  1. Additional Fees
+  2. Monthly Cost
+  3. Total Initial Cost
+  4. Monthly Expenses
+
+### Pricing data source
+
+Pricing content is managed in the native metabox `Property Pricing Details` on the property edit screen.
+
+Storage keys:
+- `_rect_property_pricing_additional_fees`
+- `_rect_property_pricing_monthly_cost`
+- `_rect_property_pricing_total_initial_cost`
+- `_rect_property_pricing_monthly_expenses`
+
+Each row supports:
+- `label` (required)
+- `amount` (optional)
+- `note` (optional)
+
+Behavior contract:
+- accordion is single-open
+- first card is open by default
+- card header action uses icon-only chevron button
+- if a panel has no rows, fallback text is shown:
+  - `Details will be updated soon.`
+
 ## Validation checklist
 
 - PHP syntax:
@@ -446,6 +500,7 @@ Notes:
   - `node --check wp-content/themes/real-estate-custom-theme/js/property-filters.js`
   - `node --check wp-content/themes/real-estate-custom-theme/js/property-inquiry-form.js`
   - `node --check wp-content/themes/real-estate-custom-theme/js/property-single-inquiry.js`
+  - `node --check wp-content/themes/real-estate-custom-theme/js/property-single-pricing-accordion.js`
 - Route checks:
   - front page: `http://localhost/realestate/`
   - property archive (depends on permalink mode): `/properties/` or `/index.php/properties/`

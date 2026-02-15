@@ -738,6 +738,7 @@ function real_estate_custom_theme_scripts()
 	$property_inquiry_form_js_version = file_exists( $theme_dir . '/js/property-inquiry-form.js' ) ? (string) filemtime( $theme_dir . '/js/property-inquiry-form.js' ) : _S_VERSION;
 	$property_single_gallery_js_version = file_exists( $theme_dir . '/js/property-single-gallery.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-gallery.js' ) : _S_VERSION;
 	$property_single_inquiry_js_version = file_exists( $theme_dir . '/js/property-single-inquiry.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-inquiry.js' ) : _S_VERSION;
+	$property_single_pricing_accordion_js_version = file_exists( $theme_dir . '/js/property-single-pricing-accordion.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-pricing-accordion.js' ) : _S_VERSION;
 	$nav_js_version     = file_exists( $theme_dir . '/js/navigation.js' ) ? (string) filemtime( $theme_dir . '/js/navigation.js' ) : _S_VERSION;
 	$stats_js_version   = file_exists( $theme_dir . '/js/stats-counter.js' ) ? (string) filemtime( $theme_dir . '/js/stats-counter.js' ) : _S_VERSION;
 
@@ -758,7 +759,7 @@ function real_estate_custom_theme_scripts()
 		$header_style_version
 	);
 
-	$should_load_home_experience_assets = is_front_page() || is_page( 'services' ) || is_post_type_archive( 'property' );
+	$should_load_home_experience_assets = is_front_page() || is_page( 'services' ) || is_post_type_archive( 'property' ) || is_singular( 'property' );
 
 	if ( is_page( 'about-us' ) ) {
 		wp_enqueue_style(
@@ -837,6 +838,14 @@ function real_estate_custom_theme_scripts()
 			$theme_uri . '/js/property-single-inquiry.js',
 			array(),
 			$property_single_inquiry_js_version,
+			true
+		);
+
+		wp_enqueue_script(
+			'real-estate-custom-theme-property-single-pricing-accordion',
+			$theme_uri . '/js/property-single-pricing-accordion.js',
+			array(),
+			$property_single_pricing_accordion_js_version,
 			true
 		);
 	}
@@ -947,6 +956,11 @@ require get_template_directory() . '/inc/property-gallery-metabox.php';
  * Property details metabox (key features + amenities, native WP media uploader).
  */
 require get_template_directory() . '/inc/property-details-metabox.php';
+
+/**
+ * Property pricing metabox (native pricing accordion data authoring).
+ */
+require get_template_directory() . '/inc/property-pricing-metabox.php';
 
 /**
  * Register Property custom post type.

@@ -19,6 +19,7 @@ Document current data structures used by the theme for dynamic home/archive cont
 - `inc/acf-fields-properties.php`
 - `inc/property-gallery-metabox.php`
 - `inc/property-details-metabox.php`
+- `inc/property-pricing-metabox.php`
 - `inc/acf-fields-testimonials.php`
 - `inc/acf-fields-clients.php`
 - `inc/acf-fields-team-members.php`
@@ -31,6 +32,7 @@ Document current data structures used by the theme for dynamic home/archive cont
 - `inc/team-member-helpers.php`
 - `inc/faq-helpers.php`
 - `js/property-single-inquiry.js`
+- `js/property-single-pricing-accordion.js`
 - `front-page.php`
 - `page-about-us.php`
 - `page-services.php`
@@ -171,6 +173,32 @@ Contract:
   2. fallback to first `property_location` term -> Google Maps iframe query URL
   3. hidden when no map URL and no location term
 
+#### Property pricing module (native metabox contract)
+- storage keys:
+  - `_rect_property_pricing_additional_fees`
+  - `_rect_property_pricing_monthly_cost`
+  - `_rect_property_pricing_total_initial_cost`
+  - `_rect_property_pricing_monthly_expenses`
+- value format:
+  - ordered rows saved as post meta arrays (WordPress serialized)
+  - each row:
+    - `label` (required text)
+    - `amount` (optional text)
+    - `note` (optional text)
+- editor UI:
+  - metabox title: `Property Pricing Details`
+  - fixed panel order:
+    1. Additional Fees
+    2. Monthly Cost
+    3. Total Initial Cost
+    4. Monthly Expenses
+  - add/remove rows
+  - drag-sort ordering
+- single-property pricing source:
+  1. reads all four pricing keys in fixed order
+  2. renders fallback row text when a panel has no rows:
+     - `Details will be updated soon.`
+
 #### Testimonial fields
 - `testimonial_rating`
 - `testimonial_quote`
@@ -257,6 +285,17 @@ Contract:
       - JS enhancer `js/property-single-inquiry.js` sets readonly `selected_property` field value to:
         - `{title}, {location}` when location exists
         - `{title}` otherwise
+  - single-property pricing section:
+    - rendered below single-property inquiry section in `single-property.php`
+    - accordion behavior:
+      - single-open mode
+      - first card open by default
+      - icon-only chevron toggle
+    - section shell includes:
+      - heading + description
+      - note strip
+      - listing price summary
+      - four pricing cards in fixed order
   - property type display fallback:
     - taxonomy term (`property_type`)
     - fallback to legacy `property_type` meta text

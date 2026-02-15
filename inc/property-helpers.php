@@ -285,6 +285,148 @@ function real_estate_custom_theme_get_property_detail_item_icon_markup( $item, $
 }
 
 /**
+ * Get pricing accordion panel config for single-property pricing module.
+ *
+ * @return array<string, array<string, string>>
+ */
+function real_estate_custom_theme_get_property_pricing_panels_config() {
+	return array(
+		'additional_fees'    => array(
+			'label'    => __( 'Additional Fees', 'real-estate-custom-theme' ),
+			'meta_key' => '_rect_property_pricing_additional_fees',
+		),
+		'monthly_cost'       => array(
+			'label'    => __( 'Monthly Cost', 'real-estate-custom-theme' ),
+			'meta_key' => '_rect_property_pricing_monthly_cost',
+		),
+		'total_initial_cost' => array(
+			'label'    => __( 'Total Initial Cost', 'real-estate-custom-theme' ),
+			'meta_key' => '_rect_property_pricing_total_initial_cost',
+		),
+		'monthly_expenses'   => array(
+			'label'    => __( 'Monthly Expenses', 'real-estate-custom-theme' ),
+			'meta_key' => '_rect_property_pricing_monthly_expenses',
+		),
+	);
+}
+
+/**
+ * Get fallback text for empty pricing panels.
+ *
+ * @return string
+ */
+function real_estate_custom_theme_get_property_pricing_fallback_row_text() {
+	return __( 'Details will be updated soon.', 'real-estate-custom-theme' );
+}
+
+/**
+ * Normalize pricing rows payload from post meta/admin payload.
+ *
+ * @param mixed $raw_value Raw value from post meta or request payload.
+ * @return array<int, array<string, string>>
+ */
+function real_estate_custom_theme_normalize_property_pricing_items( $raw_value ) {
+	$rows = array();
+
+	if ( is_array( $raw_value ) ) {
+		$rows = $raw_value;
+	} elseif ( is_string( $raw_value ) && '' !== trim( $raw_value ) ) {
+		$decoded = json_decode( $raw_value, true );
+		if ( is_array( $decoded ) ) {
+			$rows = $decoded;
+		}
+	}
+
+	if ( empty( $rows ) ) {
+		return array();
+	}
+
+	$normalized = array();
+
+	foreach ( $rows as $row ) {
+		if ( ! is_array( $row ) ) {
+			continue;
+		}
+
+		$label  = isset( $row['label'] ) ? sanitize_text_field( (string) $row['label'] ) : '';
+		$amount = isset( $row['amount'] ) ? sanitize_text_field( (string) $row['amount'] ) : '';
+		$note   = isset( $row['note'] ) ? sanitize_text_field( (string) $row['note'] ) : '';
+
+		if ( '' === $label ) {
+			continue;
+		}
+
+		$normalized[] = array(
+			'label'  => $label,
+			'amount' => $amount,
+			'note'   => $note,
+		);
+	}
+
+	return $normalized;
+}
+
+/**
+ * Read normalized pricing rows by pricing meta key.
+ *
+ * @param int    $property_id Property post ID.
+ * @param string $meta_key    Pricing meta key.
+ * @return array<int, array<string, string>>
+ */
+function real_estate_custom_theme_get_property_pricing_panel_items( $property_id, $meta_key ) {
+	return real_estate_custom_theme_normalize_property_pricing_items(
+		get_post_meta( absint( $property_id ), $meta_key, true )
+	);
+}
+
+/**
+ * Build frontend-ready pricing panels in fixed order for single-property section.
+ *
+ * @param int $property_id Property post ID.
+ * @return array<int, array<string, mixed>>
+ */
+function real_estate_custom_theme_get_property_pricing_panels( $property_id ) {
+	$panels_config = real_estate_custom_theme_get_property_pricing_panels_config();
+	$fallback_text = real_estate_custom_theme_get_property_pricing_fallback_row_text();
+	$panels        = array();
+
+	foreach ( $panels_config as $panel_key => $panel_config ) {
+		$panel_items = real_estate_custom_theme_get_property_pricing_panel_items(
+			$property_id,
+			$panel_config['meta_key']
+		);
+
+		if ( empty( $panel_items ) ) {
+			$panel_items = array(
+				array(
+					'label'       => $fallback_text,
+					'amount'      => '',
+					'note'        => '',
+					'is_fallback' => 1,
+				),
+			);
+		} else {
+			$panel_items = array_map(
+				static function( $item ) {
+					$item['is_fallback'] = 0;
+					return $item;
+				},
+				$panel_items
+			);
+		}
+
+		$panels[] = array(
+			'key'      => $panel_key,
+			'label'    => $panel_config['label'],
+			'meta_key' => $panel_config['meta_key'],
+			'items'    => $panel_items,
+		);
+	}
+
+	return $panels;
+}
+
+/**
  * Character length helper with multibyte fallback.
  *
  * @param string $text Text content.

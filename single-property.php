@@ -231,12 +231,77 @@ get_header();
 		$single_property_inquiry_form_shortcode = function_exists( 'real_estate_custom_theme_get_single_property_inquiry_form_shortcode' )
 			? real_estate_custom_theme_get_single_property_inquiry_form_shortcode()
 			: '';
+		$property_pricing_panels = function_exists( 'real_estate_custom_theme_get_property_pricing_panels' )
+			? real_estate_custom_theme_get_property_pricing_panels( $property_id )
+			: array();
 		$properties_archive_url     = function_exists( 'real_estate_custom_theme_get_properties_archive_url' )
 			? real_estate_custom_theme_get_properties_archive_url()
 			: get_post_type_archive_link( 'property' );
+		$faq_archive_url = get_post_type_archive_link( 'faq' );
+		if ( '' === $faq_archive_url ) {
+			$faq_archive_url = home_url( '/faqs/' );
+		}
+		$faq_section_description = __( 'Find answers to common questions about Estatein\'s services, property listings, and the real estate process. We\'re here to provide clarity and assist you every step of the way.', 'real-estate-custom-theme' );
 
 		if ( '' === $property_map_location ) {
 			$property_map_location = $property_location;
+		}
+
+		if ( empty( $property_pricing_panels ) ) {
+			$fallback_pricing_text = function_exists( 'real_estate_custom_theme_get_property_pricing_fallback_row_text' )
+				? real_estate_custom_theme_get_property_pricing_fallback_row_text()
+				: __( 'Details will be updated soon.', 'real-estate-custom-theme' );
+
+			$property_pricing_panels = array(
+				array(
+					'key'   => 'additional_fees',
+					'label' => __( 'Additional Fees', 'real-estate-custom-theme' ),
+					'items' => array(
+						array(
+							'label'       => $fallback_pricing_text,
+							'amount'      => '',
+							'note'        => '',
+							'is_fallback' => 1,
+						),
+					),
+				),
+				array(
+					'key'   => 'monthly_cost',
+					'label' => __( 'Monthly Cost', 'real-estate-custom-theme' ),
+					'items' => array(
+						array(
+							'label'       => $fallback_pricing_text,
+							'amount'      => '',
+							'note'        => '',
+							'is_fallback' => 1,
+						),
+					),
+				),
+				array(
+					'key'   => 'total_initial_cost',
+					'label' => __( 'Total Initial Cost', 'real-estate-custom-theme' ),
+					'items' => array(
+						array(
+							'label'       => $fallback_pricing_text,
+							'amount'      => '',
+							'note'        => '',
+							'is_fallback' => 1,
+						),
+					),
+				),
+				array(
+					'key'   => 'monthly_expenses',
+					'label' => __( 'Monthly Expenses', 'real-estate-custom-theme' ),
+					'items' => array(
+						array(
+							'label'       => $fallback_pricing_text,
+							'amount'      => '',
+							'note'        => '',
+							'is_fallback' => 1,
+						),
+					),
+				),
+			);
 		}
 
 		if ( '' !== $property_area_raw ) {
@@ -558,6 +623,194 @@ get_header();
 					<?php endif; ?>
 				</div>
 			</div>
+		</section>
+
+		<section class="property-single__pricing section-shell" aria-labelledby="property-single-pricing-title">
+			<header class="property-single__pricing-head">
+				<h2 id="property-single-pricing-title"><?php esc_html_e( 'Comprehensive Pricing Details', 'real-estate-custom-theme' ); ?></h2>
+				<p>
+					<?php
+					echo esc_html(
+						sprintf(
+							/* translators: %s: property title. */
+							__( 'At Estatein, transparency is key. We want you to have a clear understanding of all costs associated with your property investment. Below, we break down the pricing for %s to help you make an informed decision.', 'real-estate-custom-theme' ),
+							$property_title_text
+						)
+					);
+					?>
+				</p>
+			</header>
+
+			<div class="property-single__pricing-body">
+				<aside class="property-single__pricing-listing-price" aria-label="<?php esc_attr_e( 'Listing price summary', 'real-estate-custom-theme' ); ?>">
+					<span class="property-single__pricing-listing-label"><?php esc_html_e( 'Listing Price', 'real-estate-custom-theme' ); ?></span>
+					<strong><?php echo esc_html( '' !== $property_price ? $property_price : __( 'Price available upon request', 'real-estate-custom-theme' ) ); ?></strong>
+				</aside>
+
+				<div class="property-single__pricing-right">
+					<p class="property-single__pricing-note">
+						<span class="property-single__pricing-note-label"><?php esc_html_e( 'Note', 'real-estate-custom-theme' ); ?></span>
+						<span class="property-single__pricing-note-text"><?php esc_html_e( 'The figures provided above are estimates and may vary depending on the property, location, and individual circumstances.', 'real-estate-custom-theme' ); ?></span>
+					</p>
+
+					<div class="property-single__pricing-accordion" data-pricing-accordion>
+						<?php foreach ( $property_pricing_panels as $panel_index => $pricing_panel ) : ?>
+							<?php
+							$panel_key   = isset( $pricing_panel['key'] ) ? sanitize_key( (string) $pricing_panel['key'] ) : 'pricing-panel';
+							$panel_title = isset( $pricing_panel['label'] ) ? (string) $pricing_panel['label'] : '';
+							$panel_items = isset( $pricing_panel['items'] ) && is_array( $pricing_panel['items'] ) ? $pricing_panel['items'] : array();
+							$panel_id    = sprintf( 'property-pricing-panel-%d-%s', (int) $property_id, $panel_key );
+							$toggle_id   = $panel_id . '-toggle';
+							$is_open     = 0 === $panel_index;
+							?>
+							<article class="property-single__pricing-card<?php echo $is_open ? ' is-open' : ''; ?>" data-pricing-item>
+								<header class="property-single__pricing-card-head">
+									<h3><?php echo esc_html( $panel_title ); ?></h3>
+									<button
+										type="button"
+										id="<?php echo esc_attr( $toggle_id ); ?>"
+										class="property-single__pricing-toggle"
+										data-pricing-toggle
+										aria-expanded="<?php echo $is_open ? 'true' : 'false'; ?>"
+										aria-controls="<?php echo esc_attr( $panel_id ); ?>"
+									>
+										<span class="screen-reader-text">
+											<?php
+											echo esc_html(
+												sprintf(
+													/* translators: %s: pricing panel title. */
+													__( 'Toggle %s', 'real-estate-custom-theme' ),
+													$panel_title
+												)
+											);
+											?>
+										</span>
+										<svg class="property-single__pricing-chevron" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+											<path d="M6 9l6 6 6-6"></path>
+										</svg>
+									</button>
+								</header>
+
+								<div
+									id="<?php echo esc_attr( $panel_id ); ?>"
+									class="property-single__pricing-panel"
+									data-pricing-panel
+									role="region"
+									aria-labelledby="<?php echo esc_attr( $toggle_id ); ?>"
+									<?php if ( ! $is_open ) : ?>
+										hidden
+									<?php endif; ?>
+								>
+									<ul class="property-single__pricing-rows">
+										<?php foreach ( $panel_items as $panel_item ) : ?>
+											<?php
+											$item_label   = isset( $panel_item['label'] ) ? (string) $panel_item['label'] : '';
+											$item_amount  = isset( $panel_item['amount'] ) ? (string) $panel_item['amount'] : '';
+											$item_note    = isset( $panel_item['note'] ) ? (string) $panel_item['note'] : '';
+											$is_fallback  = ! empty( $panel_item['is_fallback'] );
+											?>
+											<li class="property-single__pricing-row<?php echo $is_fallback ? ' is-fallback' : ''; ?>">
+												<div class="property-single__pricing-row-main">
+													<span class="property-single__pricing-row-label"><?php echo esc_html( $item_label ); ?></span>
+													<?php if ( '' !== $item_amount ) : ?>
+														<strong class="property-single__pricing-row-amount"><?php echo esc_html( $item_amount ); ?></strong>
+													<?php endif; ?>
+												</div>
+												<?php if ( '' !== $item_note ) : ?>
+													<span class="property-single__pricing-note-chip"><?php echo esc_html( $item_note ); ?></span>
+												<?php endif; ?>
+											</li>
+										<?php endforeach; ?>
+									</ul>
+								</div>
+							</article>
+						<?php endforeach; ?>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<section class="section-shell section-shell--faq property-single__faq" aria-labelledby="property-single-faq-title">
+			<div class="section-head">
+				<div>
+					<p class="eyebrow"><?php esc_html_e( 'FAQ', 'real-estate-custom-theme' ); ?></p>
+					<h2 id="property-single-faq-title"><?php esc_html_e( 'Frequently Asked Questions', 'real-estate-custom-theme' ); ?></h2>
+					<p class="section-head__description"><?php echo esc_html( $faq_section_description ); ?></p>
+				</div>
+				<a class="btn btn--ghost" href="<?php echo esc_url( $faq_archive_url ); ?>"><?php esc_html_e( 'View All FAQ\'s', 'real-estate-custom-theme' ); ?></a>
+			</div>
+
+			<?php
+			$faq_query = new WP_Query(
+				array(
+					'post_type'           => 'faq',
+					'post_status'         => 'publish',
+					'posts_per_page'      => 12,
+					'ignore_sticky_posts' => true,
+					'meta_query'          => array(
+						array(
+							'key'     => 'is_featured',
+							'value'   => '1',
+							'compare' => '=',
+						),
+					),
+					'orderby'             => array(
+						'date' => 'DESC',
+					),
+				)
+			);
+
+			if ( $faq_query->have_posts() ) :
+				?>
+				<div class="faqs" data-faq-carousel>
+					<div class="faqs__viewport">
+						<div class="faqs__track">
+							<?php
+							while ( $faq_query->have_posts() ) :
+								$faq_query->the_post();
+								$faq_id          = get_the_ID();
+								$faq_excerpt     = function_exists( 'real_estate_custom_theme_get_faq_excerpt' ) ? real_estate_custom_theme_get_faq_excerpt( $faq_id, get_the_excerpt(), 150 ) : wp_trim_words( get_the_excerpt(), 24 );
+								$faq_button_text = function_exists( 'real_estate_custom_theme_get_faq_cta_label' ) ? real_estate_custom_theme_get_faq_cta_label( $faq_id ) : __( 'Read More', 'real-estate-custom-theme' );
+								?>
+								<article <?php post_class( 'card faq-card faqs__slide' ); ?>>
+									<div class="faq-card__body">
+										<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+										<p class="faq-card__excerpt"><?php echo esc_html( $faq_excerpt ); ?></p>
+										<a class="faq-card__cta" href="<?php the_permalink(); ?>"><?php echo esc_html( $faq_button_text ); ?></a>
+									</div>
+								</article>
+							<?php endwhile; ?>
+						</div>
+					</div>
+
+					<div class="featured-properties__controls faqs__controls">
+						<p class="featured-properties__count faqs__count">
+							<span data-faq-current>01</span>
+							<?php esc_html_e( 'of', 'real-estate-custom-theme' ); ?>
+							<span data-faq-total>01</span>
+						</p>
+						<div class="featured-properties__actions faqs__actions">
+							<button type="button" class="featured-properties__arrow faqs__arrow" data-faq-prev aria-label="<?php esc_attr_e( 'Previous FAQs', 'real-estate-custom-theme' ); ?>">
+								<svg class="featured-properties__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+									<path d="M15 6L9 12L15 18"></path>
+								</svg>
+							</button>
+							<button type="button" class="featured-properties__arrow faqs__arrow" data-faq-next aria-label="<?php esc_attr_e( 'Next FAQs', 'real-estate-custom-theme' ); ?>">
+								<svg class="featured-properties__arrow-icon" viewBox="0 0 24 24" focusable="false" aria-hidden="true">
+									<path d="M9 6L15 12L9 18"></path>
+								</svg>
+							</button>
+						</div>
+					</div>
+				</div>
+				<?php
+				wp_reset_postdata();
+			else :
+				?>
+				<p><?php esc_html_e( 'No featured FAQs found yet.', 'real-estate-custom-theme' ); ?></p>
+				<?php
+			endif;
+			?>
 		</section>
 	<?php endwhile; ?>
 </main>

@@ -22,6 +22,7 @@ Configure ACF-backed editable fields used by the current theme implementation.
 - `inc/acf-fields-properties.php`
 - `inc/property-gallery-metabox.php`
 - `inc/property-details-metabox.php`
+- `inc/property-pricing-metabox.php`
 - `inc/acf-fields-testimonials.php`
 - `inc/acf-fields-clients.php`
 - `inc/acf-fields-team-members.php`
@@ -106,6 +107,29 @@ The theme supports both:
   1. `_rect_property_map_embed_url` when provided
   2. fallback to first `property_location` term -> Google Maps iframe query embed
   3. map section hidden when no source is available
+
+### Property pricing module (native metabox, not ACF)
+
+- Meta key: `_rect_property_pricing_additional_fees`
+- Meta key: `_rect_property_pricing_monthly_cost`
+- Meta key: `_rect_property_pricing_total_initial_cost`
+- Meta key: `_rect_property_pricing_monthly_expenses`
+- Value format: ordered array rows saved as post meta (serialized by WordPress)
+  - row fields:
+    - `label` (required text)
+    - `amount` (optional text)
+    - `note` (optional text)
+- Managed from Property edit screen metabox:
+  - title: `Property Pricing Details`
+  - supports add/remove rows and drag reorder per panel
+- Single-property pricing source:
+  - `single-property.php` reads all four pricing panel keys
+  - pricing panels render in fixed order:
+    1. Additional Fees
+    2. Monthly Cost
+    3. Total Initial Cost
+    4. Monthly Expenses
+  - empty panels render fallback row text: `Details will be updated soon.`
 
 ### Property taxonomy contract
 
@@ -287,6 +311,7 @@ After setup:
   - `rg -n "group_rect_services_page_hero|services_hero_title|services_hero_description" wp-content/themes/real-estate-custom-theme/inc/acf-fields-services.php`
   - `rg -n "_rect_property_gallery_ids|save_post_property|add_meta_box\\(|wp_enqueue_media" wp-content/themes/real-estate-custom-theme/inc/property-gallery-metabox.php`
   - `rg -n "_rect_property_key_features|_rect_property_amenities|_rect_property_map_embed_url|Property Details|save_post_property|wp_enqueue_media" wp-content/themes/real-estate-custom-theme/inc/property-details-metabox.php`
+  - `rg -n "_rect_property_pricing_|Property Pricing Details|save_post_property|data-pricing-group" wp-content/themes/real-estate-custom-theme/inc/property-pricing-metabox.php`
 - Confirm template usage:
   - `rg -n "data-featured-carousel|data-testimonials-carousel|data-faq-carousel|featured_on_home|is_featured|cta_label" wp-content/themes/real-estate-custom-theme/front-page.php`
   - `rg -n "post_type\\\" value=\\\"property\\\"|property_location|property_type|location|type|price_range|size_range|build_year_range" wp-content/themes/real-estate-custom-theme/archive-property.php wp-content/themes/real-estate-custom-theme/inc/cpt-property.php`

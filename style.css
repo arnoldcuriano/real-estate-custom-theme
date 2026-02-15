@@ -1774,8 +1774,8 @@ body.page-contact-us #page {
 	padding: clamp(1.05rem, 1.65vw, 1.4rem);
 }
 
-.property-inquiry--single {
-	margin-top: clamp(1.4rem, 2.6vw, 2rem);
+.property-inquiry.section-shell.property-inquiry--single {
+	margin-top: clamp(1.75rem, 3vw, 2.6rem);
 }
 
 .property-inquiry--single .property-inquiry__layout {
@@ -2627,11 +2627,11 @@ span.property-inquiry__label {
 }
 
 .property-single__details-shell {
-	margin-top: 0.95rem;
+	margin-top: clamp(1.3rem, 2.3vw, 1.9rem);
 }
 
 .property-single__map-shell {
-	margin-top: 0.95rem;
+	margin-top: clamp(1.35rem, 2.5vw, 2.1rem);
 }
 
 .property-single__map-card {
@@ -2739,10 +2739,256 @@ span.property-inquiry__label {
 	text-underline-offset: 2px;
 }
 
+.property-single__pricing.section-shell {
+	width: 100%;
+	max-width: none;
+	margin: clamp(1.7rem, 3vw, 2.5rem) 0 0;
+	padding: 0;
+}
+
+.property-single__pricing {
+	display: grid;
+	gap: 1rem;
+}
+
+.property-single__faq.section-shell {
+	width: 100%;
+	max-width: none;
+	margin: 0;
+	padding-top: clamp(1.4rem, 2.4vw, 1.95rem);
+	padding-right: 0;
+	padding-bottom: clamp(1.6rem, 2.8vw, 2.35rem);
+	padding-left: 0;
+}
+
+.property-single__pricing-head {
+	display: grid;
+	gap: 0.46rem;
+	margin-bottom: 0.95rem;
+}
+
+.property-single__pricing-head h2 {
+	margin: 0;
+	font-size: clamp(1.3rem, 2.2vw, 1.85rem);
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+	color: #f4f6fc;
+}
+
+.property-single__pricing-head p {
+	margin: 0;
+	max-width: min(100%, 84ch);
+	font-size: 0.88rem;
+	line-height: 1.68;
+	color: #acb2c4;
+}
+
+.property-single__pricing-note {
+	margin: 0;
+	width: 100%;
+	padding: 0.78rem 0.95rem;
+	border: 1px solid #252b3b;
+	border-radius: 11px;
+	background: linear-gradient(180deg, #131722 0%, #11141d 100%);
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr);
+	align-items: center;
+	gap: 0.42rem 0.9rem;
+	font-size: 0.84rem;
+	line-height: 1.55;
+	color: #aeb5c8;
+}
+
+.property-single__pricing-note-label {
+	font-size: 0.82rem;
+	font-weight: 600;
+	letter-spacing: 0.01em;
+	color: #f2f4fb;
+	white-space: nowrap;
+}
+
+.property-single__pricing-note-text {
+	display: block;
+	min-width: 0;
+	padding-left: 0.9rem;
+	border-left: 1px solid #2e3446;
+}
+
+.property-single__pricing-body {
+	display: grid;
+	grid-template-columns: minmax(164px, 0.23fr) minmax(0, 0.77fr);
+	gap: 0.8rem;
+	align-items: start;
+}
+
+.property-single__pricing-right {
+	display: grid;
+	gap: 0.68rem;
+	min-width: 0;
+}
+
+.property-single__pricing-listing-price {
+	border: 1px solid #242736;
+	border-radius: 12px;
+	background:
+		radial-gradient(120% 150% at 100% 0%, rgba(111, 70, 255, 0.13) 0%, rgba(111, 70, 255, 0) 55%),
+		linear-gradient(180deg, #12141c 0%, #10121a 100%);
+	padding: 0.84rem;
+	display: grid;
+	gap: 0.28rem;
+	position: relative;
+	overflow: hidden;
+	box-shadow:
+		inset 0 0 0 1px rgba(255, 255, 255, 0.015),
+		0 16px 28px rgba(0, 0, 0, 0.18);
+}
+
+.property-single__pricing-listing-label {
+	font-size: 0.76rem;
+	line-height: 1.25;
+	color: #9da3b6;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.property-single__pricing-listing-price strong {
+	font-size: clamp(1.2rem, 2.05vw, 1.82rem);
+	line-height: 1.12;
+	color: #f4f6fd;
+	letter-spacing: -0.01em;
+}
+
+.property-single__pricing-accordion {
+	display: grid;
+	gap: 0.68rem;
+}
+
+.property-single__pricing-card {
+	border: 1px solid #262b3a;
+	border-radius: 12px;
+	background: linear-gradient(180deg, #131722 0%, #11141d 100%);
+	overflow: hidden;
+}
+
+.property-single__pricing-card-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.7rem;
+	padding: 0.7rem 0.82rem;
+}
+
+.property-single__pricing-card-head h3 {
+	margin: 0;
+	font-size: 0.96rem;
+	line-height: 1.25;
+	color: #f3f5fb;
+}
+
+.property-single__pricing-toggle {
+	width: 34px;
+	height: 34px;
+	border: 1px solid #2f3444;
+	border-radius: 9px;
+	background: #131722;
+	color: #d2d8ea;
+	display: inline-grid;
+	place-items: center;
+	padding: 0;
+	cursor: pointer;
+}
+
+.property-single__pricing-toggle:focus-visible {
+	outline: 2px solid rgba(111, 70, 255, 0.7);
+	outline-offset: 2px;
+}
+
+.property-single__pricing-chevron {
+	width: 15px;
+	height: 15px;
+	fill: none;
+	stroke: currentColor;
+	stroke-width: 1.9;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	transform: rotate(0deg);
+	transition: transform 200ms ease;
+}
+
+.property-single__pricing-card.is-open .property-single__pricing-chevron {
+	transform: rotate(180deg);
+}
+
+.property-single__pricing-panel {
+	padding: 0 0.82rem 0.82rem;
+}
+
+.property-single__pricing-rows {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	border-top: 1px solid #242a39;
+}
+
+.property-single__pricing-row {
+	display: grid;
+	gap: 0.32rem;
+	padding: 0.72rem 0;
+	border-bottom: 1px solid #242a39;
+}
+
+.property-single__pricing-row:last-child {
+	border-bottom: 0;
+	padding-bottom: 0;
+}
+
+.property-single__pricing-row-main {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.8rem;
+}
+
+.property-single__pricing-row-label {
+	font-size: 0.84rem;
+	line-height: 1.4;
+	color: #cfd4e4;
+}
+
+.property-single__pricing-row-amount {
+	font-size: 1.1rem;
+	line-height: 1.15;
+	color: #f5f7fd;
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.property-single__pricing-note-chip {
+	display: inline-flex;
+	align-items: center;
+	max-width: 100%;
+	width: fit-content;
+	padding: 0.24rem 0.58rem;
+	border-radius: 999px;
+	border: 1px solid #2e3446;
+	background: #171d2a;
+	font-size: 0.78rem;
+	line-height: 1.3;
+	color: #b8bfd2;
+}
+
+.property-single__pricing-row.is-fallback {
+	border-bottom: 0;
+}
+
+.property-single__pricing-row.is-fallback .property-single__pricing-row-label {
+	color: #9fa6ba;
+}
+
 .property-single__post-gallery {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 0.82rem;
+	gap: 1.02rem;
 	align-items: start;
 }
 
@@ -2936,10 +3182,48 @@ span.property-inquiry__label {
 
 	.property-single__post-gallery {
 		grid-template-columns: 1fr;
+		gap: 0.94rem;
+	}
+
+	.property-single__details-shell {
+		margin-top: 1.15rem;
+	}
+
+	.property-single__map-shell {
+		margin-top: 1.25rem;
+	}
+
+	.property-inquiry.section-shell.property-inquiry--single {
+		margin-top: 1.45rem;
 	}
 
 	.property-single__map-frame {
 		height: clamp(320px, 48vw, 380px);
+	}
+
+	.property-single__pricing-body {
+		grid-template-columns: 1fr;
+	}
+
+	.property-single__pricing {
+		margin-top: 1.55rem;
+		gap: 0.9rem;
+	}
+
+	.property-single__pricing-head {
+		margin-bottom: 0.82rem;
+	}
+
+	.property-single__pricing-listing-price {
+		max-width: 360px;
+	}
+
+	.property-single__pricing-right {
+		gap: 0.62rem;
+	}
+
+	.property-single__pricing-note {
+		padding: 0.72rem 0.84rem;
 	}
 }
 
@@ -3018,11 +3302,11 @@ span.property-inquiry__label {
 	}
 
 	.property-single__details-shell {
-		margin-top: 0.8rem;
+		margin-top: 1rem;
 	}
 
 	.property-single__map-shell {
-		margin-top: 0.8rem;
+		margin-top: 1.08rem;
 	}
 
 	.property-single__map-card {
@@ -3040,6 +3324,66 @@ span.property-inquiry__label {
 
 	.property-single__map-frame {
 		height: clamp(240px, 62vw, 320px);
+	}
+
+	.property-single__pricing {
+		margin-top: 1.3rem;
+		gap: 0.76rem;
+	}
+
+	.property-single__pricing-head {
+		margin-bottom: 0.72rem;
+	}
+
+	.property-single__pricing-note {
+		padding: 0.62rem 0.72rem;
+		font-size: 0.8rem;
+		grid-template-columns: auto minmax(0, 1fr);
+		gap: 0.34rem 0.62rem;
+	}
+
+	.property-single__pricing-note-text {
+		padding-left: 0.62rem;
+	}
+
+	.property-single__pricing-body {
+		gap: 0.62rem;
+	}
+
+	.property-single__pricing-right {
+		gap: 0.56rem;
+	}
+
+	.property-single__pricing-listing-price {
+		padding: 0.72rem;
+		max-width: none;
+	}
+
+	.property-single__pricing-card-head {
+		padding: 0.62rem 0.72rem;
+	}
+
+	.property-single__pricing-panel {
+		padding: 0 0.72rem 0.72rem;
+	}
+
+	.property-single__pricing-row {
+		gap: 0.3rem;
+		padding: 0.62rem 0;
+	}
+
+	.property-single__pricing-row-main {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.26rem;
+	}
+
+	.property-single__pricing-row-amount {
+		font-size: 1.02rem;
+	}
+
+	.property-single__pricing-note-chip {
+		font-size: 0.74rem;
 	}
 
 	.property-single__overview-card,
