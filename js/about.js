@@ -3,6 +3,7 @@
  */
 (function () {
   const CAROUSEL_SELECTOR = "[data-about-carousel]";
+  const SECTION_REVEAL_SELECTOR = ".about-team, .about-clients-section";
 
   function formatCounter(value) {
     const safeValue = Math.max(0, Number(value) || 0);
@@ -177,12 +178,69 @@
     });
   }
 
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", initAboutCarousels);
-  } else {
+  function initAboutSectionReveal() {
+    const targets = Array.from(
+      document.querySelectorAll(SECTION_REVEAL_SELECTOR),
+    ).filter((target) => "1" !== target.dataset.aboutRevealInit);
+
+    if (targets.length === 0) {
+      return;
+    }
+
+    targets.forEach((target) => {
+      target.dataset.aboutRevealInit = "1";
+      target.classList.add("scroll-animate--about");
+    });
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
+    if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+      targets.forEach((target) => {
+        target.classList.add("is-visible");
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries, io) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) {
+            return;
+          }
+
+          entry.target.classList.add("is-visible");
+          io.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.08,
+        rootMargin: "0px 0px 14% 0px",
+      },
+    );
+
+    targets.forEach((target) => {
+      const rect = target.getBoundingClientRect();
+      if (rect.top < window.innerHeight * 0.94) {
+        target.classList.add("is-visible");
+        return;
+      }
+
+      observer.observe(target);
+    });
+  }
+
+  function initAboutPageModules() {
+    initAboutSectionReveal();
     initAboutCarousels();
   }
 
-  window.addEventListener("load", initAboutCarousels);
-})();
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initAboutPageModules);
+  } else {
+    initAboutPageModules();
+  }
 
+  window.addEventListener("load", initAboutPageModules);
+})();

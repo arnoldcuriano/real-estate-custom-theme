@@ -62,6 +62,37 @@ body.page-id-29 #page {
 	}
 }
 
+.about-page .scroll-animate--about {
+	opacity: 0;
+	transform: translate3d(0, 20px, 0);
+	transition:
+		opacity 680ms cubic-bezier(0.22, 1, 0.36, 1) var(--about-reveal-delay, 0ms),
+		transform 680ms cubic-bezier(0.22, 1, 0.36, 1) var(--about-reveal-delay, 0ms);
+	will-change: opacity, transform;
+}
+
+.about-page .scroll-animate--about.is-visible {
+	opacity: 1;
+	transform: translate3d(0, 0, 0);
+}
+
+.about-page .about-team.scroll-animate--about {
+	--about-reveal-delay: 40ms;
+}
+
+.about-page .about-clients-section.scroll-animate--about {
+	--about-reveal-delay: 120ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.about-page .scroll-animate--about,
+	.about-page .scroll-animate--about.is-visible {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+}
+
 .about-hero {
 	padding: clamp(2rem, 3.4vw, 3rem) 0 clamp(1.4rem, 2.2vw, 2rem);
 	position: relative;
