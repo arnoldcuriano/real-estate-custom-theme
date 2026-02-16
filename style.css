@@ -887,7 +887,8 @@ body.page-contact-us #page {
 
 .services-value__head p {
 	margin: 0;
-	max-width: 92ch;
+	width: min(100%, 86ch);
+	max-width: 100%;
 	font-size: 0.92rem;
 	line-height: 1.65;
 	color: #b9bed0;
@@ -1056,6 +1057,104 @@ body.page-contact-us #page {
 	color: #ffffff;
 }
 
+.services-invest.section-shell {
+	padding-top: clamp(1.3rem, 2vw, 1.8rem);
+	padding-bottom: clamp(1.6rem, 3vw, 2.5rem);
+}
+
+.services-invest__layout {
+	display: grid;
+	grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
+	gap: 0.9rem;
+	align-items: stretch;
+}
+
+.services-invest__intro {
+	display: grid;
+	gap: 0.9rem;
+	align-content: start;
+}
+
+.services-invest__head {
+	display: grid;
+	gap: 0.62rem;
+}
+
+.services-invest__head h2 {
+	margin: 0;
+	font-size: clamp(1.65rem, 2.6vw, 2.2rem);
+	line-height: 1.16;
+	letter-spacing: -0.015em;
+	color: #f5f7fd;
+}
+
+.services-invest__head p {
+	margin: 0;
+	width: min(100%, 46ch);
+	max-width: 100%;
+	font-size: 0.92rem;
+	line-height: 1.65;
+	color: #b9bed0;
+}
+
+.services-invest__cta {
+	border: 1px solid #25293a;
+	border-radius: 12px;
+	padding: 1rem;
+	display: grid;
+	gap: 0.78rem;
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	background:
+		var(--services-invest-cta-bg, none),
+		linear-gradient(180deg, #12141c 0%, #11131b 100%);
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+.services-invest__cta::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background: linear-gradient(132deg, rgba(9, 11, 16, 0.7) 0%, rgba(9, 11, 16, 0.8) 55%, rgba(9, 11, 16, 0.74) 100%);
+}
+
+.services-invest__cta > * {
+	position: relative;
+	z-index: 1;
+}
+
+.services-invest__cta h3 {
+	margin: 0;
+	font-size: 1.3rem;
+	line-height: 1.24;
+	color: #f5f7ff;
+}
+
+.services-invest__cta p {
+	margin: 0;
+	font-size: 0.9rem;
+	line-height: 1.62;
+	color: #c2c8dc;
+}
+
+.services-invest__cta .services-value__cta-btn {
+	width: 100%;
+}
+
+.services-invest__cards {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0.85rem;
+}
+
+.services-invest__card {
+	min-height: 168px;
+}
+
 @media screen and (max-width: 1024px) {
 	.page-hero,
 	.page-hero__inner {
@@ -1086,6 +1185,14 @@ body.page-contact-us #page {
 		grid-column: 1 / -1;
 		height: auto;
 		min-height: 0;
+	}
+
+	.services-invest__layout {
+		grid-template-columns: 1fr;
+	}
+
+	.services-invest__head p {
+		width: min(100%, 62ch);
 	}
 }
 
@@ -1160,6 +1267,19 @@ body.page-contact-us #page {
 
 	.services-value__cta-btn {
 		justify-self: start;
+	}
+
+	.services-invest__head p {
+		width: 100%;
+	}
+
+	.services-invest__cards {
+		grid-template-columns: 1fr;
+		gap: 0.7rem;
+	}
+
+	.services-invest__cta {
+		gap: 0.72rem;
 	}
 }
 

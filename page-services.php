@@ -124,6 +124,29 @@ $management_service_cards = array(
 	),
 );
 
+$investment_service_cards = array(
+	array(
+		'title'       => __( 'Market Insight', 'real-estate-custom-theme' ),
+		'description' => __( 'Stay ahead of market trends with our expert Market Analysis. We provide in-depth insights into real estate market conditions.', 'real-estate-custom-theme' ),
+		'icon'        => 'market_insight.png',
+	),
+	array(
+		'title'       => __( 'ROI Assessment', 'real-estate-custom-theme' ),
+		'description' => __( 'Make investment decisions with confidence. Our ROI Assessment services evaluate the potential returns on your investments.', 'real-estate-custom-theme' ),
+		'icon'        => 'roi_assesment.png',
+	),
+	array(
+		'title'       => __( 'Customized Strategies', 'real-estate-custom-theme' ),
+		'description' => __( 'Every investor is unique, and so are their goals. We develop customized investment strategies tailored to your specific needs.', 'real-estate-custom-theme' ),
+		'icon'        => 'customize_strategies.png',
+	),
+	array(
+		'title'       => __( 'Diversification Mastery', 'real-estate-custom-theme' ),
+		'description' => __( 'Diversify your real estate portfolio effectively. Our experts guide you in spreading investments across various property types and locations.', 'real-estate-custom-theme' ),
+		'icon'        => 'diversification_mastery.png',
+	),
+);
+
 $service_icon_directories = array(
 	'services' => array(
 		'base_url'  => $services_asset_base,
@@ -145,6 +168,18 @@ if ( file_exists( $services_asset_path . '/' . $services_value_bg_filename ) ) {
 $services_value_cta_style_attr = '';
 if ( '' !== $services_value_bg_url ) {
 	$services_value_cta_style_attr = '--services-value-cta-bg:url(' . esc_url( $services_value_bg_url ) . ');';
+}
+
+$services_invest_bg_filename = 'cta_unlock_bg.png';
+$services_invest_bg_url      = '';
+
+if ( file_exists( $services_asset_path . '/' . $services_invest_bg_filename ) ) {
+	$services_invest_bg_url = $services_asset_base . '/' . $services_invest_bg_filename;
+}
+
+$services_invest_cta_style_attr = '';
+if ( '' !== $services_invest_bg_url ) {
+	$services_invest_cta_style_attr = '--services-invest-cta-bg:url(' . esc_url( $services_invest_bg_url ) . ');';
 }
 ?>
 
@@ -282,6 +317,55 @@ if ( '' !== $services_value_bg_url ) {
 				</div>
 				<a class="services-value__cta-btn" href="<?php echo esc_url( $contact_page_url ); ?>"><?php esc_html_e( 'Learn More', 'real-estate-custom-theme' ); ?></a>
 			</article>
+		</div>
+	</section>
+
+	<section class="services-invest section-shell" aria-labelledby="services-invest-title">
+		<div class="services-invest__layout">
+			<div class="services-invest__intro">
+				<header class="services-invest__head">
+					<h2 id="services-invest-title"><?php esc_html_e( 'Smart Investments, Informed Decisions', 'real-estate-custom-theme' ); ?></h2>
+					<p>
+						<?php esc_html_e( 'Building a real estate portfolio requires a strategic approach. Estatein\'s Investment Advisory Service empowers you to make smart investments and informed decisions.', 'real-estate-custom-theme' ); ?>
+					</p>
+				</header>
+
+				<article class="services-invest__cta"<?php echo '' !== $services_invest_cta_style_attr ? ' style="' . esc_attr( $services_invest_cta_style_attr ) . '"' : ''; ?>>
+					<h3><?php esc_html_e( 'Unlock Your Investment Potential', 'real-estate-custom-theme' ); ?></h3>
+					<p><?php esc_html_e( 'Explore our Investment Advisory Service categories and let our experts guide you toward confident, data-driven real estate decisions.', 'real-estate-custom-theme' ); ?></p>
+					<a class="services-value__cta-btn" href="<?php echo esc_url( $contact_page_url ); ?>"><?php esc_html_e( 'Learn More', 'real-estate-custom-theme' ); ?></a>
+				</article>
+			</div>
+
+			<div class="services-invest__cards">
+				<?php foreach ( $investment_service_cards as $service_card ) : ?>
+					<?php
+					$service_icon_url    = '';
+					$service_icon_source = isset( $service_card['icon_source'] ) ? sanitize_key( (string) $service_card['icon_source'] ) : 'services';
+					if ( ! isset( $service_icon_directories[ $service_icon_source ] ) ) {
+						$service_icon_source = 'services';
+					}
+
+					$service_icon_path = $service_icon_directories[ $service_icon_source ]['base_path'] . '/' . $service_card['icon'];
+					$service_icon_base = $service_icon_directories[ $service_icon_source ]['base_url'] . '/' . $service_card['icon'];
+
+					if ( file_exists( $service_icon_path ) ) {
+						$service_icon_url = $service_icon_base;
+					} elseif ( 'services' !== $service_icon_source && file_exists( $services_asset_path . '/' . $service_card['icon'] ) ) {
+						$service_icon_url = $services_asset_base . '/' . $service_card['icon'];
+					}
+					?>
+					<article class="services-value__card services-invest__card">
+						<div class="services-value__card-head">
+							<?php if ( '' !== $service_icon_url ) : ?>
+								<img class="services-value__icon" src="<?php echo esc_url( $service_icon_url ); ?>" alt="" loading="lazy" decoding="async">
+							<?php endif; ?>
+							<h3><?php echo esc_html( $service_card['title'] ); ?></h3>
+						</div>
+						<p><?php echo esc_html( $service_card['description'] ); ?></p>
+					</article>
+				<?php endforeach; ?>
+			</div>
 		</div>
 	</section>
 </main>
