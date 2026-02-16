@@ -869,12 +869,22 @@ function real_estate_custom_theme_scripts()
 add_action('wp_enqueue_scripts', 'real_estate_custom_theme_scripts');
 
 /**
- * Get the Symbol asset URL used for branding/favicon.
+ * Get the branding mark asset URL used for header/favicons.
  *
  * @return string
  */
 function real_estate_custom_theme_get_symbol_asset_url() {
 	$logo_candidates = array(
+		'Estatein.png',
+		'Estatein.svg',
+		'Estatein.webp',
+		'Estatein.jpg',
+		'Estatein.jpeg',
+		'estatein.png',
+		'estatein.svg',
+		'estatein.webp',
+		'estatein.jpg',
+		'estatein.jpeg',
 		'Symbol.png',
 		'Symbol.svg',
 		'Symbol.webp',

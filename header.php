@@ -47,6 +47,16 @@
 				<?php
 				$symbol_logo_url = '';
 				$logo_candidates = array(
+					'Estatein.png',
+					'Estatein.svg',
+					'Estatein.webp',
+					'Estatein.jpg',
+					'Estatein.jpeg',
+					'estatein.png',
+					'estatein.svg',
+					'estatein.webp',
+					'estatein.jpg',
+					'estatein.jpeg',
 					'Symbol.png',
 					'Symbol.svg',
 					'Symbol.webp',

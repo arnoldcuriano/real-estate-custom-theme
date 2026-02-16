@@ -9,6 +9,8 @@ get_header();
 
 $asset_base = trailingslashit( get_template_directory_uri() ) . 'assets/images/home';
 $asset_path = trailingslashit( get_template_directory() ) . 'assets/images/home';
+$services_asset_base = trailingslashit( get_template_directory_uri() ) . 'assets/images/services';
+$services_asset_path = trailingslashit( get_template_directory() ) . 'assets/images/services';
 
 $properties_page_url = function_exists( 'real_estate_custom_theme_get_properties_archive_url' )
 	? real_estate_custom_theme_get_properties_archive_url()
@@ -16,6 +18,9 @@ $properties_page_url = function_exists( 'real_estate_custom_theme_get_properties
 $services_page_url   = function_exists( 'real_estate_custom_theme_get_services_page_url' )
 	? real_estate_custom_theme_get_services_page_url()
 	: home_url( '/services/' );
+$contact_page_url    = function_exists( 'real_estate_custom_theme_get_contact_page_url' )
+	? real_estate_custom_theme_get_contact_page_url()
+	: home_url( '/contact-us/' );
 $services_page_id    = 0;
 
 if ( have_posts() ) {
@@ -72,6 +77,75 @@ $quick_links = array(
 		'icon'  => 'icon-sun.png',
 	),
 );
+
+$selling_service_cards = array(
+	array(
+		'title'       => __( 'Valuation Mastery', 'real-estate-custom-theme' ),
+		'description' => __( 'Discover the true worth of your property with our expert valuation services.', 'real-estate-custom-theme' ),
+		'icon'        => 'valuation-mastery.png',
+	),
+	array(
+		'title'       => __( 'Strategic Marketing', 'real-estate-custom-theme' ),
+		'description' => __( 'Selling a property requires more than just listing: it demands a strategic marketing approach.', 'real-estate-custom-theme' ),
+		'icon'        => 'strategic_marketing.png',
+	),
+	array(
+		'title'       => __( 'Negotiation Wizardry', 'real-estate-custom-theme' ),
+		'description' => __( 'Negotiating the best deal is an art, and our negotiation experts are masters of it.', 'real-estate-custom-theme' ),
+		'icon'        => 'negotiation_wizardry.png',
+	),
+	array(
+		'title'       => __( 'Closing Success', 'real-estate-custom-theme' ),
+		'description' => __( 'A successful sale is not complete until the closing. We guide you through the intricate closing process.', 'real-estate-custom-theme' ),
+		'icon'        => 'closing_success.png',
+	),
+);
+
+$management_service_cards = array(
+	array(
+		'title'       => __( 'Tenant Harmony', 'real-estate-custom-theme' ),
+		'description' => __( 'Our tenant management services ensure smooth occupancy while minimizing vacancies.', 'real-estate-custom-theme' ),
+		'icon'        => 'tenant_harmony.png',
+	),
+	array(
+		'title'       => __( 'Maintenance Ease', 'real-estate-custom-theme' ),
+		'description' => __( 'Say goodbye to maintenance headaches. We handle every aspect of property upkeep.', 'real-estate-custom-theme' ),
+		'icon'        => 'maintenance_ease.png',
+	),
+	array(
+		'title'       => __( 'Financial Peace of Mind', 'real-estate-custom-theme' ),
+		'description' => __( 'Managing property finances can be complex. Our experts take care of rent collection and reporting.', 'real-estate-custom-theme' ),
+		'icon'        => 'finance_peace_of_mind.png',
+	),
+	array(
+		'title'       => __( 'Legal Guardian', 'real-estate-custom-theme' ),
+		'description' => __( 'Stay compliant with property laws and regulations effortlessly with our legal support.', 'real-estate-custom-theme' ),
+		'icon'        => 'legal_guardian.png',
+	),
+);
+
+$service_icon_directories = array(
+	'services' => array(
+		'base_url'  => $services_asset_base,
+		'base_path' => $services_asset_path,
+	),
+	'home'     => array(
+		'base_url'  => $asset_base,
+		'base_path' => $asset_path,
+	),
+);
+
+$services_value_bg_filename = 'cta_background.png';
+$services_value_bg_url      = '';
+
+if ( file_exists( $services_asset_path . '/' . $services_value_bg_filename ) ) {
+	$services_value_bg_url = $services_asset_base . '/' . $services_value_bg_filename;
+}
+
+$services_value_cta_style_attr = '';
+if ( '' !== $services_value_bg_url ) {
+	$services_value_cta_style_attr = '--services-value-cta-bg:url(' . esc_url( $services_value_bg_url ) . ');';
+}
 ?>
 
 <main id="primary" class="site-main services-page">
@@ -114,6 +188,100 @@ $quick_links = array(
 					<?php endforeach; ?>
 				</div>
 			</div>
+		</div>
+	</section>
+
+	<section class="services-value section-shell" aria-labelledby="services-value-title">
+		<header class="services-value__head">
+			<h2 id="services-value-title"><?php esc_html_e( 'Unlock Property Value', 'real-estate-custom-theme' ); ?></h2>
+			<p>
+				<?php esc_html_e( 'Selling your property should be a rewarding experience, and at Estatein, we make sure it is. Our Property Selling Service is designed to maximize the value of your property, ensuring you get the best deal possible. Explore the categories below to see how we can help you at every step of your selling journey.', 'real-estate-custom-theme' ); ?>
+			</p>
+		</header>
+
+		<div class="services-value__grid">
+			<?php foreach ( $selling_service_cards as $service_card ) : ?>
+				<?php
+				$service_icon_url    = '';
+				$service_icon_source = isset( $service_card['icon_source'] ) ? sanitize_key( (string) $service_card['icon_source'] ) : 'services';
+				if ( ! isset( $service_icon_directories[ $service_icon_source ] ) ) {
+					$service_icon_source = 'services';
+				}
+
+				$service_icon_path = $service_icon_directories[ $service_icon_source ]['base_path'] . '/' . $service_card['icon'];
+				$service_icon_base = $service_icon_directories[ $service_icon_source ]['base_url'] . '/' . $service_card['icon'];
+
+				if ( file_exists( $service_icon_path ) ) {
+					$service_icon_url = $service_icon_base;
+				} elseif ( 'services' !== $service_icon_source && file_exists( $services_asset_path . '/' . $service_card['icon'] ) ) {
+					$service_icon_url = $services_asset_base . '/' . $service_card['icon'];
+				}
+				?>
+				<article class="services-value__card">
+					<div class="services-value__card-head">
+						<?php if ( '' !== $service_icon_url ) : ?>
+							<img class="services-value__icon" src="<?php echo esc_url( $service_icon_url ); ?>" alt="" loading="lazy" decoding="async">
+						<?php endif; ?>
+						<h3><?php echo esc_html( $service_card['title'] ); ?></h3>
+					</div>
+					<p><?php echo esc_html( $service_card['description'] ); ?></p>
+				</article>
+			<?php endforeach; ?>
+
+			<article class="services-value__card services-value__card--cta"<?php echo '' !== $services_value_cta_style_attr ? ' style="' . esc_attr( $services_value_cta_style_attr ) . '"' : ''; ?>>
+				<div class="services-value__cta-copy">
+					<h3><?php esc_html_e( 'Unlock the Value of Your Property Today', 'real-estate-custom-theme' ); ?></h3>
+					<p><?php esc_html_e( 'Ready to unlock the true value of your property? Explore our Property Selling Service categories and let us help you achieve the best deal possible for your valuable asset.', 'real-estate-custom-theme' ); ?></p>
+				</div>
+				<a class="services-value__cta-btn" href="<?php echo esc_url( $contact_page_url ); ?>"><?php esc_html_e( 'Learn More', 'real-estate-custom-theme' ); ?></a>
+			</article>
+		</div>
+	</section>
+
+	<section class="services-value section-shell" aria-labelledby="services-management-title">
+		<header class="services-value__head">
+			<h2 id="services-management-title"><?php esc_html_e( 'Effortless Property Management', 'real-estate-custom-theme' ); ?></h2>
+			<p>
+				<?php esc_html_e( 'Owning a property should be a pleasure, not a hassle. Estatein\'s Property Management Service takes the stress out of property ownership, offering comprehensive solutions tailored to your needs. Explore the categories below to see how we can make property management effortless for you.', 'real-estate-custom-theme' ); ?>
+			</p>
+		</header>
+
+		<div class="services-value__grid">
+			<?php foreach ( $management_service_cards as $service_card ) : ?>
+				<?php
+				$service_icon_url    = '';
+				$service_icon_source = isset( $service_card['icon_source'] ) ? sanitize_key( (string) $service_card['icon_source'] ) : 'services';
+				if ( ! isset( $service_icon_directories[ $service_icon_source ] ) ) {
+					$service_icon_source = 'services';
+				}
+
+				$service_icon_path = $service_icon_directories[ $service_icon_source ]['base_path'] . '/' . $service_card['icon'];
+				$service_icon_base = $service_icon_directories[ $service_icon_source ]['base_url'] . '/' . $service_card['icon'];
+
+				if ( file_exists( $service_icon_path ) ) {
+					$service_icon_url = $service_icon_base;
+				} elseif ( 'services' !== $service_icon_source && file_exists( $services_asset_path . '/' . $service_card['icon'] ) ) {
+					$service_icon_url = $services_asset_base . '/' . $service_card['icon'];
+				}
+				?>
+				<article class="services-value__card">
+					<div class="services-value__card-head">
+						<?php if ( '' !== $service_icon_url ) : ?>
+							<img class="services-value__icon" src="<?php echo esc_url( $service_icon_url ); ?>" alt="" loading="lazy" decoding="async">
+						<?php endif; ?>
+						<h3><?php echo esc_html( $service_card['title'] ); ?></h3>
+					</div>
+					<p><?php echo esc_html( $service_card['description'] ); ?></p>
+				</article>
+			<?php endforeach; ?>
+
+			<article class="services-value__card services-value__card--cta"<?php echo '' !== $services_value_cta_style_attr ? ' style="' . esc_attr( $services_value_cta_style_attr ) . '"' : ''; ?>>
+				<div class="services-value__cta-copy">
+					<h3><?php esc_html_e( 'Experience Effortless Property Management', 'real-estate-custom-theme' ); ?></h3>
+					<p><?php esc_html_e( 'Ready to experience hassle-free property management? Explore our Property Management Service categories and let us handle the complexities while you enjoy the benefits of property ownership.', 'real-estate-custom-theme' ); ?></p>
+				</div>
+				<a class="services-value__cta-btn" href="<?php echo esc_url( $contact_page_url ); ?>"><?php esc_html_e( 'Learn More', 'real-estate-custom-theme' ); ?></a>
+			</article>
 		</div>
 	</section>
 </main>
