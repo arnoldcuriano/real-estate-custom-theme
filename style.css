@@ -861,6 +861,16 @@ body.page-contact-us #page {
 	color: #d3d6e1;
 }
 
+.contact-page__hero .page-hero__title {
+	max-width: none;
+	width: 100%;
+}
+
+.contact-page__hero .page-hero__description {
+	max-width: 80ch;
+	width: min(100%, 80ch);
+}
+
 .services-page .quick-links {
 	margin-top: 0;
 	padding-top: 0;
@@ -2154,6 +2164,204 @@ body.page-contact-us #page {
 	margin-top: clamp(1.75rem, 3vw, 2.6rem);
 }
 
+.property-inquiry.section-shell.property-inquiry--contact {
+	width: var(--site-layout-width);
+	max-width: var(--site-layout-max);
+	margin-inline: auto;
+	margin-top: clamp(1.85rem, 3vw, 2.8rem);
+	padding-inline: var(--site-content-inline-pad);
+	box-sizing: border-box;
+}
+
+.property-inquiry--contact .property-inquiry__head p {
+	max-width: none;
+	width: min(100%, 80%);
+}
+
+.property-inquiry--contact .wpcf7 form {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	grid-auto-flow: row;
+}
+
+.property-inquiry--contact .property-inquiry__field--full {
+	grid-column: 1 / -1;
+}
+
+.property-inquiry--contact .property-inquiry__field--terms {
+	grid-column: 1 / span 2;
+}
+
+.property-inquiry--contact .property-inquiry__field--submit {
+	grid-column: 3 / -1;
+	justify-self: end;
+}
+
+.contact-offices.section-shell {
+	margin-top: clamp(2rem, 3.2vw, 3rem);
+	padding-bottom: clamp(1.5rem, 2.8vw, 2.6rem);
+}
+
+.contact-offices__head {
+	display: grid;
+	gap: 0.62rem;
+	margin-bottom: clamp(1rem, 2vw, 1.45rem);
+}
+
+.contact-offices__head h2 {
+	margin: 0;
+	font-size: clamp(1.72rem, 3vw, 2.35rem);
+	line-height: 1.14;
+	letter-spacing: -0.01em;
+	color: #f7f8fc;
+}
+
+.contact-offices__head p {
+	margin: 0;
+	max-width: 110ch;
+	width: min(100%, 88%);
+	font-size: 0.95rem;
+	line-height: 1.62;
+	color: #b6bac8;
+}
+
+.contact-offices__tabs {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.4rem;
+	margin-bottom: 1.2rem;
+	padding: 0.32rem;
+	border: 1px solid #242838;
+	border-radius: 11px;
+	background: #0f1118;
+}
+
+.contact-offices__tab {
+	min-width: 94px;
+	height: 42px;
+	border: 1px solid #242838;
+	border-radius: 9px;
+	background: #12141c;
+	color: #dce0ee;
+	font-size: 0.85rem;
+	font-weight: 500;
+	line-height: 1;
+	padding: 0 0.9rem;
+	cursor: pointer;
+	transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+
+.contact-offices__tab:hover,
+.contact-offices__tab:focus-visible {
+	border-color: rgba(111, 70, 255, 0.6);
+	outline: none;
+}
+
+.contact-offices__tab.is-active {
+	background: linear-gradient(180deg, #6f46ff 0%, #7f5bff 100%);
+	border-color: #7f5bff;
+	color: #ffffff;
+}
+
+.contact-offices__grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 1rem;
+}
+
+.contact-offices__card {
+	border: 1px solid #242838;
+	border-radius: 14px;
+	background: linear-gradient(180deg, #0f1118 0%, #0d0f16 100%);
+	padding: clamp(1rem, 1.9vw, 1.4rem);
+	display: grid;
+	gap: 0.72rem;
+	align-content: start;
+}
+
+.contact-offices__label {
+	margin: 0;
+	font-size: 0.82rem;
+	font-weight: 500;
+	line-height: 1.4;
+	color: #c5c8d6;
+}
+
+.contact-offices__address {
+	margin: 0;
+	font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	color: #f7f8fc;
+}
+
+.contact-offices__description {
+	margin: 0;
+	font-size: 0.92rem;
+	line-height: 1.66;
+	color: #aeb3c3;
+}
+
+.contact-offices__chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.48rem;
+}
+
+.contact-offices__chip {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.44rem;
+	min-height: 36px;
+	padding: 0.45rem 0.68rem;
+	border: 1px solid #2a2e3c;
+	border-radius: 999px;
+	background: #151821;
+	color: #d7dbea;
+	font-size: 0.8rem;
+	line-height: 1.2;
+}
+
+.contact-offices__chip svg {
+	width: 14px;
+	height: 14px;
+	flex: 0 0 14px;
+	stroke: #f2f4ff;
+	fill: none;
+	stroke-width: 1.8;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+
+.contact-offices__cta {
+	display: inline-flex;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+	min-height: 48px;
+	padding: 0.7rem 1.15rem;
+	border-radius: 10px;
+	background: linear-gradient(180deg, #6f46ff 0%, #7f5bff 100%);
+	border: 1px solid #7f5bff;
+	color: #ffffff;
+	font-size: 0.9rem;
+	font-weight: 600;
+	line-height: 1.2;
+	text-decoration: none;
+	transition: filter 0.2s ease;
+}
+
+.contact-offices__cta:hover,
+.contact-offices__cta:focus-visible,
+.contact-offices__cta:visited,
+.contact-offices__cta:active {
+	color: #ffffff;
+	filter: brightness(1.06);
+}
+
+.contact-offices__card[hidden] {
+	display: none !important;
+}
+
 .property-inquiry--single .property-inquiry__layout {
 	display: grid;
 	grid-template-columns: minmax(220px, 0.42fr) minmax(0, 0.58fr);
@@ -3137,6 +3345,15 @@ span.property-inquiry__label {
 	padding-left: 0;
 }
 
+.property-single__faq .btn--ghost,
+.property-single__faq .btn--ghost:visited,
+.property-single__faq .btn--ghost:hover,
+.property-single__faq .btn--ghost:focus,
+.property-single__faq .btn--ghost:focus-visible,
+.property-single__faq .btn--ghost:active {
+	color: #ffffff;
+}
+
 .property-single__pricing-head {
 	display: grid;
 	gap: 0.46rem;
@@ -4029,8 +4246,16 @@ span.property-inquiry__label {
 	font-size: 0.88rem;
 }
 
+.faq-archive__cta:visited,
+.faq-archive__cta:focus,
+.faq-archive__cta:focus-visible,
+.faq-archive__cta:active {
+	color: #f2f3f7;
+}
+
 .faq-archive__cta:hover {
 	background: #1a1d26;
+	color: #ffffff;
 }
 
 .faq-archive__pagination .nav-links {
@@ -4122,6 +4347,18 @@ span.property-inquiry__label {
 	.property-inquiry .wpcf7 form {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 0.9rem 0.95rem;
+	}
+
+	.property-inquiry--contact .property-inquiry__head p {
+		width: min(100%, 90%);
+	}
+
+	.contact-offices__head p {
+		width: min(100%, 92%);
+	}
+
+	.contact-offices__grid {
+		grid-template-columns: 1fr;
 	}
 
 	.property-inquiry__field--terms,
@@ -4356,6 +4593,26 @@ span.property-inquiry__label {
 
 	.property-inquiry__panel {
 		padding: 0.95rem 0.85rem;
+	}
+
+	.property-inquiry--contact .property-inquiry__head p {
+		width: 100%;
+	}
+
+	.contact-offices__head p {
+		width: 100%;
+	}
+
+	.contact-offices__tabs {
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.35rem;
+	}
+
+	.contact-offices__tab {
+		width: 100%;
+		min-width: 0;
 	}
 
 	.property-inquiry .wpcf7 form {

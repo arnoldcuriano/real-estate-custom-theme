@@ -436,6 +436,60 @@ function real_estate_custom_theme_get_single_property_inquiry_form_shortcode() {
 }
 
 /**
+ * Resolve Contact Form 7 shortcode for contact page connect form.
+ *
+ * Form title is intentionally fixed to keep template integration stable:
+ * - Contact Connect Form
+ *
+ * @return string
+ */
+function real_estate_custom_theme_get_contact_connect_form_shortcode() {
+	if ( ! shortcode_exists( 'contact-form-7' ) ) {
+		return '';
+	}
+
+	$form_title = 'Contact Connect Form';
+
+	$forms = get_posts(
+		array(
+			'post_type'      => 'wpcf7_contact_form',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'title'          => $form_title,
+			'orderby'        => 'ID',
+			'order'          => 'DESC',
+		)
+	);
+
+	// Fallback for environments where exact-title query var is unavailable.
+	if ( empty( $forms ) ) {
+		$candidate_forms = get_posts(
+			array(
+				'post_type'      => 'wpcf7_contact_form',
+				'post_status'    => 'publish',
+				'posts_per_page' => 20,
+				's'              => $form_title,
+				'orderby'        => 'ID',
+				'order'          => 'DESC',
+			)
+		);
+
+		foreach ( $candidate_forms as $candidate_form ) {
+			if ( 0 === strcasecmp( trim( (string) $candidate_form->post_title ), $form_title ) ) {
+				$forms = array( $candidate_form );
+				break;
+			}
+		}
+	}
+
+	if ( empty( $forms ) || empty( $forms[0]->ID ) ) {
+		return '';
+	}
+
+	return sprintf( '[contact-form-7 id="%d"]', absint( $forms[0]->ID ) );
+}
+
+/**
  * Normalize invalid acceptance tag syntax for the Property Inquiry CF7 form.
  *
  * CF7 acceptance tags do not support the required asterisk variant.
@@ -456,7 +510,7 @@ function real_estate_custom_theme_normalize_property_inquiry_acceptance_tag( $pr
 	}
 
 	$form_title        = trim( (string) $contact_form->title() );
-	$allowed_titles    = array( 'Property Inquiry Form', 'Single Property Inquiry Form' );
+	$allowed_titles    = array( 'Property Inquiry Form', 'Single Property Inquiry Form', 'Contact Connect Form' );
 	$matches_form_name = false;
 
 	foreach ( $allowed_titles as $allowed_title ) {
@@ -736,6 +790,7 @@ function real_estate_custom_theme_scripts()
 	$about_js_version   = file_exists( $theme_dir . '/js/about.js' ) ? (string) filemtime( $theme_dir . '/js/about.js' ) : _S_VERSION;
 	$property_filters_js_version = file_exists( $theme_dir . '/js/property-filters.js' ) ? (string) filemtime( $theme_dir . '/js/property-filters.js' ) : _S_VERSION;
 	$property_inquiry_form_js_version = file_exists( $theme_dir . '/js/property-inquiry-form.js' ) ? (string) filemtime( $theme_dir . '/js/property-inquiry-form.js' ) : _S_VERSION;
+	$contact_offices_tabs_js_version = file_exists( $theme_dir . '/js/contact-offices-tabs.js' ) ? (string) filemtime( $theme_dir . '/js/contact-offices-tabs.js' ) : _S_VERSION;
 	$property_single_gallery_js_version = file_exists( $theme_dir . '/js/property-single-gallery.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-gallery.js' ) : _S_VERSION;
 	$property_single_inquiry_js_version = file_exists( $theme_dir . '/js/property-single-inquiry.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-inquiry.js' ) : _S_VERSION;
 	$property_single_pricing_accordion_js_version = file_exists( $theme_dir . '/js/property-single-pricing-accordion.js' ) ? (string) filemtime( $theme_dir . '/js/property-single-pricing-accordion.js' ) : _S_VERSION;
@@ -759,7 +814,7 @@ function real_estate_custom_theme_scripts()
 		$header_style_version
 	);
 
-	$should_load_home_experience_assets = is_front_page() || is_page( 'services' ) || is_post_type_archive( 'property' ) || is_singular( 'property' );
+	$should_load_home_experience_assets = is_front_page() || is_page( array( 'services', 'contact-us' ) ) || is_post_type_archive( 'property' ) || is_singular( 'property' );
 
 	if ( is_page( 'about-us' ) ) {
 		wp_enqueue_style(
@@ -814,12 +869,24 @@ function real_estate_custom_theme_scripts()
 			$property_filters_js_version,
 			true
 		);
+	}
 
+	if ( is_post_type_archive( 'property' ) || is_page( 'contact-us' ) ) {
 		wp_enqueue_script(
 			'real-estate-custom-theme-property-inquiry-form',
 			$theme_uri . '/js/property-inquiry-form.js',
 			array(),
 			$property_inquiry_form_js_version,
+			true
+		);
+	}
+
+	if ( is_page( 'contact-us' ) ) {
+		wp_enqueue_script(
+			'real-estate-custom-theme-contact-offices-tabs',
+			$theme_uri . '/js/contact-offices-tabs.js',
+			array(),
+			$contact_offices_tabs_js_version,
 			true
 		);
 	}

@@ -804,8 +804,16 @@
 	width: fit-content;
 }
 
+.faq-card__cta:visited,
+.faq-card__cta:focus,
+.faq-card__cta:focus-visible,
+.faq-card__cta:active {
+	color: #f2f3f7;
+}
+
 .faq-card__cta:hover {
 	background: #1a1d26;
+	color: #ffffff;
 }
 
 .card-grid--tight .card {

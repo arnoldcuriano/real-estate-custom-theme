@@ -385,6 +385,74 @@ Important: if a select is not rendering as branded dropdown, keep `class:js-prop
 Also, if you see raw text like `[acceptance ...]` on the frontend, use `[acceptance consent_terms]...[/acceptance]` exactly (do not use `acceptance*`).
 Theme fallback: for this specific form title (`Property Inquiry Form`), invalid `[acceptance* ...]` is auto-normalized by theme hook to reduce local-authoring breakage.
 
+## Contact Connect Form (Contact Form 7)
+
+The contact page (`page-contact-us.php`) renders a dedicated section titled `Let's Connect` below the contact quick-links slider.
+
+### Required admin setup
+
+1. Ensure **Contact Form 7** is active.
+2. Create a form with title: `Contact Connect Form`.
+3. In the CF7 form **Additional Settings**, add:
+   - `autop: off`
+   - `demo_mode: on` (optional for local)
+
+### CF7 form template (recommended)
+
+Use this in the CF7 editor to match the contact page form layout:
+
+```text
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">First Name
+    [text* first_name placeholder "Enter First Name"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Last Name
+    [text* last_name placeholder "Enter Last Name"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Email
+    [email* email placeholder "Enter your Email"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Phone
+    [tel* phone placeholder "Enter Phone Number"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">Inquiry Type
+    [select* inquiry_type class:js-property-inquiry-select include_blank "Select Inquiry Type" "Buying" "Selling" "Investment" "Partnership" "General Inquiry"]
+  </label>
+</div>
+
+<div class="property-inquiry__field">
+  <label class="property-inquiry__label">How Did You Hear About Us?
+    [select* hear_about class:js-property-inquiry-select include_blank "Select" "Google Search" "Social Media" "Referral" "Event" "Other"]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--full">
+  <label class="property-inquiry__label">Message
+    [textarea* message placeholder "Enter your Message here.."]
+  </label>
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--terms property-inquiry__terms">
+  [acceptance consent_terms]I agree with Terms of Use and Privacy Policy[/acceptance]
+</div>
+
+<div class="property-inquiry__field property-inquiry__field--submit">
+  [submit class:property-inquiry__submit "Send Your Message"]
+</div>
+```
+
 ## Single Property Inquiry Form (Contact Form 7)
 
 The single property page (`single-property.php`) renders a dedicated inquiry section below the map.
